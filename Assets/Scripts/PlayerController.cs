@@ -95,6 +95,7 @@ public class PlayerController : MonoBehaviour {
                     break;
                 }
                 break;
+
             // Exercising 
             case MotionState.RUN:
                 // Exercising
@@ -107,10 +108,17 @@ public class PlayerController : MonoBehaviour {
                     SetMotionState(MotionState.IDLE);
                     break;
                 }
+                // NOT ON THE GROUND ANYMORE
+                if (!onGround) {
+                    SetMotionState(MotionState.FALL);
+                    break;
+                }
                 break;
 
             // We're going upwards
             case MotionState.JUMP:
+
+                ApplyAirSpeedModifier();
 
                 // if the jump key is released, we should start falling
                 if (jumpReleased) {
@@ -128,6 +136,8 @@ public class PlayerController : MonoBehaviour {
 
             // Shit, we're heading towards the ground at a non-zero velocity
             case MotionState.FALL:
+
+                ApplyAirSpeedModifier();
 
                 // If there is ground that we're basically touching, then we're 
                 // no longer falling
@@ -158,6 +168,9 @@ public class PlayerController : MonoBehaviour {
 
                 // Constant sliding speed
                 yVel = -0.5f;
+
+                // only way to get off is jumping or bottoming out
+                xVel = 0f;
 
                 if (onGround) {
                     SetMotionState(MotionState.IDLE);
@@ -198,6 +211,15 @@ public class PlayerController : MonoBehaviour {
 
         if (debugStateText) {
             debugStateText.text = motionState.ToString();
+        }
+    }
+
+    private void ApplyAirSpeedModifier() {
+        if (Mathf.Abs(xInput) >= 0.01f) {
+            xVel = Mathf.Lerp(rb.velocity.x, xVel, Time.deltaTime*10);
+        }
+        else {
+            xVel = Mathf.Lerp(rb.velocity.x, 0, Time.deltaTime*10);
         }
     }
 
