@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour {
 
             // Exercising 
             case MotionState.RUN:
-                // Exercising
+
                 if(jumpPressed && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
