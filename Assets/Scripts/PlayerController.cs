@@ -8,10 +8,12 @@ public class PlayerController : MonoBehaviour {
     public float hMoveSpeed = 10f;
     public float jumpForce = 600f;
     public TextMesh debugStateText;
+    public TextMesh debugDirectionText;
 
     private Vector2 wallJumpDirection = (Vector2.up + Vector2.right).normalized;
 
-    private enum Direction { NONE, UP, DOWN, LEFT, RIGHT };
+    public enum Direction { NONE, UP, DOWN, LEFT, RIGHT };
+    private Direction playerFacing = Direction.RIGHT;
     private Direction wallDirection = Direction.NONE;
 
     private enum MotionState { IDLE, RUN, JUMP, FALL, WALLSLIDE };
@@ -45,6 +47,10 @@ public class PlayerController : MonoBehaviour {
         sprite = this.GetComponentInChildren<SpriteRenderer>();
         ignoredLayers = ~(1 << LayerMask.NameToLayer("Player"));
 	}
+
+    public Direction PlayerFacing() {
+        return playerFacing;
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -101,12 +107,14 @@ public class PlayerController : MonoBehaviour {
             // Exercising 
             case MotionState.RUN:
 
+                UpdatePlayerDirectionFromVelocity();
+
                 if(jumpPressed && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
                     break;
                 }
-                if (Mathf.Abs(xVel) < 0.01f) {
+                if (Mathf.Approximately(xVel, 0f)) {
                     SetMotionState(MotionState.IDLE);
                     break;
                 }
@@ -121,6 +129,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.JUMP:
 
                 ApplyAirSpeedModifier();
+                UpdatePlayerDirectionFromVelocity();
 
                 // if the jump key is released, we should start falling
                 if (jumpReleased) {
@@ -140,6 +149,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.FALL:
 
                 ApplyAirSpeedModifier();
+                UpdatePlayerDirectionFromVelocity();
 
                 // More gravity when falling for a "faster" fall
                 yVel += Physics.gravity.y * 2f * Time.deltaTime;
@@ -200,6 +210,10 @@ public class PlayerController : MonoBehaviour {
                 break;
         }
 
+        if (debugDirectionText) {
+            debugDirectionText.text = playerFacing.ToString();
+        }
+
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
 
@@ -216,6 +230,19 @@ public class PlayerController : MonoBehaviour {
 
         if (debugStateText) {
             debugStateText.text = motionState.ToString();
+        }
+    }
+
+    private void UpdatePlayerDirectionFromVelocity() {
+        if (Mathf.Approximately(xVel, 0f)) {
+            return;
+        }
+
+        if (xVel < 0f) {
+            playerFacing = Direction.LEFT;
+        }
+        else {
+            playerFacing = Direction.RIGHT;
         }
     }
 
@@ -306,6 +333,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     private Vector2 getPlayerCenter() {
-        return new Vector2(transform.position.x + 0.5f, transform.position.y + 0.5f);
+        return transform.position;
     }
 }
