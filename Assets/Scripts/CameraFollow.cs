@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour {
 
-    public float cameraDistance = -5f;
+    public float cameraDistance = 8;
 
     private GameObject target;
     private Rigidbody2D targetRigidbody;

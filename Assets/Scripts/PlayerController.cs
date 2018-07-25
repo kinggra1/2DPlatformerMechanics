@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour {
     private MotionState motionState = MotionState.IDLE;
     private MotionState prevMotionState = MotionState.IDLE;
 
+    private SpriteRenderer sprite;
     private Rigidbody2D rb;
     private int ignoredLayers;
 
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         rb = this.GetComponent<Rigidbody2D>();
+        sprite = this.GetComponentInChildren<SpriteRenderer>();
         ignoredLayers = ~(1 << LayerMask.NameToLayer("Player"));
 	}
 	
@@ -139,6 +141,9 @@ public class PlayerController : MonoBehaviour {
 
                 ApplyAirSpeedModifier();
 
+                // More gravity when falling for a "faster" fall
+                yVel += Physics.gravity.y * 2f * Time.deltaTime;
+
                 // If there is ground that we're basically touching, then we're 
                 // no longer falling
                 if (onGround) {
@@ -231,11 +236,30 @@ public class PlayerController : MonoBehaviour {
         onGround = false;
         onWall = false;
         Vector2 playerCenter = getPlayerCenter();
+        Vector2 playerLeftCenter = playerCenter - Vector2.right * 0.5f;
+        Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
 
+        // center grounded check
         RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter - Vector2.up * downRaycastDist, ignoredLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
+            onGround = true;
+        }
+
+        // left grounded corner check
+        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, ignoredLayers);
+        Debug.DrawLine(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, Color.red);
+        if (hit2D) {
+            //objectBelow = hit2D.collider.gameObject;
+            onGround = true;
+        }
+
+        // right grounded corner check
+        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, ignoredLayers);
+        Debug.DrawLine(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, Color.red);
+        if (hit2D) {
+            //objectBelow = hit2D.collider.gameObject;
             onGround = true;
         }
 
