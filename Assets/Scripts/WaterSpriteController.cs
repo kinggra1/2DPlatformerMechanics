@@ -14,6 +14,7 @@ public class WaterSpriteController : MonoBehaviour {
     private Vector3 localOffset = Vector3.zero;
     private SpriteRenderer sprite;
     private GameObject body;
+    private ParticleSystem drippingParticles;
 
     Vector2 velocity = Vector2.zero;
 
@@ -26,6 +27,8 @@ public class WaterSpriteController : MonoBehaviour {
 
         sprite = this.GetComponentInChildren<SpriteRenderer>();
         body = sprite.gameObject;
+
+        drippingParticles = this.GetComponentInChildren<ParticleSystem>();
 
         randomSwayFactor = Random.Range(0.1f, 0.8f);
 	}
@@ -59,5 +62,7 @@ public class WaterSpriteController : MonoBehaviour {
         // and stretch based on current velocity
         float scaleFactor = velocity.magnitude / 8f;
         sprite.gameObject.transform.localScale = new Vector3(Mathf.Clamp(scaleFactor, 1f, 2f), 1f-Mathf.Clamp(scaleFactor, 0f, 0.25f), 1f);
-	}
+
+        drippingParticles.transform.rotation = Quaternion.Inverse(transform.rotation);
+    }
 }

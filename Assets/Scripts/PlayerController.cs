@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
     
     public float hMoveSpeed = 10f;
+    public float maxFallspeed = -15f;
     public float jumpForce = 600f;
     public TextMesh debugStateText;
     public TextMesh debugDirectionText;
@@ -153,6 +154,9 @@ public class PlayerController : MonoBehaviour {
 
                 // More gravity when falling for a "faster" fall
                 yVel += Physics.gravity.y * 2f * Time.deltaTime;
+                if (yVel < maxFallspeed) {
+                    yVel = maxFallspeed;
+                }
 
                 // If there is ground that we're basically touching, then we're 
                 // no longer falling
