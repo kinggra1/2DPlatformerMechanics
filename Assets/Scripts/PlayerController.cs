@@ -42,11 +42,15 @@ public class PlayerController : MonoBehaviour {
     private float xVel;
     private float yVel;
 
+    private GameController gameController;
+
 	// Use this for initialization
 	void Awake () {
         rb = this.GetComponent<Rigidbody2D>();
         sprite = this.GetComponentInChildren<SpriteRenderer>();
         ignoredLayers = ~(1 << LayerMask.NameToLayer("Player"));
+
+        gameController = GameController.GetInstance();
 	}
 
     public Direction PlayerFacing() {
