@@ -275,7 +275,7 @@ public class PlayerController : MonoBehaviour {
         Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
 
         // center grounded check
-        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter - Vector2.up * downRaycastDist, ignoredLayers);
+        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, ignoredLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
@@ -283,7 +283,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         // left grounded corner check
-        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter + Vector2.down * downRaycastDist, ignoredLayers);
         Debug.DrawLine(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
@@ -291,7 +291,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         // right grounded corner check
-        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter + Vector2.down * downRaycastDist, ignoredLayers);
         Debug.DrawLine(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
@@ -305,7 +305,7 @@ public class PlayerController : MonoBehaviour {
             onWall = true;
         }
 
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter - Vector2.right * sideRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, ignoredLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.right * sideRaycastDist, Color.red);
         if (hit2D)
         {

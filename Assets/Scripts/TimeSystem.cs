@@ -9,7 +9,7 @@ public class TimeSystem : MonoBehaviour {
     private float dawnOfTime = 0f;
     private float currentTime = 0f;
 
-    private readonly float secondsPerDay = 4f;
+    private readonly float secondsPerDay = 8f;
 
     // Use this for initialization
     void Awake() {
@@ -42,7 +42,7 @@ public class TimeSystem : MonoBehaviour {
 
     // Probably move these to a time utility class
     public int TimeToDays(float time) {
-        return (int)Mathf.Floor(currentTime / secondsPerDay);
+        return (int)Mathf.Floor(time / secondsPerDay);
     }
 
     // Lol yeah definitely move this to a utility class that returns "Instance" objects that hold days and hours, etc.

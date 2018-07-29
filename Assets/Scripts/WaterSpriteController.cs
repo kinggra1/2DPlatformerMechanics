@@ -30,7 +30,7 @@ public class WaterSpriteController : MonoBehaviour {
 
         drippingParticles = this.GetComponentInChildren<ParticleSystem>();
 
-        randomSwayFactor = Random.Range(0.1f, 0.8f);
+        // randomSwayFactor = Random.Range(0.1f, 0.8f);
 	}
 	
 	// Update is called once per frame
@@ -39,7 +39,7 @@ public class WaterSpriteController : MonoBehaviour {
         Vector3 targetOffset = floatingOffset;
         // Mirror the floating offset depending on the direction the player is facing
         if (player.PlayerFacing() == PlayerController.Direction.RIGHT) {
-            targetOffset.x = targetOffset.x * -1;
+            targetOffset.x *= -1;
         }
 
         // "Random" bobbing around
@@ -57,12 +57,12 @@ public class WaterSpriteController : MonoBehaviour {
         this.transform.position += new Vector3(velocity.x, velocity.y) * Time.deltaTime;
 
         // point us in the direction of velocity
-        sprite.gameObject.transform.localRotation = Quaternion.EulerAngles(0f, 0f, Mathf.Atan2(velocity.y, velocity.x));
+        sprite.gameObject.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg);
 
         // and stretch based on current velocity
         float scaleFactor = velocity.magnitude / 8f;
         sprite.gameObject.transform.localScale = new Vector3(Mathf.Clamp(scaleFactor, 1f, 2f), 1f-Mathf.Clamp(scaleFactor, 0f, 0.25f), 1f);
 
-        drippingParticles.transform.rotation = Quaternion.Inverse(transform.rotation);
+        //drippingParticles.transform.rotation = Quaternion.Inverse(transform.rotation);
     }
 }

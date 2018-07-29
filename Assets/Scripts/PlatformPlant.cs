@@ -6,7 +6,7 @@ public class PlatformPlant : MonoBehaviour {
 
     public GameObject[] growthPhases;
 
-    public float timeBetweenPhases;
+    // public float timeBetweenPhases;
 
     TimeSystem timeSystem;
 
@@ -26,11 +26,18 @@ public class PlatformPlant : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        int day = timeSystem.TimeToDays(plantedTime - timeSystem.DawnOfTime());
+        int day = timeSystem.TimeToDays(timeSystem.GetTime() - plantedTime);
 
         if (day != phaseIndex && day < growthPhases.Length) {
             growthPhases[phaseIndex].SetActive(false);
-            growthPhases[++phaseIndex].SetActive(true);
+            phaseIndex++;
+            GameObject nextPhase = growthPhases[phaseIndex];
+            nextPhase.SetActive(true);
+
+            Growable growable = nextPhase.GetComponent<Growable>();
+            if (growable != null) {
+                growable.Grow();
+            }
         }
 	}
 }
