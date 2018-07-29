@@ -34,21 +34,12 @@ public class PlatformPlantPhase : MonoBehaviour, Growable {
         }
 
         GameObject newStemPiece = CreateStem(platforms[0].transform.position + Vector3.down * 1.5f);
-
-        Vector3 vectorToNextLeaf = platforms[0].transform.position - newStemPiece.transform.position;
-        float stemAngle = -vectorToNextLeaf.x / vectorToNextLeaf.magnitude;
-        newStemPiece.transform.rotation = Quaternion.EulerAngles(0f, 0f, stemAngle);
-        newStemPiece.transform.localScale = new Vector3(0.1f, vectorToNextLeaf.magnitude, 1f);
+        GrowStem(newStemPiece, platforms[0].transform.position);
 
         // create all but the last stem
         for (int i = 1; i < platforms.Length-1; i++) {
             newStemPiece = CreateStem(platforms[i - 1].transform.position);
-
-            vectorToNextLeaf = platforms[i].transform.position - newStemPiece.transform.position;
-            stemAngle = -vectorToNextLeaf.x / vectorToNextLeaf.magnitude;
-            newStemPiece.transform.rotation = Quaternion.EulerAngles(0f, 0f, stemAngle);
-            newStemPiece.transform.localScale = new Vector3(0.1f, vectorToNextLeaf.magnitude, 1f);
-
+            GrowStem(newStemPiece, platforms[i].transform.position);
         }
     }
 
@@ -60,6 +51,13 @@ public class PlatformPlantPhase : MonoBehaviour, Growable {
         renderer.sortingOrder = -1000; // draw behind everything
 
         return newStemPiece;
+    }
+
+    private void GrowStem(GameObject stemPiece, Vector3 targetLocation) {
+        Vector3 vectorToNextLeaf = targetLocation - stemPiece.transform.position;
+        float stemAngle = Mathf.Atan2(vectorToNextLeaf.y, vectorToNextLeaf.x);
+        stemPiece.transform.rotation = Quaternion.EulerAngles(0f, 0f, stemAngle);
+        stemPiece.transform.localScale = new Vector3(vectorToNextLeaf.magnitude, 0.1f, 1f);
     }
 
     // Update is called once per frame
@@ -93,10 +91,7 @@ public class PlatformPlantPhase : MonoBehaviour, Growable {
             topPlatform.transform.localScale = Vector3.one * growthProgress;
 
             // Update dynamic stem
-            Vector3 vectorToNextLeaf = topPlatform.transform.position - newStemPiece.transform.position;
-            float stemAngle = -vectorToNextLeaf.x / vectorToNextLeaf.magnitude;
-            newStemPiece.transform.rotation = Quaternion.EulerAngles(0f, 0f, stemAngle);
-            newStemPiece.transform.localScale = new Vector3(0.1f, vectorToNextLeaf.magnitude, 1f);
+            GrowStem(newStemPiece, topPlatform.transform.position);
             yield return null;
         }
     }
