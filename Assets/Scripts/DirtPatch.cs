@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class DirtPatch : MonoBehaviour, IPlantableZone {
 
-    private IGrowable plant = null;
+    // TODO: Refactor plant so that this is a "Growable" and the phases are something else
+    private GameObject plant = null;
 
     // Use this for initialization
     void Start () {
@@ -17,7 +18,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 	}
 
     bool IPlantableZone.CanPlantSeed() {
-        return plant != null;
+        return plant == null;
     }
 
     void IPlantableZone.Fertalize() {
@@ -25,7 +26,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
     }
 
     void IPlantableZone.PlantSeed(GameObject seed) {
-        Instantiate(seed, this.transform);
+        plant = Instantiate(seed, this.transform);
     }
 
     void IPlantableZone.Water() {

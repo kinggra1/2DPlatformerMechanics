@@ -31,8 +31,7 @@ public class InventorySystem : MonoBehaviour {
         timeSystem = TimeSystem.GetInstance();
 
 
-        GameObject platformPlantPrefab = (GameObject)Resources.Load("Prefabs/Plants/PlatformPlant", typeof(GameObject));
-        platformPlantPrefab = (GameObject)Resources.Load("PlatformPlant", typeof(GameObject));
+        GameObject platformPlantPrefab = (GameObject)Resources.Load("PlantPrefabs/PlatformPlant", typeof(GameObject));
         itemSlots.Add(platformPlantPrefab);
     }
 
@@ -68,9 +67,8 @@ public class InventorySystem : MonoBehaviour {
             // if it's a seed...
             // check we have a place to plant it
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
-            if (plantableZone != null) {
-                // IN PROGRESS. DIS BORKEN.
-                //plantableZone.PlantSeed(itemSlots[selectedItemIndex]);
+            if (plantableZone != null && plantableZone.CanPlantSeed()) {
+                plantableZone.PlantSeed(itemSlots[selectedItemIndex]);
             }
         }
     }

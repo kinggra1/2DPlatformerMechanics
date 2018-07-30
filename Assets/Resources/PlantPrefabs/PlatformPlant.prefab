@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4474779179372448}
   - component: {fileID: 212812267039625066}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4361053164444748}
   - component: {fileID: 212855947321207872}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4922441466634518}
   - component: {fileID: 212008521743771068}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,7 +68,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4881655151562868}
   - component: {fileID: 114399116593249896}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plant_Size0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4034699724511834}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4200582764004242}
   - component: {fileID: 61484527245846844}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -114,7 +114,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4036947209037564}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4019086695830026}
   - component: {fileID: 114479166380644778}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plant_Size2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4090136313674954}
   - component: {fileID: 212402270763674282}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4296492808688752}
   - component: {fileID: 212460951557689116}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4742349606354658}
   - component: {fileID: 212408211909606410}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4351175968146588}
   - component: {fileID: 212796797825841568}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -210,7 +210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4536845074016974}
   - component: {fileID: 61365127678346204}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -226,7 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4359942151696442}
   - component: {fileID: 212009937455180506}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4089552319470702}
   - component: {fileID: 114086646908337794}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plant_Size1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4199563503139442}
   - component: {fileID: 114147533746203046}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plant_Size3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4145499199256762}
   - component: {fileID: 61037115018180542}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -290,7 +290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4527318307284030}
   - component: {fileID: 114478119509522932}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PlatformPlant
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4115850332384980}
   - component: {fileID: 212999631694905966}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PlantedStem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,7 +322,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4818766037534836}
   - component: {fileID: 61395630157655978}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -338,7 +338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4144839820374502}
   - component: {fileID: 212804787737929292}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4169699853917788}
   - component: {fileID: 212292741301110834}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -369,7 +369,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4238962429178108}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +384,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4752272095060966}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +399,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4478544883727630}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -415,7 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4812164030309528}
   - component: {fileID: 61787769569554024}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -431,7 +431,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4944882795346396}
   - component: {fileID: 212751452405203662}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -446,7 +446,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4046909198151094}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Platform2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -462,7 +462,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4365618983327128}
   - component: {fileID: 212335439313870672}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -478,7 +478,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4849296402183772}
   - component: {fileID: 61067567553780400}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -773,7 +773,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1633169590787056}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -28.98, y: -2.4, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4881655151562868}
