@@ -51,7 +51,7 @@ public class TimeSystem : MonoBehaviour {
         return (int)Mathf.Floor(24 * currentDayTime / secondsPerDay);
     }
 
-    // now if we forget to put a GameController in the scene, we can still
+    // now if we forget to put a TimeSystem in the scene, we can still
     // call this and one will be dynamically created
     public static TimeSystem GetInstance() {
         if (instance == null) {

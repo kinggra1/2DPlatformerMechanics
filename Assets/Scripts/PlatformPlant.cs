@@ -34,7 +34,7 @@ public class PlatformPlant : MonoBehaviour {
             GameObject nextPhase = growthPhases[phaseIndex];
             nextPhase.SetActive(true);
 
-            Growable growable = nextPhase.GetComponent<Growable>();
+            IGrowable growable = nextPhase.GetComponent<IGrowable>();
             if (growable != null) {
                 growable.Grow();
             }

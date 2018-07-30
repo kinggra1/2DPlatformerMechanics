@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
     public float hMoveSpeed = 10f;
     public float maxFallspeed = -15f;
     public float jumpForce = 600f;
+    public WaterSpriteController waterSprite;
     public TextMesh debugStateText;
     public TextMesh debugDirectionText;
 
@@ -23,7 +24,7 @@ public class PlayerController : MonoBehaviour {
 
     private SpriteRenderer sprite;
     private Rigidbody2D rb;
-    private int ignoredLayers;
+    private int raycastLayers;
 
     private float downRaycastDist = 0.6f;
     private float sideRaycastDist = 0.6f;
@@ -34,11 +35,15 @@ public class PlayerController : MonoBehaviour {
     private bool onWall;
     private GameObject objectOnLeft;
     private GameObject objectOnRight;
+    private IPlantableZone currentPlantableZone = null; // usually null
 
     private float xInput;
     private float yInput;
     private bool jumpPressed;
     private bool jumpReleased;
+    private bool clickPressed;
+    private bool ePressed;
+
     private float xVel;
     private float yVel;
 
@@ -48,13 +53,26 @@ public class PlayerController : MonoBehaviour {
 	void Awake () {
         rb = this.GetComponent<Rigidbody2D>();
         sprite = this.GetComponentInChildren<SpriteRenderer>();
-        ignoredLayers = ~(1 << LayerMask.NameToLayer("Player"));
+        raycastLayers = (
+            (1 << LayerMask.NameToLayer("Ground"))
+            | (1 << LayerMask.NameToLayer("Wall"))
+            // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanStandOn")
+            // ...
+            );
 
         gameController = GameController.GetInstance();
 	}
 
     public Direction PlayerFacing() {
         return playerFacing;
+    }
+
+    public IPlantableZone GetAvailablePlantableZone() {
+        return this.currentPlantableZone;
+    }
+
+    public void SetAvailablePlantableZone(IPlantableZone zone) {
+        this.currentPlantableZone = zone;
     }
 	
 	// Update is called once per frame
@@ -65,8 +83,11 @@ public class PlayerController : MonoBehaviour {
         jumpPressed = Input.GetButtonDown("Jump");
         jumpReleased = Input.GetButtonUp("Jump");
 
-        updateRaycasts();
-        checkWalls();
+        clickPressed = Input.GetMouseButtonDown(0);
+        ePressed = Input.GetKeyDown(KeyCode.E);
+
+        CheckSurroundings();
+        FindClosestWall();
 
         xVel = xInput * hMoveSpeed;
         yVel = rb.velocity.y;
@@ -263,7 +284,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    private void updateRaycasts() {
+    private void CheckSurroundings() {
 
         objectBelow = null;
         objectOnRight = null;
@@ -275,7 +296,7 @@ public class PlayerController : MonoBehaviour {
         Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
 
         // center grounded check
-        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, ignoredLayers);
+        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, raycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
@@ -283,7 +304,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         // left grounded corner check
-        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter + Vector2.down * downRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter + Vector2.down * downRaycastDist, raycastLayers);
         Debug.DrawLine(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
@@ -291,21 +312,21 @@ public class PlayerController : MonoBehaviour {
         }
 
         // right grounded corner check
-        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter + Vector2.down * downRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter + Vector2.down * downRaycastDist, raycastLayers);
         Debug.DrawLine(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
             onGround = true;
         }
 
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.right * sideRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.right * sideRaycastDist, raycastLayers);
         Debug.DrawLine(playerCenter, playerCenter + Vector2.right * sideRaycastDist, Color.red);
         if (hit2D) {
             objectOnRight = hit2D.collider.gameObject;
             onWall = true;
         }
 
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, ignoredLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, raycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.right * sideRaycastDist, Color.red);
         if (hit2D)
         {
@@ -314,7 +335,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
      
-    private void checkWalls() {
+    private void FindClosestWall() {
         if (objectOnLeft && objectOnRight) {
             // Left object is closer
             if (Vector3.Distance(objectOnLeft.transform.position, transform.position) <
@@ -342,5 +363,13 @@ public class PlayerController : MonoBehaviour {
 
     private Vector2 getPlayerCenter() {
         return transform.position;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider) {
+
+        // If we are near a collectible, tell the water sprite to go fetch
+        if (collider.GetComponent<Collectible>()) {
+            waterSprite.AddToTargetList(collider.gameObject);
+        }
     }
 }

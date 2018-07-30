@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IGrowable {
+public class Interactible : MonoBehaviour {
 
-    void Grow();
-    void Water();
-    //void Chop();
 }

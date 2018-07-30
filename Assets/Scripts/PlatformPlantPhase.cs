@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformPlantPhase : MonoBehaviour, Growable {
+public class PlatformPlantPhase : MonoBehaviour, IGrowable {
 
     public GameObject stemPrefab;
     public GameObject[] platforms;
@@ -55,8 +55,8 @@ public class PlatformPlantPhase : MonoBehaviour, Growable {
 
     private void GrowStem(GameObject stemPiece, Vector3 targetLocation) {
         Vector3 vectorToNextLeaf = targetLocation - stemPiece.transform.position;
-        float stemAngle = Mathf.Atan2(vectorToNextLeaf.y, vectorToNextLeaf.x);
-        stemPiece.transform.rotation = Quaternion.EulerAngles(0f, 0f, stemAngle);
+        float stemAngle = Mathf.Atan2(vectorToNextLeaf.y, vectorToNextLeaf.x) * Mathf.Rad2Deg;
+        stemPiece.transform.rotation = Quaternion.Euler(0f, 0f, stemAngle);
         stemPiece.transform.localScale = new Vector3(vectorToNextLeaf.magnitude, 0.1f, 1f);
     }
 
