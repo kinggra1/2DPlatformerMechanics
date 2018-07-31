@@ -5,6 +5,6 @@ using UnityEngine;
 public interface IGrowable {
 
     void Grow();
-    void Water();
-    //void Chop();
+    bool CanBeWatered();
+    void Water();  
 }

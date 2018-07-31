@@ -7,5 +7,6 @@ public interface IPlantableZone {
     bool CanPlantSeed();
     void PlantSeed(GameObject seed);
     void Fertalize();
+    bool CanBeWatered();
     void Water();
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class DirtPatch : MonoBehaviour, IPlantableZone {
 
     // TODO: Refactor plant so that this is a "Growable" and the phases are something else
-    private GameObject plant = null;
+    private IGrowable plant = null;
 
     // Use this for initialization
     void Start () {
@@ -26,11 +26,15 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
     }
 
     void IPlantableZone.PlantSeed(GameObject seed) {
-        plant = Instantiate(seed, this.transform);
+        plant = Instantiate(seed, this.transform).GetComponent<IGrowable>();
+    }
+
+    bool IPlantableZone.CanBeWatered() {
+        return plant != null && plant.CanBeWatered();
     }
 
     void IPlantableZone.Water() {
-        throw new System.NotImplementedException();
+        plant.Water();
     }
 
     void OnTriggerEnter2D(Collider2D collider) {

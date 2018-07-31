@@ -17,7 +17,7 @@ public class InventorySystem : MonoBehaviour {
     private int selectedItemIndex = 0;
 
     // RESOURCES
-    private int waterLevel = 4;
+    private int waterLevel = 1;
     private int maxWaterLevel = 10;
 
     // Use this for initialization
@@ -60,15 +60,27 @@ public class InventorySystem : MonoBehaviour {
 
     private void Update() {
         bool clickPressed = Input.GetMouseButtonDown(0);
+        bool waterButtonPressed = Input.GetKeyDown(KeyCode.E);
 
         if (clickPressed) {
             // Do some check to see if we currently have something equipt here, blah, blah, blah
-
-            // if it's a seed...
+            // if it's a seed... (need to do this check)
             // check we have a place to plant it
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanPlantSeed()) {
                 plantableZone.PlantSeed(itemSlots[selectedItemIndex]);
+            }
+        }
+
+        if (waterButtonPressed) {
+            IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+            if (plantableZone != null && plantableZone.CanBeWatered()) {
+                if (waterLevel > 0) {
+                    plantableZone.Water();
+                    waterLevel--;
+                } else {
+                    // lol you've got no water, nerd
+                }
             }
         }
     }

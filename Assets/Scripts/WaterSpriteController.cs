@@ -88,8 +88,16 @@ public class WaterSpriteController : MonoBehaviour {
         // and stretch based on current velocity
         float scaleFactor = velocity.magnitude / 8f;
         float waterLevel = inventory.GetWaterLevelPercentage();
-        sprite.gameObject.transform.localScale = new Vector3(Mathf.Clamp(scaleFactor, 1f, 2f), 1f-Mathf.Clamp(scaleFactor, 0f, 0.25f), 1f) * waterLevel;
+        float waterLevelScalar = waterLevel * 0.5f + 0.5f; // make sure we're no less than 50% size
+        ParticleSystem.SizeOverLifetimeModule dropSize = drippingParticles.sizeOverLifetime;
+        dropSize.sizeMultiplier = waterLevelScalar;
+        sprite.gameObject.transform.localScale = new Vector3(Mathf.Clamp(scaleFactor, 1f, 2f), 1f-Mathf.Clamp(scaleFactor, 0f, 0.25f), 1f) * waterLevelScalar;
 
+        if (Mathf.Approximately(waterLevel, 0f)) {
+            
+        } else {
+
+        }
         //drippingParticles.transform.rotation = Quaternion.Inverse(transform.rotation);
     }
 

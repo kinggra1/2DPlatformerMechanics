@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlatformPlantPhase : MonoBehaviour, IGrowable {
+public class PlatformPlantPhase : MonoBehaviour, IGrowablePhase {
 
     public GameObject stemPrefab;
     public GameObject[] platforms;
@@ -65,11 +65,7 @@ public class PlatformPlantPhase : MonoBehaviour, IGrowable {
         
     }
 
-    public void Water() {
-        throw new System.NotImplementedException("OHP");
-    }
-
-    public void Grow() {
+    public void AnimatePhaseGrowth() {
         StartCoroutine(GrowthCoroutine());
     }
 
@@ -85,7 +81,6 @@ public class PlatformPlantPhase : MonoBehaviour, IGrowable {
 
         //Vector3 topPlatformStartPos
         while (growthProgress < 1f) {
-            Debug.Log(growthProgress);
             growthProgress += Time.deltaTime / growthTime;
             topPlatform.transform.position = Vector3.Lerp(platformGrowthStartPos, platformGrowthTargetPos, growthProgress);
             topPlatform.transform.localScale = Vector3.one * growthProgress;
