@@ -59,6 +59,10 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
         lastWateredTime = timeSystem.GetTime();
     }
 
+    bool IGrowable.IsWatered() {
+        return watered;
+    }
+
     void IGrowable.Grow() {
 
     }

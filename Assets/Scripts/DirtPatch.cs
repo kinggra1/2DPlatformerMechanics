@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DirtPatch : MonoBehaviour, IPlantableZone {
 
+    public GameObject wetDirtSprite;
+
     // TODO: Refactor plant so that this is a "Growable" and the phases are something else
     private IGrowable plant = null;
 
@@ -14,7 +16,13 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 	
 	// Update is called once per frame
 	void Update () {
-		
+
+        // Can probably do this more cleanly/on water/grow, but in the current setup that would require a callback
+		if (plant != null && plant.IsWatered()) {
+            wetDirtSprite.SetActive(true);
+        } else {
+            wetDirtSprite.SetActive(false);
+        }
 	}
 
     bool IPlantableZone.CanPlantSeed() {

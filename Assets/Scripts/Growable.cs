@@ -6,5 +6,6 @@ public interface IGrowable {
 
     void Grow();
     bool CanBeWatered();
-    void Water();  
+    void Water();
+    bool IsWatered();
 }

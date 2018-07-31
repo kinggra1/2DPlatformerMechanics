@@ -33,7 +33,7 @@ public class PlatformPlantPhase : MonoBehaviour, IGrowablePhase {
             platformGrowthStartPos = topPlatform.transform.position;
         }
 
-        GameObject newStemPiece = CreateStem(platforms[0].transform.position + Vector3.down * 1.5f);
+        GameObject newStemPiece = CreateStem(platforms[0].transform.position + Vector3.down * 1.6f);
         GrowStem(newStemPiece, platforms[0].transform.position);
 
         // create all but the last stem
@@ -48,7 +48,7 @@ public class PlatformPlantPhase : MonoBehaviour, IGrowablePhase {
         newStemPiece.transform.position = location;
 
         SpriteRenderer renderer = newStemPiece.GetComponent<SpriteRenderer>();
-        renderer.sortingOrder = -1000; // draw behind everything
+        renderer.sortingOrder = 5; // draw over ground and dirt, but under water? idk man
 
         return newStemPiece;
     }
