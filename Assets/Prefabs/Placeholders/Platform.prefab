@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4912688253349722}
   - component: {fileID: 212330146477094704}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4000351319447290}
   - component: {fileID: 212781760875969456}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4003906615449294}
   - component: {fileID: 61412308438829270}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4719628185894816}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1457184018584852}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4719628185894816}
@@ -107,8 +107,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1827057693178602}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.7299995, y: 4.86, z: -0.4296875}
-  m_LocalScale: {x: 1.0004749, y: 1.0004749, z: 1.0004749}
+  m_LocalPosition: {x: -17, y: 23, z: 0}
+  m_LocalScale: {x: 1, y: 1.0004749, z: 1.0004749}
   m_Children:
   - {fileID: 4003906615449294}
   - {fileID: 4000351319447290}
@@ -152,7 +152,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!212 &212330146477094704
 SpriteRenderer:

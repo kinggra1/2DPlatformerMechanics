@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4303606736410612}
   - component: {fileID: 212393076992859094}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4482573492535844}
   - component: {fileID: 212982799342603238}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4004832851209884}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4917141085954516}
   - component: {fileID: 212651608072672790}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4097995516386792}
   - component: {fileID: 212002903619675956}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,7 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4104623526310824}
   - component: {fileID: 212470318613654098}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4729824337239038}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4307922345305026}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4271733109052338}
   - component: {fileID: 212451137240518262}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4770007278407020}
   - component: {fileID: 212271209262829300}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4194242520867008}
   - component: {fileID: 61750165422037332}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4488297768700244}
   - component: {fileID: 61505331577202612}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -256,7 +256,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4499265996881316}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,7 +271,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4059242045833332}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,7 +287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4024909069790986}
   - component: {fileID: 212466862893277244}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,7 +303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4203617287826800}
   - component: {fileID: 61012155426440028}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4992952571341114}
   - component: {fileID: 61158879212462864}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,7 +351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4112554357221412}
   - component: {fileID: 212803568105506900}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -367,7 +367,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4436913007520104}
   - component: {fileID: 212368280145327868}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -383,7 +383,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4305195020780482}
   - component: {fileID: 61022952711412042}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -415,7 +415,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4979021893618596}
   - component: {fileID: 212203574596062672}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4971269882384242}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Platform1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -446,7 +446,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4516518825395604}
   - component: {fileID: 212906194657640888}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -462,7 +462,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4478168189554264}
   - component: {fileID: 61131972830120654}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -576,7 +576,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1409095104378908}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4499265996881316}
@@ -589,7 +589,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1582814215479860}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4059242045833332}
@@ -628,7 +628,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1808318631715824}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4729824337239038}
@@ -701,7 +701,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1983862506956590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4971269882384242}
@@ -727,7 +727,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1418964496811316}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4004832851209884}
@@ -898,7 +898,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1646867427713102}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.625, y: -0.407, z: 0}
+  m_LocalPosition: {x: 1.625, y: -0.3333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4307922345305026}
@@ -927,7 +927,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!61 &61022952711412042
 BoxCollider2D:
@@ -952,7 +952,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!61 &61131972830120654
 BoxCollider2D:
@@ -977,7 +977,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!61 &61158879212462864
 BoxCollider2D:
@@ -1002,7 +1002,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!61 &61505331577202612
 BoxCollider2D:
@@ -1027,7 +1027,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!61 &61750165422037332
 BoxCollider2D:
@@ -1052,7 +1052,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 0.62390304}
+  m_Size: {x: 2.5, y: 0.2}
   m_EdgeRadius: 0
 --- !u!114 &114523038274880686
 MonoBehaviour:

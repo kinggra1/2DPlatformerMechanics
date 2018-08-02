@@ -12,8 +12,8 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
 
     private bool watered = false;
 
-    private float plantedTime;
-    private float lastWateredTime = Mathf.Infinity;
+    private TimeInstant plantedTime = new TimeInstant();
+    private TimeInstant lastWateredTime = new TimeInstant();
     private int phaseIndex = 0;
 
     private int growTimeDays = 2;
@@ -33,7 +33,8 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
     void Update() {
 
         if (watered) {
-            int elapsedDays = timeSystem.TimeToDays(timeSystem.GetTime() - lastWateredTime);
+            int elapsedDays = (timeSystem.GetTime() - lastWateredTime).GetDays();
+            Debug.Log(timeSystem.GetTime() - lastWateredTime);
             if (elapsedDays >= growTimeDays) {
                 growthPhases[phaseIndex].SetActive(false);
                 phaseIndex++;

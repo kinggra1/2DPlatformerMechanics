@@ -24,13 +24,19 @@ public class PlayerController : MonoBehaviour {
 
     private SpriteRenderer sprite;
     private Rigidbody2D rb;
-    private int raycastLayers;
+    private int standableRaycastLayers;
+    private int wallRaycastLayers;
 
     private float downRaycastDist = 0.6f;
     private float sideRaycastDist = 0.6f;
 
+    private int playerLayer;
+    private int platformLayer; // by definition, a platform is something we can jump up through. call other things ground.
+    private int groundLayer;
+
     // Updated in updateRaycasts
     private bool onGround;
+    private bool platformBelow; // used for determining if we're going to go through platforms or not
     private GameObject objectBelow;
     private bool onWall;
     private GameObject objectOnLeft;
@@ -53,15 +59,26 @@ public class PlayerController : MonoBehaviour {
 	void Awake () {
         rb = this.GetComponent<Rigidbody2D>();
         sprite = this.GetComponentInChildren<SpriteRenderer>();
-        raycastLayers = (
+        standableRaycastLayers = (
             (1 << LayerMask.NameToLayer("Ground"))
-            | (1 << LayerMask.NameToLayer("Wall"))
+            | (1 << LayerMask.NameToLayer("Platform"))
             // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanStandOn")
             // ...
             );
 
+        wallRaycastLayers = (
+            (1 << LayerMask.NameToLayer("Wall"))
+            // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanWallSlideOn?")
+            // ...
+            );
+        
         gameController = GameController.GetInstance();
-	}
+
+        playerLayer = LayerMask.NameToLayer("Player");
+        platformLayer = LayerMask.NameToLayer("Platform");
+        groundLayer = LayerMask.NameToLayer("Ground");
+
+    }
 
     public Direction PlayerFacing() {
         return playerFacing;
@@ -243,10 +260,13 @@ public class PlayerController : MonoBehaviour {
             debugDirectionText.text = playerFacing.ToString();
         }
 
+        // If we are heading upwards or are on solid ground (not a platform), no collision with platforms
+        Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, (yVel > 0.0f || !platformBelow));
+
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
 
-	}
+	} // END OF UPDATE FUNCTION
 
     private void SetMotionState(MotionState newMotionState) {
         if (newMotionState == motionState) {
@@ -290,43 +310,54 @@ public class PlayerController : MonoBehaviour {
         objectOnRight = null;
         objectOnLeft = null;
         onGround = false;
+        platformBelow = false;
         onWall = false;
         Vector2 playerCenter = getPlayerCenter();
         Vector2 playerLeftCenter = playerCenter - Vector2.right * 0.5f;
         Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
+        float minPlatformDistance = 0.25f;
 
         // center grounded check
-        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, raycastLayers);
+        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, standableRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
             onGround = true;
+            if (hit2D.collider.gameObject.layer.Equals(platformLayer) && hit2D.distance > minPlatformDistance) {
+                platformBelow = true;
+            }
         }
 
         // left grounded corner check
-        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter + Vector2.down * downRaycastDist, raycastLayers);
+        hit2D = Physics2D.Linecast(playerLeftCenter, playerLeftCenter + Vector2.down * downRaycastDist, standableRaycastLayers);
         Debug.DrawLine(playerLeftCenter, playerLeftCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
             onGround = true;
+            if (hit2D.collider.gameObject.layer.Equals(platformLayer) && hit2D.distance > minPlatformDistance) {
+                platformBelow = true;
+            }
         }
 
         // right grounded corner check
-        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter + Vector2.down * downRaycastDist, raycastLayers);
+        hit2D = Physics2D.Linecast(playerRightCenter, playerRightCenter + Vector2.down * downRaycastDist, standableRaycastLayers);
         Debug.DrawLine(playerRightCenter, playerRightCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             //objectBelow = hit2D.collider.gameObject;
             onGround = true;
+            if (hit2D.collider.gameObject.layer.Equals(platformLayer) && hit2D.distance > minPlatformDistance) {
+                platformBelow = true;
+            }
         }
 
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.right * sideRaycastDist, raycastLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.right * sideRaycastDist, wallRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter + Vector2.right * sideRaycastDist, Color.red);
         if (hit2D) {
             objectOnRight = hit2D.collider.gameObject;
             onWall = true;
         }
 
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, raycastLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, wallRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.right * sideRaycastDist, Color.red);
         if (hit2D)
         {

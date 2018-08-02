@@ -75,7 +75,6 @@ public class PlatformPlantPhase : MonoBehaviour, IGrowablePhase {
 
         topPlatform.transform.position = platformGrowthStartPos;
         topPlatform.transform.localScale = Vector3.zero;
-        Debug.Log(platformGrowthStartPos + " " + platformGrowthTargetPos);
 
         GameObject newStemPiece = CreateStem(platformGrowthStartPos);
 

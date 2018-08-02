@@ -6,8 +6,8 @@ public class TimeSystem : MonoBehaviour {
 
     private static TimeSystem instance = null;
 
-    private float dawnOfTime = 0f;
-    private float currentTime = 0f;
+    private TimeInstant dawnOfTime = new TimeInstant(0f);
+    private TimeInstant currentTime = new TimeInstant(0f);
 
     private readonly float secondsPerDay = 8f;
 
@@ -20,35 +20,24 @@ public class TimeSystem : MonoBehaviour {
     }
 
     void Update() {
-        currentTime += Time.deltaTime;
+        currentTime.IncrementSeconds(Time.deltaTime);
     }
 
-    public float DawnOfTime() {
-        return dawnOfTime;
+    public TimeInstant DawnOfTime() {
+        return new TimeInstant(dawnOfTime);
     }
 
-    public float GetTime() {
-        return currentTime;
+    public TimeInstant GetTime() {
+        // defensive copying or else this is just the same object (C# is all references like Java)
+        return new TimeInstant(currentTime);
     }
 
     public int CurrentDay() {
-        return (int)Mathf.Floor(currentTime / secondsPerDay);
+        return currentTime.GetDays();
     }
 
     public int CurrentHour() {
-        float currentDayTime = currentTime % secondsPerDay;
-        return (int)Mathf.Floor(24 * currentDayTime / secondsPerDay);
-    }
-
-    // Probably move these to a time utility class
-    public int TimeToDays(float time) {
-        return (int)Mathf.Floor(time / secondsPerDay);
-    }
-
-    // Lol yeah definitely move this to a utility class that returns "Instance" objects that hold days and hours, etc.
-    public int HoursPortionOfTime(float time) {
-        float currentDayTime = time % secondsPerDay;
-        return (int)Mathf.Floor(24 * currentDayTime / secondsPerDay);
+        return currentTime.GetHours();
     }
 
     // now if we forget to put a TimeSystem in the scene, we can still
