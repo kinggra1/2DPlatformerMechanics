@@ -6,6 +6,9 @@ public class InventorySystem : MonoBehaviour {
 
     private static InventorySystem instance = null;
 
+    public GameObject itemSlotParent;
+    public GameObject cursorImage;
+
     private PlayerController player;
     private TimeSystem timeSystem;
 
@@ -13,15 +16,18 @@ public class InventorySystem : MonoBehaviour {
     // Tools/resources/etc. Somethings have counts. Some things have links to prefabs. 
     // Definitely need some planning here.
     // Right now it's just a prefab and hard-coded to a platform seed.
-    private List<GameObject> itemSlots = new List<GameObject>();
+    private List<InventorySlot> itemSlots = new List<InventorySlot>();
     private int selectedItemIndex = 0;
+
+    private RectTransform cursorRectTransform;
+    private RectTransform itemRectTransform;
 
     // RESOURCES
     private int waterLevel = 1;
     private int maxWaterLevel = 10;
 
     // Use this for initialization
-    void Awake() {
+    void Start() {
         if (instance != null) {
             return;
         }
@@ -30,9 +36,13 @@ public class InventorySystem : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
         timeSystem = TimeSystem.GetInstance();
 
+        // Set up our list of available InventorySlots
+        itemSlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
-        GameObject platformPlantPrefab = (GameObject)Resources.Load("PlantPrefabs/PlatformPlant", typeof(GameObject));
-        itemSlots.Add(platformPlantPrefab);
+        GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
+        itemSlots[selectedItemIndex].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
+
+        cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
 
     public int GetWaterLevel() {
@@ -59,17 +69,41 @@ public class InventorySystem : MonoBehaviour {
     }
 
     private void Update() {
+
         bool clickPressed = Input.GetMouseButtonDown(0);
         bool waterButtonPressed = Input.GetKeyDown(KeyCode.E);
 
-        if (clickPressed) {
-            // Do some check to see if we currently have something equipt here, blah, blah, blah
-            // if it's a seed... (need to do this check)
-            // check we have a place to plant it
-            IPlantableZone plantableZone = player.GetAvailablePlantableZone();
-            if (plantableZone != null && plantableZone.CanPlantSeed()) {
-                plantableZone.PlantSeed(itemSlots[selectedItemIndex]);
+        int indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
+        
+        if (indexChange != 0) {
+            selectedItemIndex -= indexChange;
+            if (selectedItemIndex < 0) {
+                selectedItemIndex += itemSlots.Count;
             }
+            if (selectedItemIndex >= itemSlots.Count) {
+                selectedItemIndex -= itemSlots.Count;
+            }
+            itemRectTransform = itemSlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
+            cursorRectTransform.anchoredPosition = new Vector2(itemRectTransform.localPosition.x, 0f);
+        }
+
+        if (clickPressed) {
+            InventorySlot currentItem = itemSlots[selectedItemIndex];
+
+            // Right now all we can do in Update is use items, so nothing left to do.
+            if (currentItem.IsEmpty()) {
+                return;
+            }
+
+            // Check to see if we have something that can be planted and a place to plant it
+            IGrowable plantableSeed = currentItem.GetGamePrefab().GetComponent<IGrowable>();
+            IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+            if (plantableZone != null && plantableZone.CanPlantSeed() && plantableSeed != null) {
+                plantableZone.PlantSeed(currentItem.GetGamePrefab());
+                currentItem.Use();
+            }
+
+            // We can try using items here and other stuff
         }
 
         if (waterButtonPressed) {
