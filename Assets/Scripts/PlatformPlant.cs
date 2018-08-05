@@ -73,7 +73,7 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
             GameObject spawnedSeed = Instantiate(associatedSeed);
             spawnedSeed.transform.position = this.transform.position;
             Rigidbody2D rb = spawnedSeed.GetComponent<Rigidbody2D>();
-            rb.AddForce(new Vector2(Random.Range(-50, 50), Random.Range(50f, 100f)));
+            rb.AddForce(new Vector2(Random.Range(-50, 50), Random.Range(100f, 200f)));
         }
         Destroy(this.gameObject);
     }

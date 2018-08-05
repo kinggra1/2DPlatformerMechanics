@@ -10,6 +10,7 @@ public class InventorySystem : MonoBehaviour {
     public GameObject cursorImage;
 
     private PlayerController player;
+    private WaterSpriteController waterSprite;
     private TimeSystem timeSystem;
 
     // TODO: Make this more complex/interesting. Have a map to InventoryItems of some kind.
@@ -34,6 +35,7 @@ public class InventorySystem : MonoBehaviour {
         instance = this;
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        waterSprite = player.GetWaterSprite();
         timeSystem = TimeSystem.GetInstance();
 
         // Set up our list of available InventorySlots
@@ -135,8 +137,16 @@ public class InventorySystem : MonoBehaviour {
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanBeWatered()) {
                 if (waterLevel > 0) {
-                    plantableZone.Water();
-                    waterLevel--;
+                    
+                    // Everything that we have that implements interfaces is also a MonoBehavior, so we can
+                    // use this as a """safe""" cast in order to find the game object
+                    // The water sprite reaching the PlantableZone will handle the watering itself.
+                    waterSprite.AddImmediateToTargetList((plantableZone as MonoBehaviour).gameObject);
+
+                    // TODO: Consider implications of this call. It means we can't possibly overwater, but it
+                    // also changes the watersprite visual before it actually reaches the PlantableZone
+                    ChangeWaterLevel(-1);
+
                 } else {
                     // lol you've got no water, nerd
                 }

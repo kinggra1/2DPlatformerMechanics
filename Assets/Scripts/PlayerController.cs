@@ -80,6 +80,10 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    public WaterSpriteController GetWaterSprite() {
+        return waterSprite;
+    }
+
     public Direction PlayerFacing() {
         return playerFacing;
     }

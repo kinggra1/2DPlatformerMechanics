@@ -105,10 +105,16 @@ public class WaterSpriteController : MonoBehaviour {
 
         if (target != null) {
 
-            // If this is a collectible, call Collect() on it (free for you, cheap for them (tm) )
+            // If current target is a collectible, call Collect() on it (free for you, cheap for them (tm) )
             Collectible collectible = target.GetComponent<Collectible>();
             if (collectible) {
                 collectible.Collect();
+            }
+
+            // If current target is a PlantableZone, water it
+            IPlantableZone plantableZone = target.GetComponent<IPlantableZone>();
+            if (plantableZone != null) {
+                plantableZone.Water();
             }
         }
 
@@ -125,5 +131,10 @@ public class WaterSpriteController : MonoBehaviour {
 
     public void AddToTargetList(GameObject target) {
         targetList.Add(target);
+    }
+
+    // Make sure that the next target we go for is this
+    public void AddImmediateToTargetList(GameObject target) {
+        targetList.Insert(nextTargetIndex, target);
     }
 }
