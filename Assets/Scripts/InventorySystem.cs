@@ -40,7 +40,10 @@ public class InventorySystem : MonoBehaviour {
         itemSlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
+        GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
         itemSlots[selectedItemIndex].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
+
+        itemSlots[1].Assign(axeItem.GetComponent<Item>(), false);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
@@ -56,6 +59,26 @@ public class InventorySystem : MonoBehaviour {
     public void ChangeWaterLevel(int volume) {
         // Can be called with positive or negative values, but will always be [0, maxWaterLevel]
         waterLevel = Mathf.Clamp(waterLevel + volume, 0, maxWaterLevel);
+    }
+
+    public void PickupItem(Item item) {
+        // Check to see if this item already exists somewhere in our inventory if it's a consumable
+        if (item.IsConsumable()) {
+            foreach (InventorySlot slot in itemSlots) {
+                if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
+                    slot.IncrementCount(1);
+                    return;
+                }
+            }
+        }
+
+        // If all of the above fails, put it in the first free inventory slot
+        foreach (InventorySlot slot in itemSlots) {
+            if (slot.IsEmpty()) {
+                slot.Assign(item, item.IsConsumable(), 1);
+                return;
+            }
+        }
     }
 
     // now if we forget to put a InventorySystem in the scene, we can still
@@ -98,12 +121,14 @@ public class InventorySystem : MonoBehaviour {
             // Check to see if we have something that can be planted and a place to plant it
             IGrowable plantableSeed = currentItem.GetGamePrefab().GetComponent<IGrowable>();
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
-            if (plantableZone != null && plantableZone.CanPlantSeed() && plantableSeed != null) {
-                plantableZone.PlantSeed(currentItem.GetGamePrefab());
+            if (plantableSeed != null) {
+                if (plantableZone != null && !plantableZone.IsPlanted()) {
+                    plantableZone.PlantSeed(currentItem.GetGamePrefab());
+                    currentItem.Use();
+                }
+            } else {
                 currentItem.Use();
             }
-
-            // We can try using items here and other stuff
         }
 
         if (waterButtonPressed) {

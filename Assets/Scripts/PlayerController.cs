@@ -268,6 +268,23 @@ public class PlayerController : MonoBehaviour {
 
 	} // END OF UPDATE FUNCTION
 
+    public void UseTool(ItemTool.ToolType toolType) {
+        switch(toolType) {
+
+            case ItemTool.ToolType.Axe:
+                if (currentPlantableZone != null) {
+                    if (currentPlantableZone.IsPlanted()) {
+                        currentPlantableZone.Chop();
+                    }
+                } else {
+                    // Swiping at empty space, maybe a different sound for this
+                }
+                break;
+
+            // handle other tools here
+        }
+    }
+
     private void SetMotionState(MotionState newMotionState) {
         if (newMotionState == motionState) {
             // this should never happen, but...

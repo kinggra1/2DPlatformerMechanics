@@ -1065,6 +1065,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52fd65ff0c5fef041924ff74c6fbbe14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  associatedSeed: {fileID: 1257029013019656, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
   growthPhases:
   - {fileID: 1666277297458538}
   - {fileID: 1997676657434896}

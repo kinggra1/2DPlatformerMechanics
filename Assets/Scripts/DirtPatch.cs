@@ -25,8 +25,8 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
         }
 	}
 
-    bool IPlantableZone.CanPlantSeed() {
-        return plant == null;
+    bool IPlantableZone.IsPlanted() {
+        return plant != null;
     }
 
     void IPlantableZone.Fertalize() {
@@ -47,6 +47,17 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 
     void IPlantableZone.Water() {
         plant.Water();
+    }
+
+    void IPlantableZone.Chop() {
+        plant.Chop();
+
+        // One chop chump
+        ResetPatch();
+    }
+
+    private void ResetPatch() {
+        plant = null;
     }
 
     void OnTriggerEnter2D(Collider2D collider) {

@@ -22,6 +22,23 @@ public class InventorySlot : MonoBehaviour {
         return item == null;
     }
 
+    public bool IsConsumable() {
+        return item != null && consumable;
+    }
+
+    public void IncrementCount(int delta) {
+        if (consumable) {
+            count += delta;
+            UpdateUI();
+        } else {
+            Debug.LogError("Trying to increment count of non-consumable.");
+        }
+    }
+
+    public Item GetItem() {
+        return item;
+    }
+
     public GameObject GetGamePrefab() {
         return item.GetGamePrefab();
     }

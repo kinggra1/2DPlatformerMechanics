@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1927944888541566}
+  m_RootGameObject: {fileID: 1626742922667052}
   m_IsPrefabParent: 1
---- !u!1 &1927944888541566
+--- !u!1 &1626742922667052
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4376587434032560}
-  - component: {fileID: 114597693382789778}
+  - component: {fileID: 4095712424577454}
+  - component: {fileID: 114272651726939004}
   m_Layer: 0
-  m_Name: ItemSeedPlatformPlant
+  m_Name: ItemToolAxe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4376587434032560
+--- !u!4 &4095712424577454
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1927944888541566}
+  m_GameObject: {fileID: 1626742922667052}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,18 +40,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114597693382789778
+--- !u!114 &114272651726939004
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1927944888541566}
+  m_GameObject: {fileID: 1626742922667052}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 198769e44b85f2b4ab96df6793b40692, type: 3}
+  m_Script: {fileID: 11500000, guid: de496e2dbc3b74b40aaa86e3a80d4724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  consumable: 1
   menuSprite: {fileID: 21300000, guid: 6ad66ba13eac53d4e924628b82ac7d38, type: 3}
-  inGamePrefab: {fileID: 1485983480963178, guid: 888c08294a8335a41a8297163fb53f76,
+  inGamePrefab: {fileID: 1949049464353036, guid: b5ab13b159a9fa54e847b05fece7dd08,
     type: 2}
+  toolType: 0

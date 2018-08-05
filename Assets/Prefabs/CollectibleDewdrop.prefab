@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 58409185935969442}
   - component: {fileID: 114502442260109456}
   m_Layer: 0
-  m_Name: Dewdrop
+  m_Name: CollectibleDewdrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

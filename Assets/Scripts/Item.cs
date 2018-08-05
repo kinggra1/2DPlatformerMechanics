@@ -2,10 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface Item {
+public abstract class Item : MonoBehaviour {
 
-    bool CanUse();
-    void Use();
-    GameObject GetGamePrefab();
-    Sprite GetMenuSprite();
+    public bool consumable;
+    public Sprite menuSprite;
+    public GameObject inGamePrefab;
+
+    public bool IsConsumable() {
+        return consumable;
+    }
+
+    public GameObject GetGamePrefab() {
+        return inGamePrefab;
+    }
+
+    public Sprite GetMenuSprite() {
+        return menuSprite;
+    }
+
+    public abstract bool CanUse();
+    public abstract void Use();
+
+    public override bool Equals(object other) {
+        if (other == null) {
+            return false;
+        }
+
+        Item otherItem = other as Item;
+        if (otherItem == null) {
+            return false;
+        }
+
+        return this.inGamePrefab == otherItem.inGamePrefab;
+    }
 }

@@ -4,9 +4,12 @@ using UnityEngine;
 
 public interface IPlantableZone {
 
-    bool CanPlantSeed();
+    bool IsPlanted();
     void PlantSeed(GameObject seed);
+
     void Fertalize();
     bool CanBeWatered();
     void Water();
+
+    void Chop();
 }

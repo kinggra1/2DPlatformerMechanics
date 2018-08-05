@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dewdrop : Collectible {
+public class CollectibleDewdrop : Collectible {
 
     override public void Collect() {
         InventorySystem.GetInstance().ChangeWaterLevel(1);

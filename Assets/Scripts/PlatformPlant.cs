@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlatformPlant : MonoBehaviour, IGrowable {
 
+    public GameObject associatedSeed;
     public GameObject[] growthPhases;
 
     // public float timeBetweenPhases;
@@ -34,7 +35,6 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
 
         if (watered) {
             int elapsedDays = (timeSystem.GetTime() - lastWateredTime).GetDays();
-            Debug.Log(timeSystem.GetTime() - lastWateredTime);
             if (elapsedDays >= growTimeDays) {
                 growthPhases[phaseIndex].SetActive(false);
                 phaseIndex++;
@@ -66,5 +66,15 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
 
     void IGrowable.Grow() {
 
+    }
+
+    void IGrowable.Chop() {
+        for (int i = 0; i < 2; i++) {
+            GameObject spawnedSeed = Instantiate(associatedSeed);
+            spawnedSeed.transform.position = this.transform.position;
+            Rigidbody2D rb = spawnedSeed.GetComponent<Rigidbody2D>();
+            rb.AddForce(new Vector2(Random.Range(-50, 50), Random.Range(50f, 100f)));
+        }
+        Destroy(this.gameObject);
     }
 }
