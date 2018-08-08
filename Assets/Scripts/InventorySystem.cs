@@ -28,7 +28,7 @@ public class InventorySystem : MonoBehaviour {
     private int maxWaterLevel = 10;
 
     // Use this for initialization
-    void Start() {
+    void Awake() {
         if (instance != null) {
             return;
         }
@@ -43,9 +43,11 @@ public class InventorySystem : MonoBehaviour {
 
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
         GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
+        GameObject itemShovel = (GameObject)Resources.Load("ToolPrefabs/ItemToolShovel", typeof(GameObject));
         itemSlots[selectedItemIndex].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
 
         itemSlots[1].Assign(axeItem.GetComponent<Item>(), false);
+        itemSlots[2].Assign(itemShovel.GetComponent<Item>(), false);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
@@ -120,12 +122,23 @@ public class InventorySystem : MonoBehaviour {
                 return;
             }
 
-            // Check to see if we have something that can be planted and a place to plant it
+            // Check to see if we have a variety of things and if we can use them
             IGrowable plantableSeed = currentItem.GetGamePrefab().GetComponent<IGrowable>();
+            DirtPatch dirtPatch = currentItem.GetGamePrefab().GetComponent<DirtPatch>();
+
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+
+            // Planting a seed
             if (plantableSeed != null) {
                 if (plantableZone != null && !plantableZone.IsPlanted()) {
                     plantableZone.PlantSeed(currentItem.GetGamePrefab());
+                    currentItem.Use();
+                }
+            }
+            // Placing dirt on the ground
+            else if (dirtPatch != null) {
+                if (plantableZone == null && player.OnPlantableGround()) {
+                    Instantiate(dirtPatch).transform.position = player.transform.position + Vector3.down * 0.5f;
                     currentItem.Use();
                 }
             } else {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ItemTool : Item {
 
-    public enum ToolType { Axe }
+    public enum ToolType { Axe, Shovel }
     public ToolType toolType = ToolType.Axe;
 
     override public bool CanUse() {

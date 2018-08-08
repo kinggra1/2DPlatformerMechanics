@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour {
     private GameObject objectOnRight;
     private IPlantableZone currentPlantableZone = null; // usually null
 
+    private InventorySystem inventory;
+
     private float xInput;
     private float yInput;
     private bool jumpPressed;
@@ -78,6 +80,8 @@ public class PlayerController : MonoBehaviour {
         platformLayer = LayerMask.NameToLayer("Platform");
         groundLayer = LayerMask.NameToLayer("Ground");
 
+        inventory = InventorySystem.GetInstance();
+
     }
 
     public WaterSpriteController GetWaterSprite() {
@@ -95,9 +99,14 @@ public class PlayerController : MonoBehaviour {
     public void SetAvailablePlantableZone(IPlantableZone zone) {
         this.currentPlantableZone = zone;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // This will likely get more complex if we do a more intricate check
+    public bool OnPlantableGround() {
+        return onGround;
+    }
+
+    // Update is called once per frame
+    void Update () {
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
@@ -285,7 +294,23 @@ public class PlayerController : MonoBehaviour {
                 }
                 break;
 
-            // handle other tools here
+            case ItemTool.ToolType.Shovel:
+                if (currentPlantableZone != null) {
+                    // can only dig up empty dirt patch
+                    if (!currentPlantableZone.IsPlanted()) {
+                        Destroy((currentPlantableZone as MonoBehaviour).gameObject);
+                        //SetAvailablePlantableZone(null); // need to remove our personal reference as well
+                        inventory.PickupItem(((GameObject)Resources.Load("PlantPrefabs/ItemDirtPatch", typeof(GameObject))).GetComponent<Item>()); // LOL this is fucking horrible
+                        // ^ I think this is a good sign that maybe the InventorySystem should be handling this and then pass like...
+                        // animation cues to the PlayerController?
+                    }
+                }
+                else {
+                    // Swiping at empty space, maybe a different sound for this
+                }
+                break;
+
+                // handle other tools here
         }
     }
 
