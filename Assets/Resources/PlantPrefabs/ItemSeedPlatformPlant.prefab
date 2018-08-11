@@ -8,15 +8,15 @@ Prefab:
     m_TransformParent: {fileID: 0}
     m_Modifications: []
     m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 0}
+  m_SourcePrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1927944888541566}
-  m_IsPrefabParent: 1
+  m_IsPrefabAsset: 1
 --- !u!1 &1927944888541566
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
+  serializedVersion: 6
   m_Component:
   - component: {fileID: 4376587434032560}
   - component: {fileID: 114597693382789778}
@@ -30,7 +30,7 @@ GameObject:
 --- !u!4 &4376587434032560
 Transform:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1927944888541566}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -43,15 +43,15 @@ Transform:
 --- !u!114 &114597693382789778
 MonoBehaviour:
   m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1927944888541566}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 198769e44b85f2b4ab96df6793b40692, type: 3}
+  m_Script: {fileID: 11500000, guid: d0a034f1835dea74481f0def0a7d03c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   consumable: 1
-  menuSprite: {fileID: 21300000, guid: 6ad66ba13eac53d4e924628b82ac7d38, type: 3}
+  menuSprite: {fileID: 21300000, guid: 2567c2cc0d85a1645bdcbd73b3045cfa, type: 3}
   inGamePrefab: {fileID: 1485983480963178, guid: 888c08294a8335a41a8297163fb53f76,
     type: 2}
