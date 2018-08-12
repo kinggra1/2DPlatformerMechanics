@@ -8,6 +8,10 @@ public abstract class Item : MonoBehaviour {
     public Sprite menuSprite;
     public GameObject inGamePrefab;
 
+    public enum Seed { PlatformPlant, DewdropPlant }
+    public enum Tool { Axe, Shovel }
+    public enum Resource { Dirt }
+
     public bool IsConsumable() {
         return consumable;
     }

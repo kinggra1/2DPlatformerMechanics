@@ -63,7 +63,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
     void OnTriggerEnter2D(Collider2D collider) {
         PlayerController player = collider.GetComponentInParent<PlayerController>();
         if (player) {
-            Debug.Log("In plantable zone");
+            //Debug.Log("In plantable zone");
             player.SetAvailablePlantableZone(this);
         }
     }
@@ -71,12 +71,8 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
     void OnTriggerExit2D(Collider2D collider) {
         PlayerController player = collider.GetComponentInParent<PlayerController>();
         if (player && (DirtPatch)player.GetAvailablePlantableZone() == this) {
-            Debug.Log("No plantable zone");
+            //Debug.Log("No plantable zone");
             player.SetAvailablePlantableZone(null);
         }
-    }
-
-    void OnTriggerStay2D(Collider2D collider) {
-        Debug.Log("In plantable zone " + this.GetInstanceID());
     }
 }

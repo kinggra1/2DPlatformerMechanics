@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,15 +10,16 @@ public class InventorySystem : MonoBehaviour {
     public GameObject itemSlotParent;
     public GameObject cursorImage;
 
+    public Dictionary<Item.Seed, Item> seedItemMap = new Dictionary<Item.Seed, Item>();
+    public Dictionary<Item.Tool, Item> toolItemMap = new Dictionary<Item.Tool, Item>();
+    public Dictionary<Item.Resource, Item> resourceItemMap = new Dictionary<Item.Resource, Item>();
+
     private PlayerController player;
     private WaterSpriteController waterSprite;
     private TimeSystem timeSystem;
 
-    // TODO: Make this more complex/interesting. Have a map to InventoryItems of some kind.
-    // Tools/resources/etc. Somethings have counts. Some things have links to prefabs. 
-    // Definitely need some planning here.
-    // Right now it's just a prefab and hard-coded to a platform seed.
     private List<InventorySlot> itemSlots = new List<InventorySlot>();
+
     private int selectedItemIndex = 0;
 
     private RectTransform cursorRectTransform;
@@ -41,20 +43,30 @@ public class InventorySystem : MonoBehaviour {
         // Set up our list of available InventorySlots
         itemSlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
+        LoadItemsFromResources();
+
+        itemSlots[0].Assign(toolItemMap[Item.Tool.Axe], false);
+        itemSlots[1].Assign(toolItemMap[Item.Tool.Shovel], false);
+
+        itemSlots[2].Assign(seedItemMap[Item.Seed.PlatformPlant], true, 3);
+        itemSlots[3].Assign(seedItemMap[Item.Seed.DewdropPlant], true, 3);
+
+        cursorRectTransform = cursorImage.GetComponent<RectTransform>();
+    }
+
+    public void LoadItemsFromResources() {
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
         GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedDewdropPlant", typeof(GameObject));
+        seedItemMap.Add(Item.Seed.PlatformPlant, platformPlantSeedItem.GetComponent<Item>());
+        seedItemMap.Add(Item.Seed.DewdropPlant, dewdropPlantSeedItem.GetComponent<Item>());
 
         GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
         GameObject itemShovel = (GameObject)Resources.Load("ToolPrefabs/ItemToolShovel", typeof(GameObject));
-        
+        toolItemMap.Add(Item.Tool.Axe, axeItem.GetComponent<Item>());
+        toolItemMap.Add(Item.Tool.Shovel, itemShovel.GetComponent<Item>());
 
-        itemSlots[0].Assign(axeItem.GetComponent<Item>(), false);
-        itemSlots[1].Assign(itemShovel.GetComponent<Item>(), false);
-
-        itemSlots[2].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
-        itemSlots[3].Assign(dewdropPlantSeedItem.GetComponent<Item>(), true, 3);
-
-        cursorRectTransform = cursorImage.GetComponent<RectTransform>();
+        GameObject dirtItem = (GameObject)Resources.Load("ResourcePrefabs/ItemResourceDirt", typeof(GameObject));
+        resourceItemMap.Add(Item.Resource.Dirt, dirtItem.GetComponent<Item>());
     }
 
     public int GetWaterLevel() {
@@ -169,6 +181,45 @@ public class InventorySystem : MonoBehaviour {
                     // lol you've got no water, nerd
                 }
             }
+        }
+    }
+
+    internal void UseTool(Item.Tool toolType) {
+
+        IPlantableZone currentPlantableZone = player.GetAvailablePlantableZone();
+
+        switch (toolType) {
+
+            case Item.Tool.Axe:
+                if (currentPlantableZone != null) {
+                    if (currentPlantableZone.IsPlanted()) {
+                        currentPlantableZone.Chop();
+                    }
+                }
+                else {
+                    // Swiping at empty space with axe
+                }
+                break;
+
+            case Item.Tool.Shovel:
+                if (currentPlantableZone != null) {
+                    // can only dig up empty dirt patch
+                    if (!currentPlantableZone.IsPlanted()) {
+                        Destroy((currentPlantableZone as MonoBehaviour).gameObject);
+
+                        // reworked the InvetorySystem to track a dictionary of items from enums, this is so much nicer now
+                        PickupItem(resourceItemMap[Item.Resource.Dirt]);
+
+                        // seriously look at how gross this used to be
+                        // PickupItem(((GameObject)Resources.Load("PlantPrefabs/ItemDirtPatch", typeof(GameObject))).GetComponent<Item>());
+                    }
+                }
+                else {
+                    // Swiping at empty space with shovel
+                }
+                break;
+
+                // handle other tools here
         }
     }
 }

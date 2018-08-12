@@ -285,39 +285,6 @@ public class PlayerController : MonoBehaviour {
 
 	} // END OF UPDATE FUNCTION
 
-    public void UseTool(ItemTool.ToolType toolType) {
-        switch(toolType) {
-
-            case ItemTool.ToolType.Axe:
-                if (currentPlantableZone != null) {
-                    if (currentPlantableZone.IsPlanted()) {
-                        currentPlantableZone.Chop();
-                    }
-                } else {
-                    // Swiping at empty space, maybe a different sound for this
-                }
-                break;
-
-            case ItemTool.ToolType.Shovel:
-                if (currentPlantableZone != null) {
-                    // can only dig up empty dirt patch
-                    if (!currentPlantableZone.IsPlanted()) {
-                        Destroy((currentPlantableZone as MonoBehaviour).gameObject);
-                        //SetAvailablePlantableZone(null); // need to remove our personal reference as well
-                        inventory.PickupItem(((GameObject)Resources.Load("PlantPrefabs/ItemDirtPatch", typeof(GameObject))).GetComponent<Item>()); // LOL this is fucking horrible
-                        // ^ I think this is a good sign that maybe the InventorySystem should be handling this and then pass like...
-                        // animation cues to the PlayerController?
-                    }
-                }
-                else {
-                    // Swiping at empty space, maybe a different sound for this
-                }
-                break;
-
-                // handle other tools here
-        }
-    }
-
     private void SetMotionState(MotionState newMotionState) {
         if (newMotionState == motionState) {
             // this should never happen, but...

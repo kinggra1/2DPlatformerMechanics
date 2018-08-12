@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class ItemTool : Item {
 
-    public enum ToolType { Axe, Shovel }
-    public ToolType toolType = ToolType.Axe;
+    public Tool toolType = Tool.Axe;
 
     override public bool CanUse() {
         return true;
@@ -13,11 +12,11 @@ public class ItemTool : Item {
 
 
     override public void Use() {
-        PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        if (player != null) {
-            player.UseTool(toolType);
+        InventorySystem inventory = InventorySystem.GetInstance();
+        if (inventory != null) {
+            inventory.UseTool(toolType);
         } else {
-            Debug.LogError("Unable to find player by tag.");
+            Debug.LogError("Unable to find Inventory.");
         }
         
     }

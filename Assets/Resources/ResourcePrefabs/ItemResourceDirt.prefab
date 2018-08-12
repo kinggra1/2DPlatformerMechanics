@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4376587434032560}
   - component: {fileID: 114597693382789778}
   m_Layer: 0
-  m_Name: ItemDirtPatch
+  m_Name: ItemResourceDirt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
