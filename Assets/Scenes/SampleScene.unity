@@ -217,6 +217,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -262,6 +266,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (23)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -355,6 +363,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -458,6 +470,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -504,6 +520,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (21)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -549,6 +569,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -678,6 +702,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (17)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -723,6 +751,92 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d8fb3c2e942e8f47a9c9cf9289f5dfe, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &393200129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1257029013019656, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 393200133}
+  - component: {fileID: 393200132}
+  - component: {fileID: 393200131}
+  - component: {fileID: 393200130}
+  m_Layer: 0
+  m_Name: CollectibleSeedDewdropPlant
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!50 &393200130
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 50048549869384220, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 393200129}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &393200131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114626071881165684, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 393200129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9676509532492c7409e039577835ab37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collectedEffect: {fileID: 0}
+  associatedItemObject: {fileID: 1927944888541566, guid: 7536e425f595a0f4abbefd9ddfb4a650,
+    type: 2}
+--- !u!58 &393200132
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 58220684280846054, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 393200129}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 5
+--- !u!4 &393200133
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4074492201923090, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 393200129}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.1757927, y: 2.4614568, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 866329711}
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &429758634
 Prefab:
   m_ObjectHideFlags: 0
@@ -765,6 +879,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -811,6 +929,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -862,6 +984,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -983,6 +1109,11 @@ Prefab:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 224419641524792956, guid: d9bad029b3b1a7544937b871f8d7fdfb,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: -65.57147
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9bad029b3b1a7544937b871f8d7fdfb, type: 2}
   m_IsPrefabAsset: 0
@@ -1033,6 +1164,10 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4025545602124964, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1096,6 +1231,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -1146,6 +1285,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (20)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -1205,6 +1348,53 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f50095a8a44e81f49b8ecefaf005bc7c, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &866329710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1684779166736980, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 866329711}
+  - component: {fileID: 866329712}
+  m_Layer: 11
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &866329711
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4507987861566952, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 866329710}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 393200133}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &866329712
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 58784842210858300, guid: 765695ac6cdfd2d429471b88a363479c,
+    type: 2}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 866329710}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: a37494ad960cda3478653bc1eeb18a35, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.1
 --- !u!4 &877571559 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4025545602124964, guid: d3228f7f3a02ca14e890990fda8a015f,
@@ -1252,6 +1442,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -1524,6 +1718,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -1602,6 +1800,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (22)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -1808,6 +2010,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -2024,6 +2230,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -2070,6 +2280,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -2115,6 +2329,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -2201,6 +2419,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (24)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -2246,6 +2468,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -2339,6 +2565,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -2465,6 +2695,10 @@ Prefab:
       propertyPath: m_Name
       value: Dewdrop (25)
       objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
   m_IsPrefabAsset: 0
@@ -2510,6 +2744,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
@@ -2562,6 +2800,10 @@ Prefab:
     - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
       propertyPath: m_Name
       value: Dewdrop (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1739261619446384, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3228f7f3a02ca14e890990fda8a015f, type: 2}

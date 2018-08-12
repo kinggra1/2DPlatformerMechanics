@@ -42,12 +42,17 @@ public class InventorySystem : MonoBehaviour {
         itemSlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
+        GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedDewdropPlant", typeof(GameObject));
+
         GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
         GameObject itemShovel = (GameObject)Resources.Load("ToolPrefabs/ItemToolShovel", typeof(GameObject));
-        itemSlots[selectedItemIndex].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
+        
 
-        itemSlots[1].Assign(axeItem.GetComponent<Item>(), false);
-        itemSlots[2].Assign(itemShovel.GetComponent<Item>(), false);
+        itemSlots[0].Assign(axeItem.GetComponent<Item>(), false);
+        itemSlots[1].Assign(itemShovel.GetComponent<Item>(), false);
+
+        itemSlots[2].Assign(platformPlantSeedItem.GetComponent<Item>(), true, 3);
+        itemSlots[3].Assign(dewdropPlantSeedItem.GetComponent<Item>(), true, 3);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
