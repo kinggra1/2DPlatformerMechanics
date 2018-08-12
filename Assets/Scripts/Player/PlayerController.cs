@@ -278,7 +278,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         // If we are heading upwards or are on solid ground (not a platform), no collision with platforms
-        Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, (yVel > 0.0f || !platformBelow));
+        // Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, (yVel > 0.0f || !platformBelow));
 
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour {
         Vector2 playerCenter = getPlayerCenter();
         Vector2 playerLeftCenter = playerCenter - Vector2.right * 0.5f;
         Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
-        float minPlatformDistance = 0.25f;
+        float minPlatformDistance = 0.5f;
 
         // center grounded check
         RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, standableRaycastLayers);

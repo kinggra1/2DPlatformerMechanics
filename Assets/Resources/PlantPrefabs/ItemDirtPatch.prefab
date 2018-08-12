@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c301c78456db8154ebe5efd5b84e8381, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  consumable: 0
+  consumable: 1
   menuSprite: {fileID: 21300000, guid: ac0e08daf681386458e81763aa1fc67a, type: 3}
   inGamePrefab: {fileID: 1573202004719968, guid: 2b61b939d440feb48ba343070aa2cea7,
     type: 2}
