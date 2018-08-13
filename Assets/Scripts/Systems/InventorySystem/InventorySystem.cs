@@ -48,8 +48,8 @@ public class InventorySystem : MonoBehaviour {
         itemSlots[0].Assign(toolItemMap[Item.Tool.Axe], false);
         itemSlots[1].Assign(toolItemMap[Item.Tool.Shovel], false);
 
-        itemSlots[2].Assign(seedItemMap[Item.Seed.PlatformPlant], true, 3);
-        itemSlots[3].Assign(seedItemMap[Item.Seed.DewdropPlant], true, 3);
+        itemSlots[2].Assign(seedItemMap[Item.Seed.PlatformPlant], true, 5);
+        itemSlots[3].Assign(seedItemMap[Item.Seed.DewdropPlant], true, 1);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
