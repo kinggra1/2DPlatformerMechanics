@@ -125,15 +125,7 @@ public class InventorySystem : MonoBehaviour {
         int indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
         
         if (indexChange != 0) {
-            selectedItemIndex -= indexChange;
-            if (selectedItemIndex < 0) {
-                selectedItemIndex += itemSlots.Count;
-            }
-            if (selectedItemIndex >= itemSlots.Count) {
-                selectedItemIndex -= itemSlots.Count;
-            }
-            itemRectTransform = itemSlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
-            cursorRectTransform.anchoredPosition = new Vector2(itemRectTransform.localPosition.x, 0f);
+            SetSelectedItemIndex(selectedItemIndex += indexChange);
         }
 
         if (clickPressed) {
@@ -197,6 +189,52 @@ public class InventorySystem : MonoBehaviour {
                 }
             }
         }
+
+
+        // Quick and dirty keypress for inventory slots
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            SetSelectedItemIndex(0);
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            SetSelectedItemIndex(1);
+        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            SetSelectedItemIndex(2);
+        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            SetSelectedItemIndex(3);
+        } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            SetSelectedItemIndex(4);
+        } else if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            SetSelectedItemIndex(5);
+        } else if (Input.GetKeyDown(KeyCode.Alpha7)) {
+            SetSelectedItemIndex(6);
+        } else if (Input.GetKeyDown(KeyCode.Alpha8)) {
+            SetSelectedItemIndex(7);
+        } else if (Input.GetKeyDown(KeyCode.Alpha9)) {
+            SetSelectedItemIndex(8);
+        } else if (Input.GetKeyDown(KeyCode.Alpha0)) {
+            SetSelectedItemIndex(9);
+        } else if (Input.GetKeyDown(KeyCode.Minus)) {
+            SetSelectedItemIndex(10);
+        } else if (Input.GetKeyDown(KeyCode.Equals)) {
+            SetSelectedItemIndex(11);
+        }
+
+
+    }
+
+    private void SetSelectedItemIndex(int newIndex) {
+        if (newIndex < 0) {
+            newIndex += itemSlots.Count;
+        }
+        if (newIndex >= itemSlots.Count) {
+            newIndex -= itemSlots.Count;
+        }
+        selectedItemIndex = newIndex;
+        UpdateInventoryCursor();
+    }
+
+    private void UpdateInventoryCursor() {
+        itemRectTransform = itemSlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
+        cursorRectTransform.anchoredPosition = new Vector2(itemRectTransform.localPosition.x, 0f);
     }
 
     internal void UseTool(Item.Tool toolType) {
