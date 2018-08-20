@@ -137,7 +137,7 @@ public class InventorySystem : MonoBehaviour {
             }
 
             // Check to see if we have a variety of things and if we can use them
-            IGrowable plantableSeed = currentItem.GetGamePrefab().GetComponent<IGrowable>();
+            Growable  plantableSeed = currentItem.GetGamePrefab().GetComponent<Growable >();
             DirtPatch dirtPatch = currentItem.GetGamePrefab().GetComponent<DirtPatch>();
 
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();

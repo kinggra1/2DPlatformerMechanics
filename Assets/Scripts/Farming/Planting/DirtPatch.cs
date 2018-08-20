@@ -6,7 +6,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 
     public GameObject wetDirtSprite;
 
-    private IGrowable plant = null;
+    private Growable plant = null;
 
     // Use this for initialization
     void Start () {
@@ -34,8 +34,8 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
     }
 
     void IPlantableZone.PlantSeed(GameObject seed) {
-        plant = Instantiate(seed, this.transform).GetComponent<IGrowable>();
-        // Make sure we have an IGrowable being planted
+        plant = Instantiate(seed, this.transform).GetComponent<Growable>();
+        // Make sure we have an Growable being planted
         if (plant == null) {
             Debug.LogError("Error trying to plant seed.");
         }
