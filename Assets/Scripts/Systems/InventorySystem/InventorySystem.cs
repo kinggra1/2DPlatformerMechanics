@@ -69,6 +69,10 @@ public class InventorySystem : MonoBehaviour {
         resourceItemMap.Add(Item.Resource.Dirt, dirtItem.GetComponent<Item>());
     }
 
+    public bool WaterLevelFull() {
+        return waterLevel >= maxWaterLevel;
+    }
+
     public int GetWaterLevel() {
         return waterLevel;
     }
@@ -82,6 +86,29 @@ public class InventorySystem : MonoBehaviour {
         waterLevel = Mathf.Clamp(waterLevel + volume, 0, maxWaterLevel);
     }
 
+    public bool CanPickupItem(Item item)
+    {
+        // Check to see if this item can be stacked on another consumable
+        if (item.IsConsumable()) {
+            foreach (InventorySlot slot in itemSlots) {
+                if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
+                    // TODO: If we add resource stacking limits for consumables, this is where to check those
+                    return true;
+                }
+            }
+        }
+
+        // Check to see if there are any empty slots
+        foreach (InventorySlot slot in itemSlots) {
+            if (slot.IsEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Usages should probably always be guarded with checks to CanPickupItem
     public void PickupItem(Item item) {
         // Check to see if this item already exists somewhere in our inventory if it's a consumable
         if (item.IsConsumable()) {

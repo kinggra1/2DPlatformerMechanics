@@ -108,7 +108,7 @@ public class WaterSpriteController : MonoBehaviour {
             // If current target is a collectible, call Collect() on it (free for you, cheap for them (tm) )
             Collectible collectible = target.GetComponent<Collectible>();
             if (collectible) {
-                collectible.Collect();
+                collectible.CollectIfPossible();
             }
 
             // If current target is a PlantableZone, water it

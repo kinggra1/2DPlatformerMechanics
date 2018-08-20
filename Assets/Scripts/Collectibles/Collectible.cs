@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Collectible : MonoBehaviour {
+public abstract class Collectible : MonoBehaviour {
 
     public ParticleSystem collectedEffect;
 
@@ -20,8 +20,16 @@ public class Collectible : MonoBehaviour {
         }
     }
 
-    // Classes that inherit from this should override for custom collection behavior
-    public virtual void Collect() {
+    // protected so that external classes won't just blindly call Collect
+    protected virtual void Collect() {
         Destroy(this.gameObject);
+    }
+
+    public abstract bool CanCollect();
+
+    public void CollectIfPossible() {
+        if (CanCollect()) {
+            Collect();
+        }
     }
 }
