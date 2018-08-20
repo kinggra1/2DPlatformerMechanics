@@ -10,6 +10,13 @@ using UnityEngine;
  * locations will have Harvest() called.
  * 
  * The Growable script will manage creating and removing instances of Harvestable.
+ * 
+ * Example usages:
+ * 1. Final phase of a fruit growing plant grows 3 fruit with Harvestable scripts on them.
+ *      - Harvesting the Growable will call Harvest() on all fruit and revert the Growable back one phase.
+ *      - Fruit objects may or may not be destroyed depending on whether or not they have [destroyWhenHarvested] set.
+ * 2. The final phase of a resource plant has a Harvestable on its parent object
+ *      - Harvesting the Growable will call Harvest() which destroys the whole plant while spawning resources.
  */
 public class Harvestable : MonoBehaviour {
 

@@ -67,6 +67,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4322591548607908}
   - component: {fileID: 114369884814686824}
+  - component: {fileID: 114140637972215898}
   m_Layer: 9
   m_Name: DewdropPlant
   m_TagString: Untagged
@@ -470,6 +471,22 @@ MonoBehaviour:
   leavesToGrow:
   - {fileID: 1271705625307264}
   - {fileID: 1329464837838674}
+--- !u!114 &114140637972215898
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1311569076392808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f38ca91c507244f889f6fed5c87d2c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  harvestedObject: {fileID: 1257029013019656, guid: da977af9ac7b2754599a5dd45c0e9f58,
+    type: 2}
+  minHarvestYield: 1
+  maxHarvestYield: 1
+  destroyWhenHarvested: 1
 --- !u!114 &114172138865790538
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -513,7 +530,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   associatedSeed: {fileID: 1257029013019656, guid: da977af9ac7b2754599a5dd45c0e9f58,
     type: 2}
-  numDroppedSeeds: 1
   growthPhases:
   - {fileID: 1659858412123736}
   - {fileID: 1129321207050236}

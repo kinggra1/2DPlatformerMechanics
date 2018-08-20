@@ -139,7 +139,7 @@ public class InventorySystem : MonoBehaviour {
         if (clickPressed) {
             InventorySlot currentItem = itemSlots[selectedItemIndex];
 
-            // Right now all we can do in Update is use items, so nothing left to do.
+            // Right now all we can do is use items, so nothing left to do.
             if (currentItem.IsEmpty()) {
                 return;
             }
@@ -160,7 +160,17 @@ public class InventorySystem : MonoBehaviour {
             // Placing dirt on the ground
             else if (dirtPatch != null) {
                 if (plantableZone == null && player.OnPlantableGround()) {
-                    Instantiate(dirtPatch).transform.position = player.transform.position + Vector3.down * 0.5f;
+
+                    GameObject dirt = Instantiate(dirtPatch.gameObject);
+
+                    // Assign the dirt patch to be parented to whatever the player is standing on
+                    // This allows us to recursively destroy plants after we plant on top of them 
+                    // (e.g. dirt pile on a leaf platform. Destroy bottom plant, it destroys the rest)
+                    Transform parent = player.GetObjectBelow().transform;
+                    dirt.transform.parent = parent;
+
+                    // Place this dirt roughly on the ground
+                    dirt.transform.position = player.transform.position + Vector3.down * 0.5f;
                     currentItem.Use();
                 }
             } else {

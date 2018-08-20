@@ -410,6 +410,11 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    // returns null if we're not on anything
+    public GameObject GetObjectBelow() {
+        return objectBelow;
+    }
+
     private bool canJump() {
         return isGrounded();
     }
@@ -420,7 +425,7 @@ public class PlayerController : MonoBehaviour {
 
     private Vector2 getPlayerCenter() {
         return transform.position;
-    }
+    }    
 
     private void OnTriggerEnter2D(Collider2D collider) {
 

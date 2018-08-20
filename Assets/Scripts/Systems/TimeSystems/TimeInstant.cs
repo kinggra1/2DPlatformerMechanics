@@ -6,7 +6,7 @@ using UnityEngine;
 public class TimeInstant {
     private float seconds;
 
-    private static readonly float secondsPerDay = 8f;
+    private static readonly float secondsPerDay = 1f;
     private static readonly float hoursPerDay = 10f;
 
     public static TimeInstant operator -(TimeInstant a, TimeInstant b) {

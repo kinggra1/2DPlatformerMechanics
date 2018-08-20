@@ -9,8 +9,6 @@ public class TimeSystem : MonoBehaviour {
     private TimeInstant dawnOfTime = new TimeInstant(0f);
     private TimeInstant currentTime = new TimeInstant(0f);
 
-    private readonly float secondsPerDay = 8f;
-
     // Use this for initialization
     void Awake() {
         if (instance != null) {

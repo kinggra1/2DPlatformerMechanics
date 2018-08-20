@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlatformPlant : MonoBehaviour, IGrowable {
 
-    public GameObject associatedSeed;
+    // public GameObject associatedSeed;
     public GameObject[] growthPhases;
 
     // public float timeBetweenPhases;
@@ -69,6 +69,7 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
     }
 
     void IGrowable.Chop() {
+        /*
         for (int i = 0; i < 2; i++) {
             GameObject spawnedSeed = Instantiate(associatedSeed);
             spawnedSeed.transform.position = this.transform.position;
@@ -76,5 +77,10 @@ public class PlatformPlant : MonoBehaviour, IGrowable {
             rb.AddForce(new Vector2(Random.Range(-50, 50), Random.Range(100f, 200f)));
         }
         Destroy(this.gameObject);
+        */
+        foreach (Harvestable harvestable in GetComponentsInChildren<Harvestable>())
+        {
+            harvestable.Harvest();
+        }
     }
 }
