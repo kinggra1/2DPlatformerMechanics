@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Periodically spawns Dewdrops at this location
+/*
+ * Spawn a GameObject at this location after a certain amount of in-game time.
+ * 
+ * Can be used to spawn something once and then be destroyed using [oneOff]
+ * Can spawn infinite things at a constant rate [multispawner]
+ * Can spawn a single object and then wait until it is destroyed (e.g. collected) before resetting
+ */
 public class TimedSpawner : MonoBehaviour {
 
     // TODO: Make some kind of custom inspector for TimeInstant so that all times can use
     // that class
 
+    [Tooltip("The GameObject that will be spawned.")]
     public GameObject prefab;
-    public float spawnDelayDays = 1;
+    [Tooltip("How many in game days until the GameObject spanws.")]
+    public float spawnDelayDays = 1; // TODO: give this some random jitter
 
     [Tooltip("If true, this spawner will not wait for the spawned object to be destroyed to spawn another.")]
     public bool multispawner = false;

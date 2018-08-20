@@ -6,7 +6,6 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 
     public GameObject wetDirtSprite;
 
-    // TODO: Refactor plant so that this is a "Growable" and the phases are something else
     private IGrowable plant = null;
 
     // Use this for initialization
@@ -18,6 +17,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 	void Update () {
 
         // Can probably do this more cleanly/on water/grow, but in the current setup that would require a callback
+        // TODO: Consider optimizing
 		if (plant != null && plant.IsWatered()) {
             wetDirtSprite.SetActive(true);
         } else {

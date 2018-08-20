@@ -4,16 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
-    
+
+    [Tooltip("Max horizontal movement speed in m/s")]
     public float hMoveSpeed = 10f;
+    [Tooltip("Max fall speed in m/s")]
     public float maxFallspeed = -15f;
+    [Tooltip("Upwards force applied to Rigidbody2D to create a jump in N")]
     public float jumpForce = 600f;
+    [Tooltip("A reference to our best friend.")]
     public WaterSpriteController waterSprite;
+
+    [Tooltip("Debugging text to see our current movement state.")]
     public TextMesh debugStateText;
+    [Tooltip("Debugging text to see our current facing direction (in code).")]
     public TextMesh debugDirectionText;
 
     private Vector2 wallJumpDirection = (Vector2.up + Vector2.right).normalized;
 
+    // Cardinal directions in 2D referenced as "Up, Down, Left, Right" and a null state.
     public enum Direction { NONE, UP, DOWN, LEFT, RIGHT };
     private Direction playerFacing = Direction.RIGHT;
     private Direction wallDirection = Direction.NONE;
@@ -80,9 +88,10 @@ public class PlayerController : MonoBehaviour {
     }
 
     // Put any singleton instance accessing here
-    // This allows any existing singletons in the scene to set themselves up in their own Awake
+    // This allows any existing singletons in the scene to set themselves up in their own Awake()
     // without us accidentally creating a new one before they have a chance to initalize 
-    // (yes this happened and that's why I'm writing this)
+    // Start() calls runs after Awake() calls
+    // ( yes this happened and that's why I'm writing this -__- )
     private void Start() {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();

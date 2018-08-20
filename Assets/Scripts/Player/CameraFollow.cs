@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour {
 
+    [Tooltip("How far 'zoomed-out' the camera is in orthographic view space.")]
     public float cameraDistance = 8;
 
     private GameObject target;

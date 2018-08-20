@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DewdropPlant : MonoBehaviour, IGrowable {
-
+    
     public GameObject associatedSeed;
-    public int numDroppedSeeds = 2;
     public GameObject[] growthPhases;
 
     private TimeSystem timeSystem;
@@ -68,6 +67,7 @@ public class DewdropPlant : MonoBehaviour, IGrowable {
     }
 
     void IGrowable.Chop() {
+        /*
         for (int i = 0; i < numDroppedSeeds; i++) {
             GameObject spawnedSeed = Instantiate(associatedSeed);
             spawnedSeed.transform.position = this.transform.position;
@@ -75,5 +75,12 @@ public class DewdropPlant : MonoBehaviour, IGrowable {
             rb.AddForce(new Vector2(Random.Range(-50, 50), Random.Range(100f, 200f)));
         }
         Destroy(this.gameObject);
+        */
+
+        // This is a REALLY good reason to have Growable be a base class that
+        // does things like this for all derived classes.
+        foreach (Harvestable harvestable in GetComponentsInChildren<Harvestable>()) {
+            harvestable.Harvest();
+        }
     }
 }

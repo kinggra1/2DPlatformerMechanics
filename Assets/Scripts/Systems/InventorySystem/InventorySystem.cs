@@ -87,6 +87,7 @@ public class InventorySystem : MonoBehaviour {
         if (item.IsConsumable()) {
             foreach (InventorySlot slot in itemSlots) {
                 if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
+                    // TODO: If we add resource stacking limits for consumables, this is where to check those
                     slot.IncrementCount(1);
                     return;
                 }
@@ -100,6 +101,10 @@ public class InventorySystem : MonoBehaviour {
                 return;
             }
         }
+
+        // Uhoh, there are no remaining open inventory slots, and this will involve rewriting
+        // a number of systems, particularly sending the WaterSprite out ot go pick up Collectables 
+        Debug.LogError("We shouldn't have tried picking this up. Oops. Fix your code.");
     }
 
     // now if we forget to put a InventorySystem in the scene, we can still
