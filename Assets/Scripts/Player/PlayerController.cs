@@ -430,7 +430,8 @@ public class PlayerController : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collider) {
 
         // If we are near a collectible, tell the water sprite to go fetch
-        if (collider.GetComponent<Collectible>()) {
+        Collectible collectible = collider.GetComponent<Collectible>();
+        if (collectible && collectible.CanCollect()) {
             waterSprite.AddToTargetList(collider.gameObject);
         }
     }

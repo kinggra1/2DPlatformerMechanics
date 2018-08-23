@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class WaterSpriteController : MonoBehaviour {
 
-    private float xSwayRadius = 0.1f;
-    private float ySwayRadius = 0.1f;
+    private float xSwayRadius = 0.2f;
+    private float ySwayRadius = 0.2f;
     private Vector3 floatingOffset = new Vector3(1.2f, 1f, 0f);
 
     // List of things we should fly to, in order
@@ -16,7 +16,7 @@ public class WaterSpriteController : MonoBehaviour {
     private InventorySystem inventory;
     private PlayerController player;
     private Rigidbody2D playerRigidbody;
-    private Vector3 targetPosition;
+    private Vector3 targetVector;
     private Vector3 localOffset = Vector3.zero;
     private SpriteRenderer sprite;
     private GameObject body;
@@ -55,8 +55,8 @@ public class WaterSpriteController : MonoBehaviour {
 
         // We should be heading toward a target if there is one
         if (target != null) {
-            targetPosition = target.transform.position - this.transform.position;
-            targetPosition *= 5f;
+            targetVector = target.transform.position - this.transform.position;
+            targetVector *= 5f;
         } else { // target defaults to player
             Vector3 targetOffset = floatingOffset;
             // Mirror the floating offset depending on the direction the player is facing
@@ -69,17 +69,52 @@ public class WaterSpriteController : MonoBehaviour {
                 localOffset.x = Mathf.Cos(Time.time) * xSwayRadius;
                 localOffset.y = Mathf.Cos(Time.time * 2.2f) * ySwayRadius;
             }
-            targetPosition = player.transform.position + (targetOffset + localOffset) - this.transform.position;
+            targetVector = player.transform.position + (targetOffset + localOffset) - this.transform.position;
         }
 
-        velocity = targetPosition;
+        if (target == null) {
+            // We're heading towards the player, let's do some fancy spirally movement here
 
+            // set targetVector to point fro player to waterSprite for polar calculations
+            targetVector = -targetVector;
+            bool abovePlayer = targetVector.y > 0f;
+            bool rightOfPlayer = targetVector.x > 0f;
+
+            bool rotateClockwise = abovePlayer && rightOfPlayer || !abovePlayer && !rightOfPlayer;
+            Vector3 endVector;
+            if (abovePlayer) {
+                endVector = Vector3.up;
+            } else {
+                endVector = Vector3.up;
+            }
+
+            // Find the angle between our vector from the player and the end vector
+            float travelAngle = Vector3.Angle(targetVector, endVector);
+
+            travelAngle = Mathf.Deg2Rad * travelAngle * 0.05f;
+            if (rightOfPlayer) {
+                travelAngle = -travelAngle;
+            }
+
+            // Polar rotation 10% in the correct direction
+            float newX = targetVector.x * Mathf.Cos(travelAngle) - targetVector.y * Mathf.Sin(travelAngle);
+            float newY = targetVector.x * Mathf.Sin(travelAngle) + targetVector.y * Mathf.Cos(travelAngle);
+
+            Vector3 targetOrbitPosition = this.transform.position - targetVector + new Vector3(newX, newY, 0f) * 0.6f;
+            Debug.DrawLine(transform.position, transform.position - targetVector, Color.red);
+            Debug.DrawLine(transform.position, targetOrbitPosition);
+            velocity = (targetOrbitPosition - transform.position).normalized * targetVector.magnitude * 2f;
+            Debug.DrawLine(transform.position, transform.position + new Vector3(velocity.x, velocity.y, 0f), Color.blue);
+
+        } else {
+            velocity = targetVector;
+        }
 
 
         // the closer we are to the player, the more we dampen velocity change
         // Dividing by velocity.magnitude means we'll slow down if we're going faster than
         // [distance-to-player]/second, with stronger decreases the closer we get to the player
-        velocity *= Mathf.Clamp(targetPosition.magnitude/velocity.magnitude, 0.8f, 1.0f);
+        velocity *= Mathf.Clamp(targetVector.magnitude/velocity.magnitude, 0.8f, 1.0f);
         this.transform.position += new Vector3(velocity.x, velocity.y) * Time.deltaTime;
 
         // point us in the direction of velocity
