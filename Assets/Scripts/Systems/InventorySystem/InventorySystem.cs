@@ -50,6 +50,7 @@ public class InventorySystem : MonoBehaviour {
 
         itemSlots[2].Assign(seedItemMap[Item.Seed.PlatformPlant], true, 5);
         itemSlots[3].Assign(seedItemMap[Item.Seed.DewdropPlant], true, 1);
+        itemSlots[4].Assign(seedItemMap[Item.Seed.FruitPlantOrange], true, 3);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
     }
@@ -57,8 +58,10 @@ public class InventorySystem : MonoBehaviour {
     public void LoadItemsFromResources() {
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
         GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedDewdropPlant", typeof(GameObject));
+        GameObject fruitOrangePlantSeedItem = (GameObject)Resources.Load("Plantprefabs/ItemSeedFruitPlantOrange", typeof(GameObject));
         seedItemMap.Add(Item.Seed.PlatformPlant, platformPlantSeedItem.GetComponent<Item>());
         seedItemMap.Add(Item.Seed.DewdropPlant, dewdropPlantSeedItem.GetComponent<Item>());
+        seedItemMap.Add(Item.Seed.FruitPlantOrange, fruitOrangePlantSeedItem.GetComponent<Item>());
 
         GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
         GameObject itemShovel = (GameObject)Resources.Load("ToolPrefabs/ItemToolShovel", typeof(GameObject));

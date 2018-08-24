@@ -53,7 +53,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
         plant.Chop();
 
         // One chop chump
-        ResetPatch();
+        //ResetPatch();
     }
 
     private void ResetPatch() {

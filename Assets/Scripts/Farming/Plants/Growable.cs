@@ -16,11 +16,11 @@ public abstract class Growable  : MonoBehaviour {
 
     private bool watered = false;
 
-    private TimeInstant plantedTime = new TimeInstant();
-    private TimeInstant lastWateredTime = new TimeInstant();
-    private int phaseIndex = 0;
+    protected TimeInstant plantedTime = new TimeInstant();
+    protected TimeInstant lastWateredTime = new TimeInstant();
+    protected int phaseIndex = 0;
 
-    private int growTimeDays = 2;
+    protected int growTimeDays = 2;
 
     // Use this for initialization
     void Start() {
@@ -39,17 +39,23 @@ public abstract class Growable  : MonoBehaviour {
         if (watered) {
             int elapsedDays = (timeSystem.GetTime() - lastWateredTime).GetDays();
             if (elapsedDays >= growTimeDays) {
-                growthPhases[phaseIndex].SetActive(false);
-                phaseIndex++;
-                GameObject nextPhase = growthPhases[phaseIndex];
-                nextPhase.SetActive(true);
-
-                IGrowablePhase GrowablePhase = nextPhase.GetComponent<IGrowablePhase>();
-                if (GrowablePhase != null) {
-                    GrowablePhase.AnimatePhaseGrowth();
-                }
-
+                ChangePhaseIndex(1);
                 watered = false;
+            }
+        }
+    }
+
+    protected void ChangePhaseIndex(int delta) {
+        growthPhases[phaseIndex].SetActive(false);
+        phaseIndex += delta;
+        phaseIndex = (int)Mathf.Clamp(phaseIndex, 0, growthPhases.Length - 1);
+        growthPhases[phaseIndex].SetActive(true);
+
+        // grow to the next phase if we're advancing one phase
+        if (delta == 1) {
+            IGrowablePhase GrowablePhase = growthPhases[phaseIndex].GetComponent<IGrowablePhase>();
+            if (GrowablePhase != null) {
+                GrowablePhase.AnimatePhaseGrowth();
             }
         }
     }

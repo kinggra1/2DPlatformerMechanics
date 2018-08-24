@@ -21,8 +21,10 @@ public class CollectibleSeed : Collectible {
         GameObject itemImage = new GameObject("image");
         itemImage.transform.parent = this.transform;
         itemImage.transform.localPosition = Vector3.zero;
-        itemImage.transform.localScale = Vector3.one * 0.3f;
-        itemImage.AddComponent<SpriteRenderer>().sprite = associatedItem.GetMenuSprite();
+        //itemImage.transform.localScale = Vector3.one;
+        SpriteRenderer renderer = itemImage.AddComponent<SpriteRenderer>();
+        renderer.sprite = associatedItem.GetMenuSprite();
+        renderer.sortingOrder = 100;
     }
 
     public override bool CanCollect() {
