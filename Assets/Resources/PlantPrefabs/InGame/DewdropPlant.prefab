@@ -528,8 +528,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e803e62284007f40ba9824c39dd61b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  associatedSeed: {fileID: 1257029013019656, guid: da977af9ac7b2754599a5dd45c0e9f58,
-    type: 2}
   growthPhases:
   - {fileID: 1659858412123736}
   - {fileID: 1129321207050236}

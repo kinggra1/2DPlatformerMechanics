@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour {
     public float jumpForce = 600f;
     [Tooltip("A reference to our best friend.")]
     public WaterSpriteController waterSprite;
+    [Tooltip("A reference to the visual sprite of the actual player")]
+    public GameObject playerBody;
+    [Tooltip("A reference to the hand where we physically hold Weapons/Tools.")]
+    public WeaponHand weaponHand;
 
     [Tooltip("Debugging text to see our current movement state.")]
     public TextMesh debugStateText;
@@ -308,15 +312,40 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void SetWeaponObject(GameObject obj) {
+        weaponHand.SetWeaponObject(obj);
+    }
+
+    public void UseWeapon(Item.Weapon weaponType) {
+
+        // Different animations for different weapons
+        switch(weaponType) {
+
+            // Set of "swordlike" animations
+            case Item.Weapon.Axe:
+            case Item.Weapon.Shovel:
+            case Item.Weapon.Sword:
+                // Have character do whatever animation is associated with their sprite
+                // Add animation here
+
+                // And also tell the WeaponController animate
+                weaponHand.SwingSword();
+                break;
+        }
+    }
+
+
     private void UpdatePlayerDirectionFromVelocity() {
         if (Mathf.Approximately(xVel, 0f)) {
             return;
         }
 
         if (xVel < 0f) {
+            playerBody.transform.localScale = new Vector3(1f, 1f, 1f);
             playerFacing = Direction.LEFT;
         }
         else {
+            playerBody.transform.localScale = new Vector3(-1f, 1f, 1f);
             playerFacing = Direction.RIGHT;
         }
     }

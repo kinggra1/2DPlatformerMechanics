@@ -47,13 +47,13 @@ public class InventorySlot : MonoBehaviour {
         return item.GetMenuSprite();
     }
 
-    public void Assign(Item item, bool consumable = false, int count = 0) {
+    public void Assign(Item item, int count = 0) {
         if (item != null) {
             // We're replacing something, maybe do something in relation to that?
         }
 
         this.item = item;
-        this.consumable = consumable;
+        this.consumable = item.consumable;
         this.count = count;
 
         UpdateUI();

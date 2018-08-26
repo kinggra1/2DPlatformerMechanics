@@ -19,9 +19,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4095712424577454}
-  - component: {fileID: 114272651726939004}
+  - component: {fileID: 114258218213800196}
   m_Layer: 0
-  m_Name: ItemToolShovel
+  m_Name: ItemToolAxe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114272651726939004
+--- !u!114 &114258218213800196
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,11 +48,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1626742922667052}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f24f902a7500b48488fa9025cd150ff0, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ce3a56d419fdfb4d86549367b0295ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   consumable: 0
-  menuSprite: {fileID: 21300000, guid: 00a4491f7be9bdd499be17d49a710c72, type: 3}
-  inGamePrefab: {fileID: 1949049464353036, guid: b5ab13b159a9fa54e847b05fece7dd08,
+  menuSprite: {fileID: 21300000, guid: 759e3217ffe43644b9ae49e5effad1ca, type: 3}
+  inGamePrefab: {fileID: 1558586424842964, guid: 31424e5c368b296418b8d4a8ddef48ea,
     type: 2}
+  weaponType: 0
   toolType: 1

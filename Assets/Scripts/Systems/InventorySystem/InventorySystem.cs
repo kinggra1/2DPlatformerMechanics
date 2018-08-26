@@ -11,7 +11,7 @@ public class InventorySystem : MonoBehaviour {
     public GameObject cursorImage;
 
     public Dictionary<Item.Seed, Item> seedItemMap = new Dictionary<Item.Seed, Item>();
-    public Dictionary<Item.Tool, Item> toolItemMap = new Dictionary<Item.Tool, Item>();
+    public Dictionary<Item.Weapon, Item> weaponItemMap = new Dictionary<Item.Weapon, Item>();
     public Dictionary<Item.Resource, Item> resourceItemMap = new Dictionary<Item.Resource, Item>();
 
     private PlayerController player;
@@ -45,28 +45,33 @@ public class InventorySystem : MonoBehaviour {
 
         LoadItemsFromResources();
 
-        itemSlots[0].Assign(toolItemMap[Item.Tool.Axe], false);
-        itemSlots[1].Assign(toolItemMap[Item.Tool.Shovel], false);
+        itemSlots[0].Assign(weaponItemMap[Item.Weapon.Axe]);
+        itemSlots[1].Assign(weaponItemMap[Item.Weapon.Shovel]);
+        itemSlots[2].Assign(weaponItemMap[Item.Weapon.Sword]);
 
-        itemSlots[2].Assign(seedItemMap[Item.Seed.PlatformPlant], true, 5);
-        itemSlots[3].Assign(seedItemMap[Item.Seed.DewdropPlant], true, 1);
-        itemSlots[4].Assign(seedItemMap[Item.Seed.FruitPlantOrange], true, 3);
+        itemSlots[3].Assign(seedItemMap[Item.Seed.PlatformPlant], 5);
+        itemSlots[4].Assign(seedItemMap[Item.Seed.DewdropPlant], 1);
+        itemSlots[5].Assign(seedItemMap[Item.Seed.FruitPlantOrange], 3);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
+
+        UpdateUI();
     }
 
     public void LoadItemsFromResources() {
-        GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedPlatformPlant", typeof(GameObject));
-        GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/ItemSeedDewdropPlant", typeof(GameObject));
-        GameObject fruitOrangePlantSeedItem = (GameObject)Resources.Load("Plantprefabs/ItemSeedFruitPlantOrange", typeof(GameObject));
+        GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedPlatformPlant", typeof(GameObject));
+        GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedDewdropPlant", typeof(GameObject));
+        GameObject fruitOrangePlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedFruitPlantOrange", typeof(GameObject));
         seedItemMap.Add(Item.Seed.PlatformPlant, platformPlantSeedItem.GetComponent<Item>());
         seedItemMap.Add(Item.Seed.DewdropPlant, dewdropPlantSeedItem.GetComponent<Item>());
         seedItemMap.Add(Item.Seed.FruitPlantOrange, fruitOrangePlantSeedItem.GetComponent<Item>());
 
-        GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/ItemToolAxe", typeof(GameObject));
-        GameObject itemShovel = (GameObject)Resources.Load("ToolPrefabs/ItemToolShovel", typeof(GameObject));
-        toolItemMap.Add(Item.Tool.Axe, axeItem.GetComponent<Item>());
-        toolItemMap.Add(Item.Tool.Shovel, itemShovel.GetComponent<Item>());
+        GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/Inventory/ItemToolAxe", typeof(GameObject));
+        GameObject shovelItem = (GameObject)Resources.Load("ToolPrefabs/Inventory/ItemToolShovel", typeof(GameObject));
+        GameObject swordItem = (GameObject)Resources.Load("WeaponPrefabs/Inventory/ItemWeaponSword", typeof(GameObject));
+        weaponItemMap.Add(Item.Weapon.Axe, axeItem.GetComponent<Item>());
+        weaponItemMap.Add(Item.Weapon.Shovel, shovelItem.GetComponent<Item>());
+        weaponItemMap.Add(Item.Weapon.Sword, swordItem.GetComponent<Item>());
 
         GameObject dirtItem = (GameObject)Resources.Load("ResourcePrefabs/ItemResourceDirt", typeof(GameObject));
         resourceItemMap.Add(Item.Resource.Dirt, dirtItem.GetComponent<Item>());
@@ -127,7 +132,7 @@ public class InventorySystem : MonoBehaviour {
         // If all of the above fails, put it in the first free inventory slot
         foreach (InventorySlot slot in itemSlots) {
             if (slot.IsEmpty()) {
-                slot.Assign(item, item.IsConsumable(), 1);
+                slot.Assign(item, 1);
                 return;
             }
         }
@@ -149,8 +154,8 @@ public class InventorySystem : MonoBehaviour {
 
     private void Update() {
 
-        bool clickPressed = Input.GetMouseButtonDown(0);
-        bool waterButtonPressed = Input.GetKeyDown(KeyCode.E);
+        bool useItemPressed = Input.GetMouseButtonDown(0);
+        bool waterButtonPressed = Input.GetMouseButtonDown(1);
 
         int indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
         
@@ -158,7 +163,7 @@ public class InventorySystem : MonoBehaviour {
             SetSelectedItemIndex(selectedItemIndex += indexChange);
         }
 
-        if (clickPressed) {
+        if (useItemPressed) {
             InventorySlot currentItem = itemSlots[selectedItemIndex];
 
             // Right now all we can do is use items, so nothing left to do.
@@ -221,7 +226,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
 
-        // Quick and dirty keypress for inventory slots
+        // Quick and dirty keypress check for inventory slots
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             SetSelectedItemIndex(0);
         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
@@ -259,12 +264,19 @@ public class InventorySystem : MonoBehaviour {
             newIndex -= itemSlots.Count;
         }
         selectedItemIndex = newIndex;
-        UpdateInventoryCursor();
+        UpdateUI();
     }
 
-    private void UpdateInventoryCursor() {
+    private void UpdateUI() {
         itemRectTransform = itemSlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
         cursorRectTransform.anchoredPosition = new Vector2(itemRectTransform.localPosition.x, 0f);
+
+        Item weaponItem = itemSlots[selectedItemIndex].GetItem();
+        if (weaponItem && weaponItem.GetComponent<ItemWeapon>() != null) {
+            player.SetWeaponObject(weaponItem.inGamePrefab);
+        } else {
+            player.SetWeaponObject(null);
+        }
     }
 
     internal void UseTool(Item.Tool toolType) {
@@ -301,6 +313,7 @@ public class InventorySystem : MonoBehaviour {
                     // Swiping at empty space with shovel
                 }
                 break;
+
 
                 // handle other tools here
         }
