@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4433431430592046}
   - component: {fileID: 212652332190039138}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: WeaponSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4218184529267456}
   - component: {fileID: 61539951640915942}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

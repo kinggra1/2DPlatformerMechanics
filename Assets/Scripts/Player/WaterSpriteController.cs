@@ -30,8 +30,8 @@ public class WaterSpriteController : MonoBehaviour {
 	void Start () {
         inventory = InventorySystem.GetInstance();
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        playerRigidbody = player.GetComponent<Rigidbody2D>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        playerRigidbody = player.GetRigidbody();
 
         sprite = this.GetComponentInChildren<SpriteRenderer>();
         body = sprite.gameObject;

@@ -36,7 +36,7 @@ public class InventorySystem : MonoBehaviour {
         }
         instance = this;
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         waterSprite = player.GetWaterSprite();
         timeSystem = TimeSystem.GetInstance();
 
@@ -273,9 +273,9 @@ public class InventorySystem : MonoBehaviour {
 
         Item weaponItem = itemSlots[selectedItemIndex].GetItem();
         if (weaponItem && weaponItem.GetComponent<ItemWeapon>() != null) {
-            player.SetWeaponObject(weaponItem.inGamePrefab);
+            player.SetWeapon(weaponItem.GetComponent<ItemWeapon>());
         } else {
-            player.SetWeaponObject(null);
+            player.SetWeapon(null);
         }
     }
 

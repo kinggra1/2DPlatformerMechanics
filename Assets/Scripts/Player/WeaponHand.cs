@@ -11,6 +11,9 @@ public class WeaponHand : MonoBehaviour {
     private float animationDuration = 0.2f;
 
     private GameObject weaponObject = null;
+    private ItemWeapon weapon = null;
+
+    private bool usingWeapon = false;
 
 	// Use this for initialization
 	void Start () {
@@ -23,12 +26,18 @@ public class WeaponHand : MonoBehaviour {
 	}
 
     // TODO: Make this more memory efficient. Save references to weapons and activate/deactivate them
-    public void SetWeaponObject(GameObject obj) {
+    public void SetWeapon(ItemWeapon weaponItem) {
         if (weaponObject) {
             Destroy(weaponObject);
         }
-        weaponObject = Instantiate(obj, transform) as GameObject;
+        if (weaponItem == null) {
+            return;
+        }
+
+        weaponObject = Instantiate(weaponItem.inGamePrefab, transform) as GameObject;
         weaponObject.transform.localPosition = Vector3.zero;
+
+        weapon = weaponItem;
     }
 
     // TODO: Take in a time to specify speed
@@ -45,6 +54,7 @@ public class WeaponHand : MonoBehaviour {
     // Animation Coroutines
     private IEnumerator SwordAnimationCoroutine() {
         animationTimer = 0f;
+        usingWeapon = true;
 
         float startAngle = -30f;
         float endAngle = 90f;
@@ -66,5 +76,15 @@ public class WeaponHand : MonoBehaviour {
 
         // Reset to where we started
         this.transform.localRotation = Quaternion.Euler(0f, 0f, startAngle);
+        usingWeapon = false;
+    }
+
+    public void OnTriggerEnter2D(Collider2D other) {
+        if (usingWeapon) {
+            IStrikeable strikeable = other.GetComponent<IStrikeable>();
+            if (strikeable != null) {
+                strikeable.Strike(this.transform.position, this.weapon);
+            }
+        }
     }
 }

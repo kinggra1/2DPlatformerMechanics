@@ -11,6 +11,9 @@ public class FruitPlantOrange : FruitPlant {
 
             // Then revert to the phase where there is no fruit yet
             ChangePhaseIndex(-1);
+        } else {
+            // chop it down
+            Destroy(this.gameObject);
         }
     }
 }

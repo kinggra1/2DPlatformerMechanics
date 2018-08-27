@@ -12,7 +12,7 @@ public class ItemWeapon : Item {
     }
 
     override public void Use() {
-        PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         player.UseWeapon(weaponType);
 
         if (toolType != Tool.None) {

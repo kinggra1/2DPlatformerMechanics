@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour {
         }
         instance = this;
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         timeSystem = TimeSystem.GetInstance();
 	}
 

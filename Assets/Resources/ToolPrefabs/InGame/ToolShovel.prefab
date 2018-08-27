@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4056625781824084}
   - component: {fileID: 61505907751583222}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4470983373770280}
   - component: {fileID: 212807809369590270}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ToolShovel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

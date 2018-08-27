@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour {
     public GameObject playerBody;
     [Tooltip("A reference to the hand where we physically hold Weapons/Tools.")]
     public WeaponHand weaponHand;
+    [Tooltip("The parent of all player-associated objects. Used to seperate collisions and scale flipping.")]
+    public PlayerOrganizer playerOrganizer;
 
     [Tooltip("Debugging text to see our current movement state.")]
     public TextMesh debugStateText;
@@ -103,6 +105,10 @@ public class PlayerController : MonoBehaviour {
 
     public WaterSpriteController GetWaterSprite() {
         return waterSprite;
+    }
+
+    public Rigidbody2D GetRigidbody() {
+        return rb;
     }
 
     public Direction PlayerFacing() {
@@ -312,8 +318,8 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public void SetWeaponObject(GameObject obj) {
-        weaponHand.SetWeaponObject(obj);
+    public void SetWeapon(ItemWeapon weaponItem) {
+        weaponHand.SetWeapon(weaponItem);
     }
 
     public void UseWeapon(Item.Weapon weaponType) {
@@ -341,11 +347,11 @@ public class PlayerController : MonoBehaviour {
         }
 
         if (xVel < 0f) {
-            playerBody.transform.localScale = new Vector3(1f, 1f, 1f);
+            playerOrganizer.SetPlayerScale(Vector3.one);
             playerFacing = Direction.LEFT;
         }
         else {
-            playerBody.transform.localScale = new Vector3(-1f, 1f, 1f);
+            playerOrganizer.SetPlayerScale(new Vector3(-1f, 1f, 1f));
             playerFacing = Direction.RIGHT;
         }
     }
@@ -459,9 +465,12 @@ public class PlayerController : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collider) {
 
         // If we are near a collectible, tell the water sprite to go fetch
+        // DEPRECATED: Each individual Collectible now handles this (kept for reference)
+        /*
         Collectible collectible = collider.GetComponent<Collectible>();
         if (collectible && collectible.CanCollect()) {
             waterSprite.AddToTargetList(collider.gameObject);
         }
+        */
     }
 }
