@@ -154,10 +154,14 @@ public class InventorySystem : MonoBehaviour {
 
     private void Update() {
 
-        bool useItemPressed = Input.GetMouseButtonDown(0);
-        bool waterButtonPressed = Input.GetMouseButtonDown(1);
+        bool useItemPressed = Input.GetButton("Fire1");
+        bool waterButtonPressed = Input.GetButton("Fire2");
 
-        int indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
+        int indexChange = 0;
+        indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
+        indexChange += Input.GetButtonDown("NavLeft")? -1 : 0;
+        indexChange += Input.GetButtonDown("NavRight") ? 1 : 0;
+        Debug.Log(Input.GetKey(KeyCode.Joystick1Button9));
         
         if (indexChange != 0) {
             SetSelectedItemIndex(selectedItemIndex += indexChange);
@@ -208,8 +212,9 @@ public class InventorySystem : MonoBehaviour {
         if (waterButtonPressed) {
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanBeWatered()) {
-                if (waterLevel > 0) {
-                    
+                GameObject target = (plantableZone as MonoBehaviour).gameObject;
+                if (waterLevel > 0 && !waterSprite.PlanningToVisit(target)) {
+
                     // Everything that we have that implements interfaces is also a MonoBehavior, so we can
                     // use this as a """safe""" cast in order to find the game object
                     // The water sprite reaching the PlantableZone will handle the watering itself.

@@ -172,4 +172,13 @@ public class WaterSpriteController : MonoBehaviour {
     public void AddImmediateToTargetList(GameObject target) {
         targetList.Insert(nextTargetIndex, target);
     }
+
+    public bool PlanningToVisit(GameObject target) {
+        foreach (GameObject t in targetList) {
+            if (t.Equals(target)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

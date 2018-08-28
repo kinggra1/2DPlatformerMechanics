@@ -45,9 +45,7 @@ public class EnemyTarget : Enemy, IStrikeable {
             case MoveState.HIT:
                 rb.velocity *= 0.93f;
                 stunTimer += Time.deltaTime;
-                Debug.Log(stunTimer);
                 if (stunTimer > stunTime && rb.velocity.magnitude < 0.01f) {
-                    Debug.Log(rb.velocity.magnitude);
                     SetMotionState(MoveState.GOINGHOME);
                 }
                 break;

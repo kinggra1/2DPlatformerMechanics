@@ -10,14 +10,18 @@ public class WeaponHand : MonoBehaviour {
     private float animationTimer = 0f;
     private float animationDuration = 0.2f;
 
+    private Rigidbody2D rb;
     private GameObject weaponObject = null;
     private ItemWeapon weapon = null;
 
     private bool usingWeapon = false;
 
-	// Use this for initialization
-	void Start () {
-		
+    // Array to hold Physics collision results for the beginning of each weapon swing (using Rigidbody2D.OverlapCollider)
+    private Collider2D[] results = new Collider2D[100];
+
+    // Use this for initialization
+    void Start () {
+        rb = GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
@@ -60,6 +64,19 @@ public class WeaponHand : MonoBehaviour {
         float endAngle = 90f;
         this.transform.localRotation = Quaternion.Euler(0f, 0f, startAngle);
 
+        // Check once to see if sword is already "hitting" something before we swing
+        // Build up a list of all colliders in the weapon object and check all things they're overlapping with
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.useTriggers = true;
+        Collider2D[] results = new Collider2D[100];
+
+        int hits = rb.OverlapCollider(filter, results);
+        for (int i = 0; i < hits; i++) {
+            Collider2D other = results[i];
+            HandleWeaponHit(other);
+        }
+
+
         while (animationTimer < animationDuration) {
 
             animationTimer += Time.deltaTime;
@@ -79,12 +96,17 @@ public class WeaponHand : MonoBehaviour {
         usingWeapon = false;
     }
 
-    public void OnTriggerEnter2D(Collider2D other) {
+    private void HandleWeaponHit(Collider2D other) {
+        // we can only "hit" something if we're using our weapon, not when it's just sitting idle
         if (usingWeapon) {
             IStrikeable strikeable = other.GetComponent<IStrikeable>();
             if (strikeable != null) {
                 strikeable.Strike(this.transform.position, this.weapon);
             }
         }
+    }
+
+    public void OnTriggerEnter2D(Collider2D other) {
+        HandleWeaponHit(other);
     }
 }
