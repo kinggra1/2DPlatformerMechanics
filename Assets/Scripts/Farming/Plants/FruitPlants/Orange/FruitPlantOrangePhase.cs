@@ -42,7 +42,6 @@ public class FruitPlantOrangePhase : MonoBehaviour, IGrowablePhase {
 
             foreach (GameObject newPiece in newPieces) {
                 newPiece.transform.localScale = Vector3.one * growthProgress;
-                Debug.Log(growthProgress);
             }
             yield return null;
         }

@@ -161,7 +161,6 @@ public class InventorySystem : MonoBehaviour {
         indexChange = Mathf.RoundToInt(10f*Input.GetAxis("Mouse ScrollWheel"));
         indexChange += Input.GetButtonDown("NavLeft")? -1 : 0;
         indexChange += Input.GetButtonDown("NavRight") ? 1 : 0;
-        Debug.Log(Input.GetKey(KeyCode.Joystick1Button9));
         
         if (indexChange != 0) {
             SetSelectedItemIndex(selectedItemIndex += indexChange);
