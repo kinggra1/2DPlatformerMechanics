@@ -60,7 +60,7 @@ public class WaterSpriteController : MonoBehaviour {
         } else { // target defaults to player
             Vector3 targetOffset = floatingOffset;
             // Mirror the floating offset depending on the direction the player is facing
-            if (player.PlayerFacing() == PlayerController.Direction.RIGHT) {
+            if (player.PlayerFacing() == AI.Direction.RIGHT) {
                 targetOffset.x *= -1;
             }
 

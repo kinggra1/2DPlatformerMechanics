@@ -19,6 +19,9 @@ public class WeaponHand : MonoBehaviour {
     // Array to hold Physics collision results for the beginning of each weapon swing (using Rigidbody2D.OverlapCollider)
     private Collider2D[] results = new Collider2D[100];
 
+    // History hold all objects hit on this attack so we don't double collide on a single attack.
+    HitObjectHistory hitHistory = new HitObjectHistory();
+
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody2D>();
@@ -46,6 +49,7 @@ public class WeaponHand : MonoBehaviour {
 
     // TODO: Take in a time to specify speed
     public void SwingSword() {
+        hitHistory.Clear();
         StartCoroutine(SwordAnimationCoroutine());
     }
 
@@ -100,13 +104,44 @@ public class WeaponHand : MonoBehaviour {
         // we can only "hit" something if we're using our weapon, not when it's just sitting idle
         if (usingWeapon) {
             IStrikeable strikeable = other.GetComponent<IStrikeable>();
-            if (strikeable != null) {
+            if (strikeable != null && !hitHistory.HaveHit(other.gameObject)) {
                 strikeable.Strike(this.transform.position, this.weapon);
+                hitHistory.MarkObjectAsHit(other.gameObject);
             }
         }
     }
 
     public void OnTriggerEnter2D(Collider2D other) {
         HandleWeaponHit(other);
+    }
+
+
+
+
+
+    private class HitObjectHistory {
+
+        private Dictionary<int, GameObject> lookupTable = new Dictionary<int, GameObject>();
+
+        public void MarkObjectAsHit(GameObject obj) {
+            lookupTable.Add(obj.GetHashCode(), obj);
+        }
+
+        public bool HaveHit(GameObject obj) {
+            return lookupTable.ContainsKey(obj.GetHashCode());
+        }
+
+        public void Clear() {
+            lookupTable.Clear();
+        }
+
+        public List<GameObject> AllObjects() {
+            List<GameObject> objects = new List<GameObject>();
+            foreach (GameObject obj in lookupTable.Values) {
+                objects.Add(obj);
+            }
+
+            return objects;
+        }
     }
 }

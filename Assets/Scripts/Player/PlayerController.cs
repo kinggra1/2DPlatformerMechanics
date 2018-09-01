@@ -28,9 +28,8 @@ public class PlayerController : MonoBehaviour {
     private Vector2 wallJumpDirection = (Vector2.up + Vector2.right).normalized;
 
     // Cardinal directions in 2D referenced as "Up, Down, Left, Right" and a null state.
-    public enum Direction { NONE, UP, DOWN, LEFT, RIGHT };
-    private Direction playerFacing = Direction.RIGHT;
-    private Direction wallDirection = Direction.NONE;
+    private AI.Direction playerFacing = AI.Direction.RIGHT;
+    private AI.Direction wallDirection = AI.Direction.NONE;
 
     private enum MotionState { IDLE, RUN, JUMP, FALL, WALLSLIDE };
     private MotionState motionState = MotionState.IDLE;
@@ -111,7 +110,7 @@ public class PlayerController : MonoBehaviour {
         return rb;
     }
 
-    public Direction PlayerFacing() {
+    public AI.Direction PlayerFacing() {
         return playerFacing;
     }
 
@@ -245,13 +244,13 @@ public class PlayerController : MonoBehaviour {
 
                 // If we started contacting a wall, let's start wallsliding
                 switch (wallDirection) {
-                    case Direction.LEFT:
+                    case AI.Direction.LEFT:
                         SetMotionState(MotionState.WALLSLIDE);
                         break;
-                    case Direction.RIGHT:
+                    case AI.Direction.RIGHT:
                         SetMotionState(MotionState.WALLSLIDE);
                         break;
-                    case Direction.NONE:
+                    case AI.Direction.NONE:
                         break;
                 }
 
@@ -283,7 +282,7 @@ public class PlayerController : MonoBehaviour {
                 if (jumpPressed) {
                     Vector2 jump = wallJumpDirection * jumpForce;
                     // flip x if wall to the right
-                    jump.x = wallDirection == Direction.RIGHT ? -jump.x : jump.x; 
+                    jump.x = wallDirection == AI.Direction.RIGHT ? -jump.x : jump.x; 
                     rb.AddForce(jump);
                     SetMotionState(MotionState.JUMP);
                     break;
@@ -348,11 +347,11 @@ public class PlayerController : MonoBehaviour {
 
         if (xVel < 0f) {
             playerOrganizer.SetPlayerScale(Vector3.one);
-            playerFacing = Direction.LEFT;
+            playerFacing = AI.Direction.LEFT;
         }
         else {
             playerOrganizer.SetPlayerScale(new Vector3(-1f, 1f, 1f));
-            playerFacing = Direction.RIGHT;
+            playerFacing = AI.Direction.RIGHT;
         }
     }
 
@@ -432,16 +431,16 @@ public class PlayerController : MonoBehaviour {
             // Left object is closer
             if (Vector3.Distance(objectOnLeft.transform.position, transform.position) <
                 Vector3.Distance(objectOnRight.transform.position, transform.position)) {
-                wallDirection = Direction.LEFT;
+                wallDirection = AI.Direction.LEFT;
             } else {
-                wallDirection = Direction.RIGHT;
+                wallDirection = AI.Direction.RIGHT;
             }
         } else if (objectOnLeft) {
-            wallDirection = Direction.LEFT;
+            wallDirection = AI.Direction.LEFT;
         } else if (objectOnRight) {
-            wallDirection = Direction.RIGHT;
+            wallDirection = AI.Direction.RIGHT;
         } else {
-            wallDirection = Direction.NONE;
+            wallDirection = AI.Direction.NONE;
         }
     }
 
