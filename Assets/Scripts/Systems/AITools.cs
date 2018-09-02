@@ -69,4 +69,25 @@ public static class AI {
         }
         return Direction.NONE;
     }
+
+
+
+
+
+
+
+
+    /*
+     * *****************************************************************************
+     * Raycasting Tools
+     * *****************************************************************************
+     */
+    public static int NonPlayerOrEnemyLayermask = ~(
+        (1 << LayerMask.NameToLayer("Player"))
+        | (1 << LayerMask.NameToLayer("Enemy"))
+    );
+
+    public static int NonPlayerLayermask = ~(
+        (1 << LayerMask.NameToLayer("Player"))
+    );
 }

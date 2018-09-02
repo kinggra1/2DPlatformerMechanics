@@ -17,6 +17,10 @@ public class PlayerController : MonoBehaviour {
     public GameObject playerBody;
     [Tooltip("A reference to the hand where we physically hold Weapons/Tools.")]
     public WeaponHand weaponHand;
+    [Tooltip("The amount of time player cannot be hit after sustaining damage.")]
+    public float invulnerabilityTime = 2f;
+    [Tooltip("The amount of time that input has no effect on the player after they've been hit.")]
+    public float knockbackStunTime = 1f;
     [Tooltip("The parent of all player-associated objects. Used to seperate collisions and scale flipping.")]
     public PlayerOrganizer playerOrganizer;
 
@@ -42,6 +46,9 @@ public class PlayerController : MonoBehaviour {
 
     private float downRaycastDist = 0.6f;
     private float sideRaycastDist = 0.6f;
+
+    private float invulnTimer = 0f;
+    private float stunTimer = 0f;
 
     private int playerLayer;
     private int platformLayer; // by definition, a platform is something we can jump up through. call other things ground.
@@ -122,6 +129,16 @@ public class PlayerController : MonoBehaviour {
         this.currentPlantableZone = zone;
     }
 
+    public void GetHit(Vector2 knockback) {
+        rb.velocity = knockback;
+        invulnTimer = 0f;
+        stunTimer = 0f;
+    }
+
+    public bool IsInvulnerable() {
+        return invulnTimer < invulnerabilityTime;
+    }
+
     // This will likely get more complex if we do a more intricate check
     public bool OnPlantableGround() {
         return onGround;
@@ -140,6 +157,10 @@ public class PlayerController : MonoBehaviour {
 
         CheckSurroundings();
         FindClosestWall();
+
+        if (invulnTimer < invulnerabilityTime) {
+            invulnTimer += Time.deltaTime;
+        }
 
         xVel = xInput * hMoveSpeed;
         yVel = rb.velocity.y;
@@ -185,7 +206,7 @@ public class PlayerController : MonoBehaviour {
             // Exercising 
             case MotionState.RUN:
 
-                UpdatePlayerDirectionFromVelocity();
+                UpdatePlayerDirectionFromInput();
 
                 if(jumpPressed && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
@@ -207,7 +228,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.JUMP:
 
                 ApplyAirSpeedModifier();
-                UpdatePlayerDirectionFromVelocity();
+                UpdatePlayerDirectionFromInput();
 
                 // if the jump key is released, we should start falling
                 if (jumpReleased) {
@@ -227,7 +248,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.FALL:
 
                 ApplyAirSpeedModifier();
-                UpdatePlayerDirectionFromVelocity();
+                UpdatePlayerDirectionFromInput();
 
                 // More gravity when falling for a "faster" fall
                 yVel += Physics.gravity.y * 2f * Time.deltaTime;
@@ -295,8 +316,11 @@ public class PlayerController : MonoBehaviour {
             debugDirectionText.text = playerFacing.ToString();
         }
 
-        // If we are heading upwards or are on solid ground (not a platform), no collision with platforms
-        // Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, (yVel > 0.0f || !platformBelow));
+        // Not going to feed any input to Rigidbody2D if we're stunned. Physics will still move player around.
+        if (stunTimer < knockbackStunTime) {
+            stunTimer += Time.deltaTime;
+            return;
+        }
 
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
@@ -340,16 +364,15 @@ public class PlayerController : MonoBehaviour {
     }
 
 
-    private void UpdatePlayerDirectionFromVelocity() {
-        if (Mathf.Approximately(xVel, 0f)) {
+    private void UpdatePlayerDirectionFromInput() {
+        if (Mathf.Approximately(xInput, 0f)) {
             return;
         }
 
-        if (xVel < 0f) {
+        if (xInput < 0f) {
             playerOrganizer.SetPlayerScale(Vector3.one);
             playerFacing = AI.Direction.LEFT;
-        }
-        else {
+        } else {
             playerOrganizer.SetPlayerScale(new Vector3(-1f, 1f, 1f));
             playerFacing = AI.Direction.RIGHT;
         }

@@ -49,8 +49,10 @@ public class WeaponHand : MonoBehaviour {
 
     // TODO: Take in a time to specify speed
     public void SwingSword() {
-        hitHistory.Clear();
-        StartCoroutine(SwordAnimationCoroutine());
+        if (!usingWeapon) {
+            hitHistory.Clear();
+            StartCoroutine(SwordAnimationCoroutine());
+        }
     }
 
 

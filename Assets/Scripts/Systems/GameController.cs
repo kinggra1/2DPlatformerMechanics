@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -29,4 +30,16 @@ public class GameController : MonoBehaviour {
         }
         return instance;
     }
+
+    void Update() {
+        bool debugResetLevelPressed = Input.GetKeyDown(KeyCode.R);   
+        if (debugResetLevelPressed) {
+            ReloadScene();
+        }
+    }
+
+    public void ReloadScene() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
 }
