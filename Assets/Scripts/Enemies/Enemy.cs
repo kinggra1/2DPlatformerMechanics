@@ -25,7 +25,7 @@ public abstract class Enemy : MonoBehaviour {
         RectTransform healthBackgroundRect = healthBarLocation.GetComponent<RectTransform>();
         healthBackgroundRect.sizeDelta = Vector2.one; // 1x1 square (Googled a fair bit of this)
         // Scale to appropriate "health bar" dimensions through scaling the object itself
-        healthBarLocation.transform.localScale = new Vector3(1f, 0.3f, 1f);
+        healthBarLocation.transform.localScale = new Vector3(1f, 0.15f, 1f);
 
         // Create a plain white 1x1 pixel texture to use as an image basis.
         Texture2D texture = new Texture2D(1, 1);
@@ -48,7 +48,6 @@ public abstract class Enemy : MonoBehaviour {
         healthImage.fillMethod = Image.FillMethod.Horizontal; // Make it so we can fill this horizontally like a health bar
         healthImage.sprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), Vector2.zero);
         healthImage.color = Color.green;
-
 
         // Hide health until somethign else (like taking damage) decides to display it
         healthBarLocation.SetActive(false);
