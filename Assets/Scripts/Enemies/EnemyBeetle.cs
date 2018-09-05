@@ -13,7 +13,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private float hitStunTimer = 0f;
 
     private readonly float ROAM_SPEED = 2f; // m/s
-    private readonly float MAX_ROAM_DISTANCE = 6f;
+    private readonly float MAX_ROAM_DISTANCE = 6000f; // basically roam forever
     private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_KNOCKBACK_ANGLE = 30f; // degrees from horizontal
@@ -76,12 +76,24 @@ public class EnemyBeetle : Enemy, IStrikeable {
     }
 
     private bool NeedNewTarget() {
+
+        Vector3 facingDirection = AI.DirectionToVector2(direction);
+        RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection, AI.NonPlayerOrEnemyLayermask);
+        foreach(RaycastHit2D hit in hits) {
+            // Ignore triggers
+            if (!hit.collider.isTrigger) {
+                // We've hit something that isn't a Player or an Enemy or a trigger
+                return true;
+            }
+        }
+
+        Debug.DrawLine(transform.position, transform.position + facingDirection);
+
+        // Otherwise check to see if we've exceeded our max roaming distance
         float distanceToTarget = Mathf.Abs(transform.position.x - targetXValue);
-        bool distanceExceeded = (direction == AI.Direction.LEFT && transform.position.x < targetXValue
+        return (direction == AI.Direction.LEFT && transform.position.x < targetXValue
             || direction == AI.Direction.RIGHT && transform.position.x > targetXValue)
             || distanceToTarget > MAX_ROAM_DISTANCE;
-
-        return distanceExceeded;
     }
 
     private void ChangeDirection() {
