@@ -174,6 +174,8 @@ public class WaterSpriteController : MonoBehaviour {
                     offspring.transform.position = this.transform.position;
                     WaterSpriteOffspring waterSpriteOffspring = offspring.GetComponent<WaterSpriteOffspring>();
                     waterSpriteOffspring.SetTarget(col.gameObject);
+
+                    inventory.ChangeWaterLevel(-1);
                 }
             }
         }

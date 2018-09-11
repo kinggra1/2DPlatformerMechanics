@@ -89,9 +89,9 @@ public class InventorySystem : MonoBehaviour {
         return (float)waterLevel / maxWaterLevel;
     }
 
-    public void ChangeWaterLevel(int volume) {
+    public void ChangeWaterLevel(int volumeChange) {
         // Can be called with positive or negative values, but will always be [0, maxWaterLevel]
-        waterLevel = Mathf.Clamp(waterLevel + volume, 0, maxWaterLevel);
+        waterLevel = Mathf.Clamp(waterLevel + volumeChange, 0, maxWaterLevel);
     }
 
     public bool CanPickupItem(Item item)
