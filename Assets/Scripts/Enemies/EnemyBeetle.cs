@@ -21,7 +21,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private float targetXValue;
 
     // Use this for initialization
-    void Start() {
+    new void Start() {
         base.Start();
         rb = this.GetComponent<Rigidbody2D>();
 
@@ -78,6 +78,8 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private bool NeedNewTarget() {
 
         Vector3 facingDirection = AI.DirectionToVector2(direction);
+
+        // Check to see if we're going to hit any non-trigger colliers in front of us
         RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection, AI.NonPlayerOrEnemyLayermask);
         foreach(RaycastHit2D hit in hits) {
             // Ignore triggers
@@ -86,8 +88,28 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 return true;
             }
         }
-
         Debug.DrawLine(transform.position, transform.position + facingDirection);
+
+        /*
+        // Assume that we're about to fall off of a cliff in front of ourselves and do a 
+        // check to prove that false.
+        // This block is basically the difference between green shell and red shell koopas in SMB.
+        hits = Physics2D.LinecastAll(transform.position + facingDirection, transform.position + facingDirection + Vector3.down, AI.NonPlayerOrEnemyLayermask);
+        bool nearCliff = true;
+        foreach (RaycastHit2D hit in hits) {
+            // Ignore triggers
+            if (!hit.collider.isTrigger) {
+                // Okay, we've found solid ground, we're good here
+                nearCliff = false;
+                break;
+            }
+        }
+        Debug.DrawLine(transform.position + facingDirection, transform.position + facingDirection + Vector3.down, Color.red);
+        if (nearCliff) {
+            return true;
+        }
+        */
+
 
         // Otherwise check to see if we've exceeded our max roaming distance
         float distanceToTarget = Mathf.Abs(transform.position.x - targetXValue);
@@ -102,7 +124,6 @@ public class EnemyBeetle : Enemy, IStrikeable {
     }
 
     void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
-        // Debug.Log("Smap");
         base.TakeDamage(1f);
         SetMotionState(MoveState.HIT);
 
@@ -116,7 +137,6 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private void OnTriggerStay2D(Collider2D collider) {
         PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
         if (player && !player.IsInvulnerable()) {
-            Debug.Log("Ow my bones");
             float knockbackX = Vector3.Project(player.transform.position - this.transform.position, Vector2.right).normalized.x;
             knockbackX = knockbackX * Mathf.Cos(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
             // The amount of "up" our knockback has. We're small and low so we knock the player up a little in a predictable way.

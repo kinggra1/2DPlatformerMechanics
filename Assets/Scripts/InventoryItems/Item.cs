@@ -10,8 +10,9 @@ public abstract class Item : MonoBehaviour {
 
     public enum Seed { PlatformPlant, DewdropPlant, FruitPlantOrange }
     public enum Tool { None, Axe, Shovel }
-    public enum Weapon { Axe, Shovel, Sword }
+    public enum Weapon { None, Axe, Shovel, Sword }
     public enum Resource { Dirt }
+    public enum ElementCrystal { None, Fire, Electric }
 
     public bool IsConsumable() {
         return consumable;

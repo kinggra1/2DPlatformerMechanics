@@ -60,7 +60,6 @@ public class EnemyTarget : Enemy, IStrikeable {
     }
 
     void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
-        Debug.Log("Smap");
         SetMotionState(MoveState.HIT);
         Vector2 knockbackDirection = (this.transform.position - weaponLocation).normalized;
         rb.AddForce(knockbackDirection*1000f);

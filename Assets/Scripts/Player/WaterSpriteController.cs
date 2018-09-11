@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class WaterSpriteController : MonoBehaviour {
 
+    public GameObject waterSpriteChildPrefab;
+
+    private Item.ElementCrystal crystal = Item.ElementCrystal.None;
+
     private float xSwayRadius = 0.2f;
     private float ySwayRadius = 0.2f;
     private Vector3 floatingOffset = new Vector3(1.2f, 1f, 0f);
@@ -26,6 +30,8 @@ public class WaterSpriteController : MonoBehaviour {
 
     private float randomSwayFactor;
 
+    private bool specialButtonPressed;
+
 	// Use this for initialization
 	void Start () {
         inventory = InventorySystem.GetInstance();
@@ -43,6 +49,13 @@ public class WaterSpriteController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        // TODO: Update this to work with Input Manager
+        specialButtonPressed = Input.GetKeyDown(KeyCode.E);
+
+        if (specialButtonPressed) {
+            TargetNearbyEnemies();
+        }
 
         // Update whether which target (if any) we should be going to
         if (target == null) {
@@ -130,10 +143,40 @@ public class WaterSpriteController : MonoBehaviour {
 
         if (Mathf.Approximately(waterLevel, 0f)) {
             
-        } else {
+        } 
+    }
 
+    private int ClosestComponentCompare(Component x, Component y) {
+        float xDist = Vector3.Distance(x.transform.position, this.transform.position);
+        float yDist = Vector3.Distance(y.transform.position, this.transform.position);
+
+        if (xDist < yDist) {
+            return -1;
+        } else if (xDist > yDist) {
+            return 1;
+        } else {
+            return 0;
         }
-        //drippingParticles.transform.rotation = Quaternion.Inverse(transform.rotation);
+    }
+
+    private void TargetNearbyEnemies() {
+
+        // Find all things on "Enemy" layer 10m around us
+        Collider2D[] enemiesToAttack = Physics2D.OverlapCircleAll(player.transform.position, 10f, AI.EnemyLayermask);
+        System.Array.Sort<Component>(enemiesToAttack, new System.Comparison<Component>(ClosestComponentCompare));
+        foreach(Collider2D col in enemiesToAttack) {
+            // We can only hit things that have IStrikeable attached
+            if (col.gameObject.GetComponent<IStrikeable>() != null) {
+                // AddImmediateToTargetList(col.gameObject);
+                // Send a child off to attack this
+                if (inventory.GetWaterLevel() > 0) {
+                    GameObject offspring = Instantiate(waterSpriteChildPrefab);
+                    offspring.transform.position = this.transform.position;
+                    WaterSpriteOffspring waterSpriteOffspring = offspring.GetComponent<WaterSpriteOffspring>();
+                    waterSpriteOffspring.SetTarget(col.gameObject);
+                }
+            }
+        }
     }
 
     private void NextTarget() {
@@ -150,6 +193,12 @@ public class WaterSpriteController : MonoBehaviour {
             IPlantableZone plantableZone = target.GetComponent<IPlantableZone>();
             if (plantableZone != null) {
                 plantableZone.Water();
+            }
+
+            // If current target is a Strikable, strike it up
+            IStrikeable strikable = target.GetComponent<IStrikeable>();
+            if (strikable != null) {
+                strikable.Strike(this.transform.position, null);
             }
         }
 

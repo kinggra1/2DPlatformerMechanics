@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour {
     [Tooltip("Max fall speed in m/s")]
     public float maxFallspeed = -15f;
     [Tooltip("Upwards force applied to Rigidbody2D to create a jump in N")]
-    public float jumpForce = 600f;
+    public float jumpForce = 1000;
     [Tooltip("A reference to our best friend.")]
     public WaterSpriteController waterSprite;
     [Tooltip("A reference to the visual sprite of the actual player")]
@@ -69,7 +69,6 @@ public class PlayerController : MonoBehaviour {
     private float yInput;
     private bool jumpPressed;
     private bool jumpReleased;
-    private bool clickPressed;
     private bool ePressed;
 
     private float xVel;
@@ -152,7 +151,6 @@ public class PlayerController : MonoBehaviour {
         jumpPressed = Input.GetButtonDown("Jump");
         jumpReleased = Input.GetButtonUp("Jump");
 
-        clickPressed = Input.GetMouseButtonDown(0);
         ePressed = Input.GetKeyDown(KeyCode.E);
 
         CheckSurroundings();
@@ -227,6 +225,9 @@ public class PlayerController : MonoBehaviour {
             // We're going upwards
             case MotionState.JUMP:
 
+                // Player feels gravity more when jumping to feel less floaty
+                yVel += Physics.gravity.y * 2f * Time.deltaTime;
+
                 ApplyAirSpeedModifier();
                 UpdatePlayerDirectionFromInput();
 
@@ -251,7 +252,7 @@ public class PlayerController : MonoBehaviour {
                 UpdatePlayerDirectionFromInput();
 
                 // More gravity when falling for a "faster" fall
-                yVel += Physics.gravity.y * 2f * Time.deltaTime;
+                yVel += Physics.gravity.y * 3f * Time.deltaTime;
                 if (yVel < maxFallspeed) {
                     yVel = maxFallspeed;
                 }
@@ -331,6 +332,15 @@ public class PlayerController : MonoBehaviour {
         if (newMotionState == motionState) {
             // this should never happen, but...
             return;
+        }
+
+        switch (newMotionState) {
+            case MotionState.FALL:
+                // Set an angle in our motion curve.
+                // We move up slowly but as soon as our speed hits zero, shoot us downwards.
+                // Increase to decrease feeling of suddenly falling at top of jump.
+                yVel = -1f;
+                break;
         }
 
         prevMotionState = motionState;

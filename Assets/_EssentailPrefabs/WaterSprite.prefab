@@ -81,7 +81,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1565769232897946}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.39, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4397070944959554}
@@ -128,6 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3af36d5197f73784c8e6ca634bd0ebe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waterSpriteChildPrefab: {fileID: 1558513476410510, guid: 9d470108650a347b99be5c637b587a07,
+    type: 2}
 --- !u!198 &198985858366076122
 ParticleSystem:
   m_ObjectHideFlags: 1

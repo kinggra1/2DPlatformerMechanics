@@ -82,12 +82,20 @@ public static class AI {
      * Raycasting Tools
      * *****************************************************************************
      */
-    public static int NonPlayerOrEnemyLayermask = ~(
+
+    public static int PlayerOrEnemyLayermask = (
         (1 << LayerMask.NameToLayer("Player"))
         | (1 << LayerMask.NameToLayer("Enemy"))
     );
+    public static int NonPlayerOrEnemyLayermask = ~PlayerOrEnemyLayermask;
 
-    public static int NonPlayerLayermask = ~(
+    public static int PlayerLayermask = (
         (1 << LayerMask.NameToLayer("Player"))
+    );
+
+    public static int NonPlayerLayermask = ~PlayerLayermask;
+
+    public static int EnemyLayermask = (
+        (1 << LayerMask.NameToLayer("Enemy"))
     );
 }
