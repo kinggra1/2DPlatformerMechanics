@@ -26,18 +26,20 @@ public class WaterSpriteOffspring : MonoBehaviour {
     // Update is called once per frame
     void Update () {
 
-         if (Vector3.Distance(this.transform.position, target.transform.position) < 0.5f) {
-            InteractWithTarget(); // this could set target to be null if we ran out of targets
-        }
-
         // We should be heading toward a target if there is one
         if (target != null) {
             targetVector = target.transform.position - this.transform.position;
             targetVector *= 8f;
-        } else {
+        }
+        else {
             // TODO: Consider code to find a new enemy of existing target gets destroyed
             // but for now
             Destroy(this.gameObject);
+            return;
+        }
+
+        if (Vector3.Distance(this.transform.position, target.transform.position) < 0.5f) {
+            InteractWithTarget(); // this could set target to be null if we ran out of targets
         }
 
         velocity = targetVector;

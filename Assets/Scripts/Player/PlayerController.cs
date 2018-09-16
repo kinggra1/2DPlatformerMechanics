@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour {
     private int standableRaycastLayers;
     private int wallRaycastLayers;
 
-    private float downRaycastDist = 0.6f;
+    private float downRaycastDist = 1.1f;
     private float sideRaycastDist = 0.6f;
 
     private float invulnTimer = 0f;
@@ -380,12 +380,11 @@ public class PlayerController : MonoBehaviour {
         }
 
         if (xInput < 0f) {
-            playerOrganizer.SetPlayerScale(Vector3.one);
             playerFacing = AI.Direction.LEFT;
         } else {
-            playerOrganizer.SetPlayerScale(new Vector3(-1f, 1f, 1f));
             playerFacing = AI.Direction.RIGHT;
         }
+        playerOrganizer.SetFacing(playerFacing);
     }
 
     private void ApplyAirSpeedModifier() {

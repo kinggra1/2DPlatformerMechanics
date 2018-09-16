@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyBeetle : Enemy, IStrikeable {
 
-    private enum MoveState { IDLE, HIT, ROAMING }
+    private enum MoveState { IDLE, HIT, ROAMING, EATING }
     private MoveState moveState = MoveState.ROAMING;
 
     Rigidbody2D rb;
@@ -19,6 +19,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private readonly float PLAYER_KNOCKBACK_ANGLE = 30f; // degrees from horizontal
 
     private float targetXValue;
+    private IPlantableZone targetPlant = null;
 
     // Use this for initialization
     new void Start() {
@@ -39,6 +40,10 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 break;
 
             case MoveState.ROAMING:
+                break;
+
+            case MoveState.EATING:
+                rb.velocity = Vector2.zero;
                 break;
 
         }
@@ -64,18 +69,30 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 // float newX = Mathf.MoveTowards(transform.position.x, startingX + roamXTargetOffset, ROAM_SPEED * Time.deltaTime);
                 // rb.MovePosition(new Vector2(newX, transform.position.y));
 
-                // Change directions if we've traveled target distance
-                if (NeedNewTarget()) {
-                    ChangeDirection();
+                // Decide if we need to change our state or direction depending
+                if (CheckInFront()) {
+                    break;
                 }
 
                 float xSpeed = ROAM_SPEED * (direction == AI.Direction.LEFT ? -1 : 1);
                 rb.velocity = new Vector2(xSpeed, rb.velocity.y);
                 break;
+
+            case MoveState.EATING:
+                if (targetPlant == null) {
+                    SetMotionState(MoveState.ROAMING);
+                } else {
+                    // targetPlant.GetEaten();
+                }
+                break;
         }
     }
 
-    private bool NeedNewTarget() {
+    /*
+     * Check in front of Beetle and make appropriate changes in response to what is there
+     * returns: true if we changed to a new state, false otherwise
+     */
+    private bool CheckInFront() {
 
         Vector3 facingDirection = AI.DirectionToVector2(direction);
 
@@ -83,9 +100,18 @@ public class EnemyBeetle : Enemy, IStrikeable {
         RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection, AI.NonPlayerOrEnemyLayermask);
         foreach(RaycastHit2D hit in hits) {
             // Ignore triggers
-            if (!hit.collider.isTrigger) {
+            if (hit.collider.isTrigger) {
+                // Check to see if this is a plant that we can eat
+                IPlantableZone plantableZone = hit.collider.GetComponentInParent<IPlantableZone>();
+                if (plantableZone != null && plantableZone.IsPlanted()) {
+                    SetMotionState(MoveState.EATING);
+                    targetPlant = plantableZone;
+                    return true;
+                }
+            } else {
                 // We've hit something that isn't a Player or an Enemy or a trigger
-                return true;
+                ChangeDirection();
+                return false;
             }
         }
         Debug.DrawLine(transform.position, transform.position + facingDirection);
@@ -113,9 +139,12 @@ public class EnemyBeetle : Enemy, IStrikeable {
 
         // Otherwise check to see if we've exceeded our max roaming distance
         float distanceToTarget = Mathf.Abs(transform.position.x - targetXValue);
-        return (direction == AI.Direction.LEFT && transform.position.x < targetXValue
+        if ((direction == AI.Direction.LEFT && transform.position.x < targetXValue
             || direction == AI.Direction.RIGHT && transform.position.x > targetXValue)
-            || distanceToTarget > MAX_ROAM_DISTANCE;
+            || distanceToTarget > MAX_ROAM_DISTANCE) {
+            ChangeDirection();
+        }
+        return false;
     }
 
     private void ChangeDirection() {

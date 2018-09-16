@@ -55,5 +55,5 @@ MonoBehaviour:
   menuSprite: {fileID: 21300000, guid: 759e3217ffe43644b9ae49e5effad1ca, type: 3}
   inGamePrefab: {fileID: 1558586424842964, guid: 31424e5c368b296418b8d4a8ddef48ea,
     type: 2}
-  weaponType: 0
+  weaponType: 1
   toolType: 1

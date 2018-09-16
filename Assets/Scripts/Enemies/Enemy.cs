@@ -20,6 +20,11 @@ public abstract class Enemy : MonoBehaviour {
     public float defense = 1f;
 
     protected void Start() {
+        // In theory this should be some part of the enemy's body sprite. Just need for the order in layer.
+        // This will let us put the health bar on the same drawing layer as the enemy sprite.
+        SpriteRenderer bodyRenderer = GetComponentInChildren<SpriteRenderer>();
+        int orderInLayer = bodyRenderer.sortingOrder;
+
         healthCanvas = healthBarLocation.AddComponent<Canvas>();
         // Creating a canvas gives healthBarLocation object a RectTransform instead of a transform
         RectTransform healthBackgroundRect = healthBarLocation.GetComponent<RectTransform>();
@@ -38,6 +43,7 @@ public abstract class Enemy : MonoBehaviour {
         healthBackgroundImage.fillMethod = Image.FillMethod.Horizontal;
         healthBackgroundImage.sprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), Vector2.zero);
         healthBackgroundImage.color = Color.grey;
+        healthBackgroundImage.GetComponent<Canvas>().sortingOrder = orderInLayer;
 
         // Add actual healthbar to a child object of the healthBackgroundImage object
         GameObject healthBar = Instantiate(new GameObject("HealthBar"), healthBackgroundImage.transform);
