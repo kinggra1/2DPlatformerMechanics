@@ -13,6 +13,7 @@ public class CameraFollow : MonoBehaviour {
     private Camera cam;
 
     private Vector3 velocity;
+    private Vector3 targetPosition;
 
 	// Use this for initialization
 	void Start () {
@@ -26,10 +27,11 @@ public class CameraFollow : MonoBehaviour {
         }
 	}
 	
-	// Update is called once per frame
-    void FixedUpdate () {
+	// We run in FixedUpdate to keep up with the player velocity, which is also set in FixedUpdate
+    void FixedUpdate() {
 
-        Vector3 targetPosition = target.transform.position;
+
+        targetPosition = target.transform.position;
         targetPosition.z = transform.position.z;
         if (targetRigidbody != null) {
             targetPosition += new Vector3(targetRigidbody.velocity.x, targetRigidbody.velocity.y, 0f).normalized * Mathf.Min(targetRigidbody.velocity.magnitude, 2f);

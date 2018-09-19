@@ -15,7 +15,7 @@ public class ParallaxBackgroundManager : MonoBehaviour {
     public ScrollLayer[] scrollLayers;
 
     // Distance at which there will be no more movement
-    private int vanishingDistance = 200;
+    public int vanishingDistance = 200;
 
     private GameObject mainCamera;
 
@@ -34,8 +34,8 @@ public class ParallaxBackgroundManager : MonoBehaviour {
         CreateScaledLayers();
 	}
 	
-	// Update is called once per frame
-	void Update () {
+    // We run in FixedUpdate to keep up exactly with the camera velocity, which is also set in FixedUpdate
+	void FixedUpdate () {
         // We assume that the player starts at (0, 0, 0) I guess
         foreach (ScrollLayer layer in scrollLayers) {
 

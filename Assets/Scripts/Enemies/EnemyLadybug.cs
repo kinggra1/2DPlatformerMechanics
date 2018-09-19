@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class EnemyLadybug : Enemy, IStrikeable {
 
-    private enum MoveState { IDLE, SEEKPLANT, EATPLANT, SEEKPLAYER }
+    private enum MoveState { ROAMING, SEEKPLANT, EATPLANT, SEEKPLAYER, HIT }
     private MoveState moveState = MoveState.SEEKPLAYER;
 
     private Rigidbody2D rb;
     private PlayerController player;
 
-    private readonly float STUN_TIME = 1f;
-    private float hitStunTimer = 0f;
+    private readonly float STUN_TIME = 1.5f;
+    private float stateTimer = 0f;
 
     private readonly float MAX_FLIGHT_SPEED = 5f; // m/s
     private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
@@ -21,15 +21,22 @@ public class EnemyLadybug : Enemy, IStrikeable {
     private float targetXValue;
 
     // Use this for initialization
-    void Start() {
+    new void Start() {
         base.Start();
         rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
     }
 
     private void SetMotionState(MoveState newState) {
+
+        if (newState == moveState) {
+            return;
+        }
+
+        stateTimer = 0f;
+
         switch (newState) {
-            case MoveState.IDLE:
+            case MoveState.ROAMING:
                 break;
 
             case MoveState.SEEKPLANT:
@@ -47,8 +54,11 @@ public class EnemyLadybug : Enemy, IStrikeable {
 
     // Update is called once per frame
     void Update() {
+
+        stateTimer += Time.deltaTime;
+
         switch (moveState) {
-            case MoveState.IDLE:
+            case MoveState.ROAMING:
                 break;
 
             case MoveState.SEEKPLANT:
@@ -64,17 +74,19 @@ public class EnemyLadybug : Enemy, IStrikeable {
                 } else {
                     rb.velocity *= 0.9f;
                 }
+
+
                 break;
 
-                /*
+
             case MoveState.HIT:
                 rb.velocity *= 0.93f;
-                hitStunTimer += Time.deltaTime;
-                if (hitStunTimer > STUN_TIME) {
-                    SetMotionState(MoveState.ROAMING);
+                if (stateTimer > STUN_TIME) {
+                    SetMotionState(MoveState.SEEKPLAYER);
                 }
                 break;
 
+            /*
             case MoveState.ROAMING:
                 // float newX = Mathf.MoveTowards(transform.position.x, startingX + roamXTargetOffset, ROAM_SPEED * Time.deltaTime);
                 // rb.MovePosition(new Vector2(newX, transform.position.y));
@@ -94,7 +106,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
     void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
         // Debug.Log("Smap");
         base.TakeDamage(1f);
-        //SetMotionState(MoveState.HIT);
+        SetMotionState(MoveState.HIT);
 
         // Effects for getting hit here
         // Project vector from weapon to us onto the X axis and normalize to decide direction (left or right)

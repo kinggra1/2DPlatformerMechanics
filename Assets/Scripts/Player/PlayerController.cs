@@ -29,6 +29,9 @@ public class PlayerController : MonoBehaviour {
     [Tooltip("Debugging text to see our current facing direction (in code).")]
     public TextMesh debugDirectionText;
 
+    // Horizontal eceleration rate when there is no input in the air. m/s^2
+    private readonly float AIR_X_DECEL_RATE = 50f;
+
     private Vector2 wallJumpDirection = (Vector2.up + Vector2.right).normalized;
 
     // Cardinal directions in 2D referenced as "Up, Down, Left, Right" and a null state.
@@ -143,8 +146,8 @@ public class PlayerController : MonoBehaviour {
         return onGround;
     }
 
-    // Update is called once per frame
-    void Update () {
+    // We run in FixedUpdate because we are directly messing with the RigidBody2D
+    void FixedUpdate() {
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
@@ -157,7 +160,7 @@ public class PlayerController : MonoBehaviour {
         FindClosestWall();
 
         if (invulnTimer < invulnerabilityTime) {
-            invulnTimer += Time.deltaTime;
+            invulnTimer += Time.fixedDeltaTime;
         }
 
         xVel = xInput * hMoveSpeed;
@@ -226,7 +229,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.JUMP:
 
                 // Player feels gravity more when jumping to feel less floaty
-                yVel += Physics.gravity.y * 2f * Time.deltaTime;
+                yVel += Physics.gravity.y * 2f * Time.fixedDeltaTime;
 
                 ApplyAirSpeedModifier();
                 UpdatePlayerDirectionFromInput();
@@ -252,7 +255,7 @@ public class PlayerController : MonoBehaviour {
                 UpdatePlayerDirectionFromInput();
 
                 // More gravity when falling for a "faster" fall
-                yVel += Physics.gravity.y * 3f * Time.deltaTime;
+                yVel += Physics.gravity.y * 3f * Time.fixedDeltaTime;
                 if (yVel < maxFallspeed) {
                     yVel = maxFallspeed;
                 }
@@ -319,7 +322,7 @@ public class PlayerController : MonoBehaviour {
 
         // Not going to feed any input to Rigidbody2D if we're stunned. Physics will still move player around.
         if (stunTimer < knockbackStunTime) {
-            stunTimer += Time.deltaTime;
+            stunTimer += Time.fixedDeltaTime;
             return;
         }
 
@@ -387,12 +390,16 @@ public class PlayerController : MonoBehaviour {
         playerOrganizer.SetFacing(playerFacing);
     }
 
+    /*
+     * Decelerate (and possibly limit) the player's X velocity when they are airbourne
+     * NOTE: This function should only be called from FixedUpdate because it uses fixedDeltaTime
+     */
     private void ApplyAirSpeedModifier() {
         if (Mathf.Abs(xInput) >= 0.01f) {
-            xVel = Mathf.Lerp(rb.velocity.x, xVel, Time.deltaTime*10);
+            // xVel = Mathf.MoveTowards(rb.velocity.x, xVel, Time.fixedDeltaTime * AIR_X_DECEL_RATE);
         }
         else {
-            xVel = Mathf.Lerp(rb.velocity.x, 0, Time.deltaTime*10);
+            xVel = Mathf.MoveTowards(rb.velocity.x, 0, Time.fixedDeltaTime * AIR_X_DECEL_RATE);
         }
     }
 

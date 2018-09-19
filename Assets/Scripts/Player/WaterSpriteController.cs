@@ -48,7 +48,7 @@ public class WaterSpriteController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate() {
 
         // TODO: Update this to work with Input Manager
         specialButtonPressed = Input.GetKeyDown(KeyCode.E);
@@ -128,7 +128,7 @@ public class WaterSpriteController : MonoBehaviour {
         // Dividing by velocity.magnitude means we'll slow down if we're going faster than
         // [distance-to-player]/second, with stronger decreases the closer we get to the player
         velocity *= Mathf.Clamp(targetVector.magnitude/velocity.magnitude, 0.8f, 1.0f);
-        this.transform.position += new Vector3(velocity.x, velocity.y) * Time.deltaTime;
+        this.transform.position += new Vector3(velocity.x, velocity.y) * Time.fixedDeltaTime;
 
         // point us in the direction of velocity
         sprite.gameObject.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg);

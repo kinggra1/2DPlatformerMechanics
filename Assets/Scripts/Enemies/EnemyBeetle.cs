@@ -10,7 +10,8 @@ public class EnemyBeetle : Enemy, IStrikeable {
     Rigidbody2D rb;
 
     private readonly float STUN_TIME = 1f;
-    private float hitStunTimer = 0f;
+    private readonly float EAT_TIME = 5f;
+    private float stateTimer = 0f;
 
     private readonly float ROAM_SPEED = 2f; // m/s
     private readonly float MAX_ROAM_DISTANCE = 6000f; // basically roam forever
@@ -30,13 +31,19 @@ public class EnemyBeetle : Enemy, IStrikeable {
     }
 
     private void SetMotionState(MoveState newState) {
+        if (moveState == newState) {
+            return;
+        }
+
+        stateTimer = 0f;
+
         switch (newState) {
             case MoveState.IDLE:
                 break;
 
             // This refers to being hit
             case MoveState.HIT:
-                hitStunTimer = 0f;
+                stateTimer = 0f;
                 break;
 
             case MoveState.ROAMING:
@@ -53,14 +60,16 @@ public class EnemyBeetle : Enemy, IStrikeable {
 
     // Update is called once per frame
     void Update() {
+
+        stateTimer += Time.deltaTime;
+
         switch (moveState) {
             case MoveState.IDLE:
                 break;
 
             case MoveState.HIT:
                 rb.velocity *= 0.93f;
-                hitStunTimer += Time.deltaTime;
-                if (hitStunTimer > STUN_TIME) {
+                if (stateTimer > STUN_TIME) {
                     SetMotionState(MoveState.ROAMING);
                 }
                 break;
@@ -69,7 +78,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 // float newX = Mathf.MoveTowards(transform.position.x, startingX + roamXTargetOffset, ROAM_SPEED * Time.deltaTime);
                 // rb.MovePosition(new Vector2(newX, transform.position.y));
 
-                // Decide if we need to change our state or direction depending
+                // Decide if we need to change our state or direction depending on what's in front of us
                 if (CheckInFront()) {
                     break;
                 }
@@ -82,6 +91,10 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 if (targetPlant == null) {
                     SetMotionState(MoveState.ROAMING);
                 } else {
+                    if (stateTimer > EAT_TIME) {
+                        targetPlant.Chop();
+                        SetMotionState(MoveState.ROAMING);
+                    }
                     // targetPlant.GetEaten();
                 }
                 break;
@@ -97,13 +110,14 @@ public class EnemyBeetle : Enemy, IStrikeable {
         Vector3 facingDirection = AI.DirectionToVector2(direction);
 
         // Check to see if we're going to hit any non-trigger colliers in front of us
-        RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection, AI.NonPlayerOrEnemyLayermask);
+        RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection*0.42f, AI.NonPlayerOrEnemyLayermask);
         foreach(RaycastHit2D hit in hits) {
-            // Ignore triggers
+
             if (hit.collider.isTrigger) {
                 // Check to see if this is a plant that we can eat
                 IPlantableZone plantableZone = hit.collider.GetComponentInParent<IPlantableZone>();
                 if (plantableZone != null && plantableZone.IsPlanted()) {
+                    Debug.Log(((MonoBehaviour)plantableZone).gameObject.name);
                     SetMotionState(MoveState.EATING);
                     targetPlant = plantableZone;
                     return true;

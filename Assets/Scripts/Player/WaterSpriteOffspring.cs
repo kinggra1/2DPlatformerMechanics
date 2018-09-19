@@ -29,7 +29,7 @@ public class WaterSpriteOffspring : MonoBehaviour {
         // We should be heading toward a target if there is one
         if (target != null) {
             targetVector = target.transform.position - this.transform.position;
-            targetVector *= 8f;
+            targetVector *= 10f;
         }
         else {
             // TODO: Consider code to find a new enemy of existing target gets destroyed

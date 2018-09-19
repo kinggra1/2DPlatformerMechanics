@@ -36,10 +36,18 @@ public class GameController : MonoBehaviour {
         if (debugResetLevelPressed) {
             ReloadScene();
         }
+
+        bool escapeGamePressed = Input.GetKeyDown(KeyCode.Escape);
+        if (escapeGamePressed) {
+            QuitGame();
+        }
     }
 
     public void ReloadScene() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    private void QuitGame() {
+        Application.Quit();
+    }
 }
