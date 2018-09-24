@@ -19,6 +19,10 @@ public abstract class Enemy : MonoBehaviour {
     [Tooltip("Scalar from 0 to 1 indicating what percentage of damage is blocked.")]
     public float defense = 1f;
 
+    protected float stateTimer = 0f;
+    protected Vector3 targetPlantPosition;
+    protected IPlantableZone targetPlantZone = null;
+
     protected void Start() {
         // In theory this should be some part of the enemy's body sprite. Just need for the order in layer.
         // This will let us put the health bar on the same drawing layer as the enemy sprite.
@@ -46,7 +50,9 @@ public abstract class Enemy : MonoBehaviour {
         healthBackgroundImage.GetComponent<Canvas>().sortingOrder = orderInLayer;
 
         // Add actual healthbar to a child object of the healthBackgroundImage object
-        GameObject healthBar = Instantiate(new GameObject("HealthBar"), healthBackgroundImage.transform);
+        GameObject healthBar = new GameObject("HealthBar");
+        healthBar.transform.SetParent(healthBackgroundImage.transform, false);
+        healthBar.transform.parent = healthBackgroundImage.transform;
         healthImage = healthBar.AddComponent<Image>();
         RectTransform healthBarRect = healthBar.GetComponent<RectTransform>();
         healthBarRect.sizeDelta = Vector2.one;

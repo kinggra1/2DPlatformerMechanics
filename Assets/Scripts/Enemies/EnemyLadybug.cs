@@ -10,15 +10,14 @@ public class EnemyLadybug : Enemy, IStrikeable {
     private Rigidbody2D rb;
     private PlayerController player;
 
-    private readonly float STUN_TIME = 1.5f;
-    private float stateTimer = 0f;
+    private readonly float STUN_TIME = 0.8f;
+    private readonly float EAT_TIME = 5f;
 
     private readonly float MAX_FLIGHT_SPEED = 5f; // m/s
     private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_KNOCKBACK_VELOCITY = 20f;
-    //private readonly float PLAYER_KNOCKBACK_ANGLE = 30f; // degrees from horizontal
-
-    private float targetXValue;
+    private readonly float PLAYER_DETECTION_DISTANCE = 15f;
+    private readonly float PLANT_DETECTION_DISTANCE = 35f;
 
     // Use this for initialization
     new void Start() {
@@ -59,22 +58,77 @@ public class EnemyLadybug : Enemy, IStrikeable {
 
         switch (moveState) {
             case MoveState.ROAMING:
+                if (AI.DistanceToPlayer(this.gameObject) < PLAYER_DETECTION_DISTANCE) {
+                    SetMotionState(MoveState.SEEKPLAYER);
+                    break;
+                }
+
+                targetPlantZone = null;
+                Collider2D plant = AI.FindPlantInRange(transform.position, PLANT_DETECTION_DISTANCE);
+                Collider2D[] plants = new Collider2D[20];
+                AI.NearestPlants(transform.position, PLANT_DETECTION_DISTANCE, plants);
+                Debug.Log(plants.GetValue(0));
+                if (plant) {
+                    targetPlantZone = plant.GetComponentInParent<IPlantableZone>();
+                    if (targetPlantZone != null && targetPlantZone.IsPlanted()) {
+                        targetPlantPosition = plant.transform.position;
+                        SetMotionState(MoveState.SEEKPLANT);
+                        break;
+                    }
+                }
+
+                rb.velocity = Vector2.zero;
                 break;
 
             case MoveState.SEEKPLANT:
+
+                if (!targetPlantZone.IsPlanted()) {
+                    SetMotionState(MoveState.ROAMING);
+                    break;
+                }
+
+                if (Vector2.Distance(targetPlantPosition, transform.position) < 1f) {
+                    rb.velocity = Vector2.zero;
+                    SetMotionState(MoveState.EATPLANT);
+                    break;
+                }
+
+                Vector2 direction = (targetPlantPosition - transform.position).normalized;
+                if (rb.velocity.magnitude < MAX_FLIGHT_SPEED) {
+                    rb.AddForce(direction * 10f);
+                }
+                else {
+                    rb.velocity *= 0.9f;
+                }
                 break;
 
             case MoveState.EATPLANT:
+                if (!targetPlantZone.IsPlanted()) {
+                    SetMotionState(MoveState.ROAMING);
+                    break;
+                }
+                else {
+                    if (stateTimer > EAT_TIME) {
+                        targetPlantZone.Chop();
+                        SetMotionState(MoveState.ROAMING);
+                        break;
+                    }
+                    // targetPlant.GetEaten();
+                }
                 break;
 
             case MoveState.SEEKPLAYER:
-                Vector2 direction = (player.transform.position - transform.position).normalized;
+                if (AI.DistanceToPlayer(this.gameObject) > PLAYER_DETECTION_DISTANCE) {
+                    SetMotionState(MoveState.ROAMING);
+                    break;
+                }
+
+                direction = (player.transform.position - transform.position).normalized;
                 if (rb.velocity.magnitude < MAX_FLIGHT_SPEED) {
                     rb.AddForce(direction * 10f);
                 } else {
                     rb.velocity *= 0.9f;
                 }
-
 
                 break;
 
@@ -83,6 +137,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
                 rb.velocity *= 0.93f;
                 if (stateTimer > STUN_TIME) {
                     SetMotionState(MoveState.SEEKPLAYER);
+                    break;
                 }
                 break;
 

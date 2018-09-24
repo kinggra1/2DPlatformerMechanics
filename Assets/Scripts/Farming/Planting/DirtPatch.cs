@@ -35,7 +35,7 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 
     void IPlantableZone.PlantSeed(GameObject seed) {
         plant = Instantiate(seed, this.transform).GetComponent<Growable>();
-        // Make sure we have an Growable being planted
+        // Make sure we have a Growable being planted
         if (plant == null) {
             Debug.LogError("Error trying to plant seed.");
         }

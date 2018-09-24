@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour {
 
     private float xInput;
     private float yInput;
+    private bool jumpHeld;
     private bool jumpPressed;
     private bool jumpReleased;
     private bool ePressed;
@@ -86,6 +87,7 @@ public class PlayerController : MonoBehaviour {
         standableRaycastLayers = (
             (1 << LayerMask.NameToLayer("Ground"))
             | (1 << LayerMask.NameToLayer("Platform"))
+            | (1 << LayerMask.NameToLayer("Plant"))
             // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanStandOn")
             // ...
             );
@@ -151,8 +153,8 @@ public class PlayerController : MonoBehaviour {
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
-        jumpPressed = Input.GetButtonDown("Jump");
-        jumpReleased = Input.GetButtonUp("Jump");
+        jumpHeld = Input.GetButton("Jump");
+        // jumpReleased = Input.GetButtonUp("Jump");
 
         ePressed = Input.GetKeyDown(KeyCode.E);
 
@@ -186,7 +188,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.IDLE:
 
                 // JUMP
-                if (jumpPressed && onGround) {
+                if (jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
                     break;
@@ -209,7 +211,7 @@ public class PlayerController : MonoBehaviour {
 
                 UpdatePlayerDirectionFromInput();
 
-                if(jumpPressed && onGround) {
+                if(jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
                     break;
@@ -235,7 +237,7 @@ public class PlayerController : MonoBehaviour {
                 UpdatePlayerDirectionFromInput();
 
                 // if the jump key is released, we should start falling
-                if (jumpReleased) {
+                if (!jumpHeld) {
                     yVel = 0f;
                     SetMotionState(MotionState.FALL);
                     break;
@@ -304,7 +306,7 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 // We can jump off of the wall, but in a slightly different arc
-                if (jumpPressed) {
+                if (jumpHeld) {
                     Vector2 jump = wallJumpDirection * jumpForce;
                     // flip x if wall to the right
                     jump.x = wallDirection == AI.Direction.RIGHT ? -jump.x : jump.x; 

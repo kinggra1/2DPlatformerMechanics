@@ -23,7 +23,7 @@ public abstract class Growable  : MonoBehaviour {
     protected int growTimeDays = 2;
 
     // Use this for initialization
-    void Start() {
+    void Awake() {
         timeSystem = TimeSystem.GetInstance();
         plantedTime = timeSystem.GetTime();
 

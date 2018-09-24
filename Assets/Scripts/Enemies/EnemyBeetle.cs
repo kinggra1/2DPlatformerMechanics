@@ -11,7 +11,6 @@ public class EnemyBeetle : Enemy, IStrikeable {
 
     private readonly float STUN_TIME = 1f;
     private readonly float EAT_TIME = 5f;
-    private float stateTimer = 0f;
 
     private readonly float ROAM_SPEED = 2f; // m/s
     private readonly float MAX_ROAM_DISTANCE = 6000f; // basically roam forever
@@ -20,7 +19,6 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private readonly float PLAYER_KNOCKBACK_ANGLE = 30f; // degrees from horizontal
 
     private float targetXValue;
-    private IPlantableZone targetPlant = null;
 
     // Use this for initialization
     new void Start() {
@@ -88,11 +86,11 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 break;
 
             case MoveState.EATING:
-                if (targetPlant == null) {
+                if (!targetPlantZone.IsPlanted()) {
                     SetMotionState(MoveState.ROAMING);
                 } else {
                     if (stateTimer > EAT_TIME) {
-                        targetPlant.Chop();
+                        targetPlantZone.Chop();
                         SetMotionState(MoveState.ROAMING);
                     }
                     // targetPlant.GetEaten();
@@ -110,7 +108,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
         Vector3 facingDirection = AI.DirectionToVector2(direction);
 
         // Check to see if we're going to hit any non-trigger colliers in front of us
-        RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection*0.42f, AI.NonPlayerOrEnemyLayermask);
+        RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, transform.position + facingDirection, AI.NonPlayerOrEnemyLayermask);
         foreach(RaycastHit2D hit in hits) {
 
             if (hit.collider.isTrigger) {
@@ -119,7 +117,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
                 if (plantableZone != null && plantableZone.IsPlanted()) {
                     Debug.Log(((MonoBehaviour)plantableZone).gameObject.name);
                     SetMotionState(MoveState.EATING);
-                    targetPlant = plantableZone;
+                    targetPlantZone = plantableZone;
                     return true;
                 }
             } else {
