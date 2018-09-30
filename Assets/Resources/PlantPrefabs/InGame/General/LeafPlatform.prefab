@@ -1,5 +1,10 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!4 &1710024030289667970 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7056251703920014809, guid: 99a8a53b8776ad347b7c8cf096c4fe08, type: 3}
+  m_PrefabInstance: {fileID: 8527546385127019099}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4305803668650680676
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,7 +15,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4311452775709899474}
   - component: {fileID: 4122916495205333322}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: PrototypeWhite04x01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4311463264858942528}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: LeafPlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +128,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4308596187876581274}
   - component: {fileID: 4121267036325543914}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: leafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -203,7 +208,7 @@ GameObject:
   - component: {fileID: 4308505249084060796}
   - component: {fileID: 4259672089544027892}
   - component: {fileID: 4087463435976130202}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,11 +274,6 @@ PlatformEffector2D:
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
---- !u!4 &1710024030289667970 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7056251703920014809, guid: 99a8a53b8776ad347b7c8cf096c4fe08, type: 3}
-  m_PrefabInstance: {fileID: 8527546385127019099}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8527546385127019099
 PrefabInstance:
   m_ObjectHideFlags: 0

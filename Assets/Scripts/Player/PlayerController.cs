@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour {
     private AI.Direction playerFacing = AI.Direction.RIGHT;
     private AI.Direction wallDirection = AI.Direction.NONE;
 
-    private enum MotionState { IDLE, RUN, JUMP, FALL, WALLSLIDE };
+    private enum MotionState { IDLE, RUN, JUMP, FALL, SWIM, WALLSLIDE };
     private MotionState motionState = MotionState.IDLE;
     private MotionState prevMotionState = MotionState.IDLE;
 
@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour {
 
     // Updated in updateRaycasts
     private bool onGround;
+    private bool inWater;
     private bool platformBelow; // used for determining if we're going to go through platforms or not
     private GameObject objectBelow;
     private bool onWall;
@@ -87,7 +88,6 @@ public class PlayerController : MonoBehaviour {
         standableRaycastLayers = (
             (1 << LayerMask.NameToLayer("Ground"))
             | (1 << LayerMask.NameToLayer("Platform"))
-            | (1 << LayerMask.NameToLayer("Plant"))
             // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanStandOn")
             // ...
             );
@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour {
             // Exercising 
             case MotionState.RUN:
 
-                UpdatePlayerDirectionFromInput();
+                //UpdatePlayerDirectionFromInput();
 
                 if(jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
@@ -234,7 +234,7 @@ public class PlayerController : MonoBehaviour {
                 yVel += Physics.gravity.y * 2f * Time.fixedDeltaTime;
 
                 ApplyAirSpeedModifier();
-                UpdatePlayerDirectionFromInput();
+                //UpdatePlayerDirectionFromInput();
 
                 // if the jump key is released, we should start falling
                 if (!jumpHeld) {
@@ -254,7 +254,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.FALL:
 
                 ApplyAirSpeedModifier();
-                UpdatePlayerDirectionFromInput();
+                //UpdatePlayerDirectionFromInput();
 
                 // More gravity when falling for a "faster" fall
                 yVel += Physics.gravity.y * 3f * Time.fixedDeltaTime;
@@ -262,10 +262,14 @@ public class PlayerController : MonoBehaviour {
                     yVel = maxFallspeed;
                 }
 
+                if (inWater) {
+                    SetMotionState(MotionState.SWIM);
+                }
+
                 // If there is ground that we're basically touching, then we're 
                 // no longer falling
                 if (onGround) {
-                    SetMotionState(MotionState.IDLE); // what about if we're moving sideways?
+                    SetMotionState(MotionState.IDLE);
                     break;
                 }
 
@@ -279,6 +283,24 @@ public class PlayerController : MonoBehaviour {
                         break;
                     case AI.Direction.NONE:
                         break;
+                }
+
+                break;
+
+            // This cat is okay with getting wet
+            case MotionState.SWIM:
+
+                // JUMP
+                if (jumpHeld) {
+                    rb.AddForce(Vector2.up * jumpForce);
+                    SetMotionState(MotionState.JUMP);
+                    break;
+                }
+
+                // Somehow managed to not be in the water without jumping. Possibly knockback.
+                if (!inWater) {
+                    SetMotionState(MotionState.IDLE);
+                    break;
                 }
 
                 break;
@@ -327,6 +349,9 @@ public class PlayerController : MonoBehaviour {
             stunTimer += Time.fixedDeltaTime;
             return;
         }
+
+        // If we're not stunned, we can control which direction we're facing
+        UpdatePlayerDirectionFromInput();
 
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
@@ -411,6 +436,7 @@ public class PlayerController : MonoBehaviour {
         objectOnRight = null;
         objectOnLeft = null;
         onGround = false;
+        inWater = false;
         platformBelow = false;
         onWall = false;
         Vector2 playerCenter = getPlayerCenter();
@@ -418,8 +444,15 @@ public class PlayerController : MonoBehaviour {
         Vector2 playerRightCenter = playerCenter + Vector2.right * 0.5f;
         float minPlatformDistance = 0.5f;
 
+        // check if we are in the water
+        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.down * downRaycastDist*0.5f, AI.WaterLayermask);
+        Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist*0.5f, Color.blue);
+        if (hit2D) {
+            inWater = true;
+        }
+
         // center grounded check
-        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, standableRaycastLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, standableRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
@@ -506,6 +539,11 @@ public class PlayerController : MonoBehaviour {
         Collectible collectible = collider.GetComponent<Collectible>();
         if (collectible && collectible.CanCollect()) {
             waterSprite.AddToTargetList(collider.gameObject);
+        }
+
+        // If we just landed in some water, then tell the WaterSprite to refill if it isn't already full
+        if ((1<<collider.gameObject.layer) == AI.WaterLayermask && !inventory.WaterLevelFull()) {
+            waterSprite.AddImmediateToTargetList(collider.gameObject);
         }
     }
 }

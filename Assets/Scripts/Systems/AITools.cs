@@ -115,6 +115,10 @@ public static class AI {
         (1 << LayerMask.NameToLayer("Plant"))
     );
 
+    public static int WaterLayermask = (
+        (1 << LayerMask.NameToLayer("Water"))
+    );
+
 
     public static float DistanceToPlayer(GameObject go) {
         return Vector2.Distance(go.transform.position, GetPlayer().transform.position);

@@ -81,6 +81,10 @@ public class InventorySystem : MonoBehaviour {
         return waterLevel >= maxWaterLevel;
     }
 
+    public void FillWaterLevel() {
+        waterLevel = maxWaterLevel;
+    }
+
     public int GetWaterLevel() {
         return waterLevel;
     }
@@ -210,18 +214,21 @@ public class InventorySystem : MonoBehaviour {
 
         if (waterButtonPressed) {
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+            Debug.Log(plantableZone);
             if (plantableZone != null && plantableZone.CanBeWatered()) {
                 GameObject target = (plantableZone as MonoBehaviour).gameObject;
-                if (waterLevel > 0 && !waterSprite.PlanningToVisit(target)) {
+                if (waterLevel > 0) {
 
-                    // Everything that we have that implements interfaces is also a MonoBehavior, so we can
-                    // use this as a """safe""" cast in order to find the game object
-                    // The water sprite reaching the PlantableZone will handle the watering itself.
-                    waterSprite.AddImmediateToTargetList((plantableZone as MonoBehaviour).gameObject);
+                    if (!waterSprite.PlanningToVisit(target)) {
+                        // Everything that we have that implements interfaces is also a MonoBehavior, so we can
+                        // use this as a """safe""" cast in order to find the game object
+                        // The water sprite reaching the PlantableZone will handle the watering itself.
+                        waterSprite.AddImmediateToTargetList((plantableZone as MonoBehaviour).gameObject);
 
-                    // TODO: Consider implications of this call. It means we can't possibly overwater, but it
-                    // also changes the watersprite visual before it actually reaches the PlantableZone
-                    ChangeWaterLevel(-1);
+                        // TODO: Consider implications of this call. It means we can't possibly overwater, but it
+                        // also changes the watersprite visual before it actually reaches the PlantableZone
+                        ChangeWaterLevel(-1);
+                    }
 
                 } else {
                     // lol you've got no water, nerd

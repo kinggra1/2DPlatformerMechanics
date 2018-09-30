@@ -66,8 +66,6 @@ public class EnemyLadybug : Enemy, IStrikeable {
                 targetPlantZone = null;
                 Collider2D plant = AI.FindPlantInRange(transform.position, PLANT_DETECTION_DISTANCE);
                 Collider2D[] plants = new Collider2D[20];
-                AI.NearestPlants(transform.position, PLANT_DETECTION_DISTANCE, plants);
-                Debug.Log(plants.GetValue(0));
                 if (plant) {
                     targetPlantZone = plant.GetComponentInParent<IPlantableZone>();
                     if (targetPlantZone != null && targetPlantZone.IsPlanted()) {

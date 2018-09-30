@@ -181,27 +181,35 @@ public class WaterSpriteController : MonoBehaviour {
         }
     }
 
+    private void HandleCurrentTarget() {
+        // If current target is a collectible, call Collect() on it (free for you, cheap for them (tm) )
+        Collectible collectible = target.GetComponent<Collectible>();
+        if (collectible) {
+            collectible.CollectIfPossible();
+        }
+
+        // If current target is a PlantableZone, water it
+        IPlantableZone plantableZone = target.GetComponent<IPlantableZone>();
+        if (plantableZone != null) {
+            plantableZone.Water();
+        }
+
+        // If current target is a Strikable, strike it up
+        IStrikeable strikable = target.GetComponent<IStrikeable>();
+        if (strikable != null) {
+            strikable.Strike(this.transform.position, null);
+        }
+
+        // If we went to water, Fill'r up
+        if ((1<<target.layer) == AI.WaterLayermask) {
+            inventory.FillWaterLevel();
+        }
+    }
+
     private void NextTarget() {
 
         if (target != null) {
-
-            // If current target is a collectible, call Collect() on it (free for you, cheap for them (tm) )
-            Collectible collectible = target.GetComponent<Collectible>();
-            if (collectible) {
-                collectible.CollectIfPossible();
-            }
-
-            // If current target is a PlantableZone, water it
-            IPlantableZone plantableZone = target.GetComponent<IPlantableZone>();
-            if (plantableZone != null) {
-                plantableZone.Water();
-            }
-
-            // If current target is a Strikable, strike it up
-            IStrikeable strikable = target.GetComponent<IStrikeable>();
-            if (strikable != null) {
-                strikable.Strike(this.transform.position, null);
-            }
+            HandleCurrentTarget();
         }
 
         // We've run out of things to fly to, clear the list
