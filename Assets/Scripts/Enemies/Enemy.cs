@@ -7,8 +7,8 @@ public abstract class Enemy : MonoBehaviour {
 
     [Tooltip("Where the health bar for this enemy should be drawn centered.")]
     public GameObject healthBarLocation;
-    protected float health = 4f;
-    protected float maxHealth = 4f;
+    public float health = 4f;
+    public float maxHealth = 4f;
     protected AI.Direction direction = AI.Direction.RIGHT;
 
     // Health bar related variables
@@ -23,7 +23,11 @@ public abstract class Enemy : MonoBehaviour {
     protected Vector3 targetPlantPosition;
     protected IPlantableZone targetPlantZone = null;
 
+    protected SpriteRenderer[] renderers;
+
     protected void Start() {
+        renderers = this.GetComponentsInChildren<SpriteRenderer>();
+
         // In theory this should be some part of the enemy's body sprite. Just need for the order in layer.
         // This will let us put the health bar on the same drawing layer as the enemy sprite.
         SpriteRenderer bodyRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -98,8 +102,13 @@ public abstract class Enemy : MonoBehaviour {
         }
     }
 
-    protected void TakeDamage(float damage) {
+    protected void SetSpriteColor(Color color) {
+        foreach (SpriteRenderer renderer in renderers) {
+            renderer.color = color;
+        }
+    }
 
+    protected void TakeDamage(float damage) {
         health -= damage;
         DisplayHealth();
         if (health <= 0f) {

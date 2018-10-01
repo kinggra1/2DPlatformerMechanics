@@ -13,12 +13,18 @@ public class PlayerController : MonoBehaviour {
     public float jumpForce = 1000;
     [Tooltip("A reference to our best friend.")]
     public WaterSpriteController waterSprite;
+    [Tooltip("Movement speed when dash/roll/dodge-ing.")]
+    public float dodgeMoveSpeed = 30f;
+    [Tooltip("Length of time that the dash/roll/dodge-ing motion takes place. Will also set invulnerability timer.")]
+    public float dodgeStateTime = 0.2f;
+    [Tooltip("How much time must pass between successive dodges.")]
+    public float dodgeCooldown = 2f;
     [Tooltip("A reference to the visual sprite of the actual player")]
     public GameObject playerBody;
     [Tooltip("A reference to the hand where we physically hold Weapons/Tools.")]
     public WeaponHand weaponHand;
     [Tooltip("The amount of time player cannot be hit after sustaining damage.")]
-    public float invulnerabilityTime = 2f;
+    public float knockbackInvulnerabilityTime = 2f;
     [Tooltip("The amount of time that input has no effect on the player after they've been hit.")]
     public float knockbackStunTime = 1f;
     [Tooltip("The parent of all player-associated objects. Used to seperate collisions and scale flipping.")]
@@ -38,7 +44,7 @@ public class PlayerController : MonoBehaviour {
     private AI.Direction playerFacing = AI.Direction.RIGHT;
     private AI.Direction wallDirection = AI.Direction.NONE;
 
-    private enum MotionState { IDLE, RUN, JUMP, FALL, SWIM, WALLSLIDE };
+    private enum MotionState { IDLE, RUN, DODGE, JUMP, FALL, SWIM, WALLSLIDE };
     private MotionState motionState = MotionState.IDLE;
     private MotionState prevMotionState = MotionState.IDLE;
 
@@ -52,6 +58,7 @@ public class PlayerController : MonoBehaviour {
 
     private float invulnTimer = 0f;
     private float stunTimer = 0f;
+    private float dodgeCooldownTimer = 0f;
 
     private int playerLayer;
     private int platformLayer; // by definition, a platform is something we can jump up through. call other things ground.
@@ -72,14 +79,14 @@ public class PlayerController : MonoBehaviour {
     private float xInput;
     private float yInput;
     private bool jumpHeld;
-    private bool jumpPressed;
-    private bool jumpReleased;
     private bool ePressed;
+    private bool dodgePressed;
 
     private float xVel;
     private float yVel;
 
     private GameController gameController;
+    public float currentStateTimer = 0f;
 
 	// Use this for initialization
 	void Awake () {
@@ -133,14 +140,36 @@ public class PlayerController : MonoBehaviour {
         this.currentPlantableZone = zone;
     }
 
+    public void SetInvulnerabilityTime(float time) {
+
+        // Don't decrease invulnerability timer if we are already invulnerable for more time than this.
+        if (invulnTimer >= time) {
+            return;
+        }
+        invulnTimer = time;
+    }
+
+    public void SetStunTime(float time) {
+
+        // Don't decrease stun timer if we are already invulnerable for more time than this.
+        if (stunTimer >= time) {
+            return;
+        }
+        stunTimer = time;
+    }
+
     public void GetHit(Vector2 knockback) {
         rb.velocity = knockback;
-        invulnTimer = 0f;
-        stunTimer = 0f;
+        SetInvulnerabilityTime(knockbackInvulnerabilityTime);
+        SetStunTime(knockbackStunTime);
     }
 
     public bool IsInvulnerable() {
-        return invulnTimer < invulnerabilityTime;
+        return invulnTimer > 0f;
+    }
+
+    public bool CanDodge() {
+        return dodgeCooldownTimer <= 0f;
     }
 
     // This will likely get more complex if we do a more intricate check
@@ -150,6 +179,9 @@ public class PlayerController : MonoBehaviour {
 
     // We run in FixedUpdate because we are directly messing with the RigidBody2D
     void FixedUpdate() {
+
+        currentStateTimer += Time.fixedDeltaTime;
+
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
@@ -157,12 +189,16 @@ public class PlayerController : MonoBehaviour {
         // jumpReleased = Input.GetButtonUp("Jump");
 
         ePressed = Input.GetKeyDown(KeyCode.E);
+        dodgePressed = Input.GetKey(KeyCode.LeftShift);
 
         CheckSurroundings();
         FindClosestWall();
 
-        if (invulnTimer < invulnerabilityTime) {
-            invulnTimer += Time.fixedDeltaTime;
+        if (invulnTimer > 0f) {
+            invulnTimer -= Time.fixedDeltaTime;
+        }
+        if (dodgeCooldownTimer > 0f) {
+            dodgeCooldownTimer -= Time.fixedDeltaTime;
         }
 
         xVel = xInput * hMoveSpeed;
@@ -187,6 +223,11 @@ public class PlayerController : MonoBehaviour {
             // We hangin' out.
             case MotionState.IDLE:
 
+                // DODGE
+                if (dodgePressed && CanDodge()) {
+                    SetMotionState(MotionState.DODGE);
+                    break;
+                }
                 // JUMP
                 if (jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
@@ -209,8 +250,11 @@ public class PlayerController : MonoBehaviour {
             // Exercising 
             case MotionState.RUN:
 
-                //UpdatePlayerDirectionFromInput();
-
+                // DODGE
+                if (dodgePressed && CanDodge()) {
+                    SetMotionState(MotionState.DODGE);
+                    break;
+                }
                 if(jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
@@ -227,6 +271,19 @@ public class PlayerController : MonoBehaviour {
                 }
                 break;
 
+            // We're dodging attacks
+            case MotionState.DODGE:
+
+                xVel = dodgeMoveSpeed * (playerFacing == AI.Direction.LEFT ? -1 : 1);
+                yVel = 0f;
+
+                // The only way to leave this state is to let the dodge complete
+                if (currentStateTimer > dodgeStateTime) {
+                    SetMotionState(MotionState.IDLE);
+                    dodgeCooldownTimer = dodgeCooldown;
+                }
+                break;
+
             // We're going upwards
             case MotionState.JUMP:
 
@@ -234,8 +291,12 @@ public class PlayerController : MonoBehaviour {
                 yVel += Physics.gravity.y * 2f * Time.fixedDeltaTime;
 
                 ApplyAirSpeedModifier();
-                //UpdatePlayerDirectionFromInput();
 
+                // DODGE
+                if (dodgePressed && CanDodge()) {
+                    SetMotionState(MotionState.DODGE);
+                    break;
+                }
                 // if the jump key is released, we should start falling
                 if (!jumpHeld) {
                     yVel = 0f;
@@ -254,7 +315,6 @@ public class PlayerController : MonoBehaviour {
             case MotionState.FALL:
 
                 ApplyAirSpeedModifier();
-                //UpdatePlayerDirectionFromInput();
 
                 // More gravity when falling for a "faster" fall
                 yVel += Physics.gravity.y * 3f * Time.fixedDeltaTime;
@@ -262,6 +322,11 @@ public class PlayerController : MonoBehaviour {
                     yVel = maxFallspeed;
                 }
 
+                // DODGE
+                if (dodgePressed && CanDodge()) {
+                    SetMotionState(MotionState.DODGE);
+                    break;
+                }
                 if (inWater) {
                     SetMotionState(MotionState.SWIM);
                 }
@@ -345,8 +410,8 @@ public class PlayerController : MonoBehaviour {
         }
 
         // Not going to feed any input to Rigidbody2D if we're stunned. Physics will still move player around.
-        if (stunTimer < knockbackStunTime) {
-            stunTimer += Time.fixedDeltaTime;
+        if (stunTimer > 0f) {
+            stunTimer -= Time.fixedDeltaTime;
             return;
         }
 
@@ -364,7 +429,15 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
+        currentStateTimer = 0f;
+
         switch (newMotionState) {
+
+            case MotionState.DODGE:
+                // Make us invulnerable for the duration of the dodge.
+                SetInvulnerabilityTime(dodgeStateTime);
+                break;
+
             case MotionState.FALL:
                 // Set an angle in our motion curve.
                 // We move up slowly but as soon as our speed hits zero, shoot us downwards.

@@ -35,7 +35,7 @@ public class ParallaxBackgroundManager : MonoBehaviour {
 	}
 	
     // We run in FixedUpdate to keep up exactly with the camera velocity, which is also set in FixedUpdate
-	void FixedUpdate () {
+	void Update () {
         // We assume that the player starts at (0, 0, 0) I guess
         foreach (ScrollLayer layer in scrollLayers) {
 

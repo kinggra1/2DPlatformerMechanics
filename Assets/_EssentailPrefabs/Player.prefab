@@ -516,13 +516,16 @@ MonoBehaviour:
   maxFallspeed: -15
   jumpForce: 1000
   waterSprite: {fileID: 0}
+  dodgeMoveSpeed: 40
+  dodgeStateTime: 0.5
   playerBody: {fileID: 1801823162172638}
   weaponHand: {fileID: 8221108904587267231}
-  invulnerabilityTime: 2
+  knockbackInvulnerabilityTime: 2
   knockbackStunTime: 0.2
   playerOrganizer: {fileID: 724078955}
   debugStateText: {fileID: 102116614624309310}
   debugDirectionText: {fileID: 102423940592173640}
+  currentStateTimer: 0
 --- !u!50 &1617026991
 Rigidbody2D:
   serializedVersion: 4

@@ -10,21 +10,27 @@ public class EnemySample : Enemy, IStrikeable {
     Rigidbody2D rb;
 
     private readonly float STUN_TIME = 1f;
-    private float hitStunTimer = 0f;
 
     // Use this for initialization
-    void Start() {
+    new void Start() {
+        base.Start();
         rb = this.GetComponent<Rigidbody2D>();
     }
 
     private void SetMotionState(MoveState newState) {
+
+        if (newState == moveState) {
+            return;
+        }
+
+        stateTimer = 0f;
+
         switch (newState) {
             case MoveState.IDLE:
                 break;
 
             // This refers to being hit
             case MoveState.HIT:
-                hitStunTimer = 0f;
                 break;
 
             case MoveState.OTHERSTATE1:
@@ -39,14 +45,17 @@ public class EnemySample : Enemy, IStrikeable {
 
     // Update is called once per frame
     void Update() {
+
+        stateTimer += Time.deltaTime;
+
         switch (moveState) {
             case MoveState.IDLE:
                 break;
 
             case MoveState.HIT:
 
-                hitStunTimer += Time.deltaTime;
-                if (hitStunTimer > STUN_TIME) {
+                stateTimer += Time.deltaTime;
+                if (stateTimer > STUN_TIME) {
                     SetMotionState(MoveState.IDLE);
                 }
                 break;
@@ -61,11 +70,22 @@ public class EnemySample : Enemy, IStrikeable {
 
     void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
         // Debug.Log("Smap");
+        base.TakeDamage(0f);
         SetMotionState(MoveState.HIT);
 
         // Effects for getting hit here
         // E.g. simple Physics2D knockback based on the position of the weapon
         // Vector2 knockbackDirection = (this.transform.position - weaponLocation).normalized;
         // rb.AddForce(knockbackDirection * 1000f);
+    }
+
+    // Handle how we hit the player
+    private void OnTriggerStay2D(Collider2D collider) {
+        PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
+        if (player && !player.IsInvulnerable()) {
+            Vector2 knockback = (player.transform.position - this.transform.position).normalized;
+
+            player.GetHit(knockback * 20f);
+        }
     }
 }

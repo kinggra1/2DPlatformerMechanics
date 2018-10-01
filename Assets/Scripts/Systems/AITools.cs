@@ -82,6 +82,31 @@ public static class AI {
         return Direction.NONE;
     }
 
+    public static Direction VectorToHorizontalDirection(Vector2 vector) {
+        if (Mathf.Approximately(vector.x, 0f)) {
+            return Direction.NONE;
+        }
+
+        return vector.x > 0 ? Direction.RIGHT : Direction.LEFT;
+    }
+
+    public static Direction VectorToVerticalDirection(Vector2 vector) {
+        if (Mathf.Approximately(vector.y, 0f)) {
+            return Direction.NONE;
+        }
+
+        return vector.y > 0 ? Direction.UP : Direction.DOWN;
+    }
+
+    public static Direction VectorToDirection(Vector2 vector) {
+        // This is mostly a horizontal vector
+        if (Mathf.Abs(vector.x) > Mathf.Abs(vector.y)) {
+            return VectorToHorizontalDirection(vector);
+        } else {
+            return VectorToVerticalDirection(vector);
+        }
+    }
+
 
 
 
