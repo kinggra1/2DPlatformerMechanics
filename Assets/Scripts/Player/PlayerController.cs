@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour {
     // Cardinal directions in 2D referenced as "Up, Down, Left, Right" and a null state.
     private AI.Direction playerFacing = AI.Direction.RIGHT;
     private AI.Direction wallDirection = AI.Direction.NONE;
+    private AI.Direction dodgeDirection = AI.Direction.RIGHT;
 
     private enum MotionState { IDLE, RUN, DODGE, JUMP, FALL, SWIM, WALLSLIDE };
     private MotionState motionState = MotionState.IDLE;
@@ -80,16 +81,20 @@ public class PlayerController : MonoBehaviour {
     private float yInput;
     private bool jumpHeld;
     private bool ePressed;
-    private bool dodgePressed;
+    private float dodgeInput;
 
     private float xVel;
     private float yVel;
 
+    private CameraFollow cameraFollowScript;
     private GameController gameController;
     public float currentStateTimer = 0f;
 
 	// Use this for initialization
 	void Awake () {
+        // This keeps our motion consistent if we ever change the physics timescale.
+        jumpForce /= (Time.fixedDeltaTime * 60f);
+
         rb = this.GetComponent<Rigidbody2D>();
         sprite = this.GetComponentInChildren<SpriteRenderer>();
         standableRaycastLayers = (
@@ -118,6 +123,8 @@ public class PlayerController : MonoBehaviour {
     private void Start() {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();
+
+        cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
     }
 
     public WaterSpriteController GetWaterSprite() {
@@ -162,6 +169,8 @@ public class PlayerController : MonoBehaviour {
         rb.velocity = knockback;
         SetInvulnerabilityTime(knockbackInvulnerabilityTime);
         SetStunTime(knockbackStunTime);
+
+        cameraFollowScript.AddShakeTrauma(0.5f);
     }
 
     public bool IsInvulnerable() {
@@ -189,7 +198,7 @@ public class PlayerController : MonoBehaviour {
         // jumpReleased = Input.GetButtonUp("Jump");
 
         ePressed = Input.GetKeyDown(KeyCode.E);
-        dodgePressed = Input.GetKey(KeyCode.LeftShift);
+        dodgeInput = Input.GetAxisRaw("Dodge");
 
         CheckSurroundings();
         FindClosestWall();
@@ -224,7 +233,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.IDLE:
 
                 // DODGE
-                if (dodgePressed && CanDodge()) {
+                if (dodgeInput != 0f && CanDodge()) {
                     SetMotionState(MotionState.DODGE);
                     break;
                 }
@@ -251,7 +260,7 @@ public class PlayerController : MonoBehaviour {
             case MotionState.RUN:
 
                 // DODGE
-                if (dodgePressed && CanDodge()) {
+                if (dodgeInput != 0f && CanDodge()) {
                     SetMotionState(MotionState.DODGE);
                     break;
                 }
@@ -274,7 +283,7 @@ public class PlayerController : MonoBehaviour {
             // We're dodging attacks
             case MotionState.DODGE:
 
-                xVel = dodgeMoveSpeed * (playerFacing == AI.Direction.LEFT ? -1 : 1);
+                xVel = dodgeMoveSpeed * AI.DirectionScalarX(dodgeDirection);
                 yVel = 0f;
 
                 // The only way to leave this state is to let the dodge complete
@@ -293,7 +302,7 @@ public class PlayerController : MonoBehaviour {
                 ApplyAirSpeedModifier();
 
                 // DODGE
-                if (dodgePressed && CanDodge()) {
+                if (dodgeInput != 0f && CanDodge()) {
                     SetMotionState(MotionState.DODGE);
                     break;
                 }
@@ -323,7 +332,7 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 // DODGE
-                if (dodgePressed && CanDodge()) {
+                if (dodgeInput != 0f && CanDodge()) {
                     SetMotionState(MotionState.DODGE);
                     break;
                 }
@@ -434,6 +443,7 @@ public class PlayerController : MonoBehaviour {
         switch (newMotionState) {
 
             case MotionState.DODGE:
+                dodgeDirection = AI.FloatToHorizontalDirection(dodgeInput);
                 // Make us invulnerable for the duration of the dodge.
                 SetInvulnerabilityTime(dodgeStateTime);
                 break;

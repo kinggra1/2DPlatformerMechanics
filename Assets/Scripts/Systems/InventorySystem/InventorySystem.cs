@@ -25,6 +25,8 @@ public class InventorySystem : MonoBehaviour {
     private RectTransform cursorRectTransform;
     private RectTransform itemRectTransform;
 
+    private float toolUsageCooldownTimer = 0f;
+
     // RESOURCES
     private int waterLevel = 1;
     private int maxWaterLevel = 10;
@@ -158,6 +160,10 @@ public class InventorySystem : MonoBehaviour {
 
     private void Update() {
 
+        if (toolUsageCooldownTimer > 0f) {
+            toolUsageCooldownTimer -= Time.deltaTime;
+        }
+
         bool useItemPressed = Input.GetButton("Fire1");
         bool waterButtonPressed = Input.GetButton("Fire2");
 
@@ -288,6 +294,19 @@ public class InventorySystem : MonoBehaviour {
         } else {
             player.SetWeapon(null);
         }
+    }
+
+    public bool CanUseTool() {
+        return toolUsageCooldownTimer <= 0f;
+    }
+
+    public void SetToolUsageCooldown(float time) {
+        if (toolUsageCooldownTimer > time) {
+            Debug.LogError("How did this happen?");
+            return;
+        }
+
+        toolUsageCooldownTimer = time;
     }
 
     internal void UseTool(Item.Tool toolType) {

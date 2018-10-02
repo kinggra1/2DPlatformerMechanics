@@ -107,6 +107,22 @@ public static class AI {
         }
     }
 
+    public static Direction FloatToHorizontalDirection(float value) {
+        if (Mathf.Approximately(value, 0f)) {
+            return Direction.NONE;
+        }
+
+        return value > 0 ? Direction.RIGHT : Direction.LEFT;
+    }
+
+    public static Direction FloatToVerticalDirection(float value) {
+        if (Mathf.Approximately(value, 0f)) {
+            return Direction.NONE;
+        }
+
+        return value > 0 ? Direction.UP : Direction.DOWN;
+    }
+
 
 
 

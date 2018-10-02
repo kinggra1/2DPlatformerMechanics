@@ -12,8 +12,8 @@ public class EnemyBigEnemy : Enemy, IStrikeable {
 
     private readonly float STUN_TIME = 1f;
     private readonly float TELEGRAPH_CHARGE_TIME = 1f;
-    private readonly float CHARGE_TIME = 2f;
-    private readonly float ATTACK_RECOVERY_TIME = 3f;
+    private readonly float CHARGE_TIME = 0.5f;
+    private readonly float ATTACK_RECOVERY_TIME = 1f;
 
     private readonly float PLAYER_DETECTION_DISTANCE = 15f;
 
