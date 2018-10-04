@@ -326,11 +326,11 @@ InputManager:
     axis: 2
     joyNum: 0
   - serializedVersion: 3
-    m_Name: DashRight
-    descriptiveName: 
+    m_Name: Dodge
+    descriptiveName: keyboard dodge
     descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: escape
+    negativeButton: q
+    positiveButton: e
     altNegativeButton: 
     altPositiveButton: joystick button 1
     gravity: 1000
