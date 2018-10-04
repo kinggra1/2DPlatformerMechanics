@@ -183,10 +183,10 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Fire1
-    descriptiveName: 
+    descriptiveName: Keyboard Fire1
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: j
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -199,10 +199,10 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Fire2
-    descriptiveName: 
+    descriptiveName: Keyboard Fire2
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: k
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -329,8 +329,8 @@ InputManager:
     m_Name: Dodge
     descriptiveName: keyboard dodge
     descriptiveNegativeName: 
-    negativeButton: q
-    positiveButton: e
+    negativeButton: u
+    positiveButton: i
     altNegativeButton: 
     altPositiveButton: joystick button 1
     gravity: 1000
