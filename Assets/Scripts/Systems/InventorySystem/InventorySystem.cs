@@ -220,7 +220,6 @@ public class InventorySystem : MonoBehaviour {
 
         if (waterButtonPressed) {
             IPlantableZone plantableZone = player.GetAvailablePlantableZone();
-            Debug.Log(plantableZone);
             if (plantableZone != null && plantableZone.CanBeWatered()) {
                 GameObject target = (plantableZone as MonoBehaviour).gameObject;
                 if (waterLevel > 0) {

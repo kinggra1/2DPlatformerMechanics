@@ -501,14 +501,6 @@ PrefabInstance:
       propertyPath: waterSprite
       value: 
       objectReference: {fileID: 766616968}
-    - target: {fileID: 1617026990, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
-      propertyPath: dodgeMoveSpeed
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1617026990, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
-      propertyPath: dodgeStateTime
-      value: 0.2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
 --- !u!1001 &1737252605
