@@ -1404,8 +1404,8 @@ GameObject:
   m_Component:
   - component: {fileID: 537469413}
   - component: {fileID: 537469414}
-  - component: {fileID: 537469416}
   - component: {fileID: 537469415}
+  - component: {fileID: 537469416}
   m_Layer: 4
   m_Name: LakeWater
   m_TagString: Untagged
@@ -3264,6 +3264,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4025545602124964, guid: d3228f7f3a02ca14e890990fda8a015f, type: 3}
   m_PrefabInstance: {fileID: 60435070}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1574980826 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114782919559170724, guid: 8d8fb3c2e942e8f47a9c9cf9289f5dfe, type: 3}
+  m_PrefabInstance: {fileID: 294206881}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3af36d5197f73784c8e6ca634bd0ebe5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1606654553
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4731,6 +4742,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1617026990, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
+      propertyPath: waterSprite
+      value: 
+      objectReference: {fileID: 1574980826}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
 --- !u!1001 &6890539038995472988
