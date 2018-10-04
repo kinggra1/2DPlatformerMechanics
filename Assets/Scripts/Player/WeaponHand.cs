@@ -7,6 +7,8 @@ public class WeaponHand : MonoBehaviour {
     [Tooltip("The object that is the position/scale parent of the weapon itself. May move around with weapon usage.")]
     public GameObject weaponParent;
 
+    private PlayerController player;
+
     private float animationTimer = 0f;
     private float animationDuration = 0.2f;
 
@@ -23,9 +25,10 @@ public class WeaponHand : MonoBehaviour {
     HitObjectHistory hitHistory = new HitObjectHistory();
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         rb = GetComponent<Rigidbody2D>();
-	}
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -109,6 +112,16 @@ public class WeaponHand : MonoBehaviour {
             if (strikeable != null && !hitHistory.HaveHit(other.gameObject)) {
                 strikeable.Strike(this.transform.position, this.weapon);
                 hitHistory.MarkObjectAsHit(other.gameObject);
+            }
+
+            // If this is on the enemy layer, give us a little knockback when we hit it.
+            // TODO: Figure out how to do "pogo" knockback for swinging downwards later
+            if (1 << other.gameObject.layer == AI.EnemyLayermask) {
+                // -1 or 1 exclusively in x, 0 on y, depending on position relative to enemy
+                Vector2 hKnockback = (player.transform.position - other.transform.position).x < 0f ? Vector2.left : Vector2.right;
+                Debug.Log(hKnockback);
+                player.GetPushed(hKnockback * 10f, 0.1f);
+
             }
         }
     }

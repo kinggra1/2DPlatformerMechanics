@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour {
     [Tooltip("The amount of time player cannot be hit after sustaining damage.")]
     public float knockbackInvulnerabilityTime = 2f;
     [Tooltip("The amount of time that input has no effect on the player after they've been hit.")]
-    public float knockbackStunTime = 1f;
+    public float getHitStunTime = 0.2f;
     [Tooltip("The parent of all player-associated objects. Used to seperate collisions and scale flipping.")]
     public PlayerOrganizer playerOrganizer;
 
@@ -166,11 +166,14 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void GetHit(Vector2 knockback) {
-        rb.velocity = knockback;
+        GetPushed(knockback, getHitStunTime);
         SetInvulnerabilityTime(knockbackInvulnerabilityTime);
-        SetStunTime(knockbackStunTime);
-
         cameraFollowScript.AddShakeTrauma(0.5f);
+    }
+
+    public void GetPushed(Vector2 knockback, float stunTime) {
+        rb.velocity = knockback;
+        SetStunTime(stunTime);
     }
 
     public bool IsInvulnerable() {
@@ -186,22 +189,23 @@ public class PlayerController : MonoBehaviour {
         return onGround;
     }
 
-    // We run in FixedUpdate because we are directly messing with the RigidBody2D
-    void FixedUpdate() {
-
-        currentStateTimer += Time.fixedDeltaTime;
-
+    void Update() {
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
         jumpHeld = Input.GetButton("Jump");
-        // jumpReleased = Input.GetButtonUp("Jump");
 
         ePressed = Input.GetKeyDown(KeyCode.E);
         dodgeInput = Input.GetAxisRaw("Dodge");
 
         CheckSurroundings();
         FindClosestWall();
+    }
+
+    // We run in FixedUpdate because we are directly messing with the RigidBody2D
+    void FixedUpdate() {
+
+        currentStateTimer += Time.fixedDeltaTime;
 
         if (invulnTimer > 0f) {
             invulnTimer -= Time.fixedDeltaTime;
