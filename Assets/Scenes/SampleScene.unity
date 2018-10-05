@@ -4746,6 +4746,14 @@ PrefabInstance:
       propertyPath: waterSprite
       value: 
       objectReference: {fileID: 1574980826}
+    - target: {fileID: 1617026991, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: b1616eddfb8101442974e37f56fac029, type: 2}
+    - target: {fileID: 1617026991, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
+      propertyPath: m_Interpolate
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
 --- !u!1001 &6890539038995472988

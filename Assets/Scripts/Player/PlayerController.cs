@@ -172,7 +172,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void GetPushed(Vector2 knockback, float stunTime) {
-        rb.velocity = knockback;
+        rb.velocity += knockback;
         SetStunTime(stunTime);
     }
 
@@ -496,12 +496,13 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
-        if (xInput < 0f) {
-            playerFacing = AI.Direction.LEFT;
-        } else {
-            playerFacing = AI.Direction.RIGHT;
+        if (xInput < 0f && playerFacing == AI.Direction.RIGHT ||
+            xInput > 0f && playerFacing == AI.Direction.LEFT) {
+
+            playerFacing = AI.OppositeDirection(playerFacing);
+            cameraFollowScript.SetPlayerTurnaroundX(transform.position.x);
+            playerOrganizer.SetFacing(playerFacing);
         }
-        playerOrganizer.SetFacing(playerFacing);
     }
 
     /*
@@ -611,10 +612,10 @@ public class PlayerController : MonoBehaviour {
     }
 
     private bool canJump() {
-        return isGrounded();
+        return IsGrounded();
     }
 
-    private bool isGrounded() {
+    public bool IsGrounded() {
         return objectBelow != null;
     }
 
