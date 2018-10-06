@@ -20,6 +20,7 @@ public class CameraFollow : MonoBehaviour {
 
     private float playerTurnaroundX;
     private float playerGroundedY;
+    private Vector2 sceneLimitDims;
 
     private float shakeTime = 0f;
     private float trauma = 0f;
@@ -112,6 +113,8 @@ public class CameraFollow : MonoBehaviour {
         shakeOffset = shakeOffset * 2f * cameraShakeMagnitude;
         shakeAngle = (Mathf.PerlinNoise(shakeTime, 50f) * 2f - 0.5f) * cameraShakeMagnitude;
 
+        newPosition = CapInSceneBounds(newPosition);
+
         transform.position = newPosition + Vector3.Scale(shakeOffset, SHAKE_SCALE);
         //newPosition = player.transform.position;
         //newPosition.z = this.transform.position.z;
@@ -120,7 +123,31 @@ public class CameraFollow : MonoBehaviour {
         cam.orthographicSize = cameraDistance;
 	}
 
-    public void setTarget(GameObject newTarget) {
+    private Vector3 CapInSceneBounds(Vector3 pos) {
+        float maxXOffset = sceneLimitDims.x / 2f;
+        float maxYOffset = sceneLimitDims.y / 2f;
+
+        if (pos.x > maxXOffset) {
+            pos.x = maxXOffset;
+        }
+        if (pos.x < -maxXOffset) {
+            pos.x = -maxXOffset;
+        }
+        if (pos.y > maxYOffset) {
+            pos.y = maxYOffset;
+        }
+        if (pos.y < -maxYOffset) {
+            pos.y = -maxYOffset;
+        }
+
+        return pos;
+    }
+
+    public void SetSceneLimitDims(Vector2 dimensions) {
+        sceneLimitDims = dimensions;
+    }
+
+    public void SetTarget(GameObject newTarget) {
         target = newTarget;
         playerRigidbody = target.GetComponent<Rigidbody2D>();
     }
