@@ -35,24 +35,15 @@ public class ParallaxBackgroundManager : MonoBehaviour {
 	}
 	
     // We run in FixedUpdate to keep up exactly with the camera velocity, which is also set in FixedUpdate
-	void Update () {
+	void FixedUpdate () {
         // We assume that the player starts at (0, 0, 0) I guess
         foreach (ScrollLayer layer in scrollLayers) {
-
-            // 90 degree angle, don't move at all, 0 degree angle move 100%
 
             float distance = layer.distance;
             Vector2 newPosition = this.transform.position + mainCamera.transform.position * (distance/vanishingDistance);
             // newPosition.y = layer.entityParent.transform.position.y;
             layer.entityParent.transform.position = newPosition;
             
-
-            /*
-            float factor = (110 - layer.distance);
-            factor = factor == 0 ? 1 : factor;
-            Vector2 newPosition = this.transform.position + mainCamera.transform.position / factor;
-            layer.entityParent.transform.position = newPosition;
-            */
         }
 	}
 }

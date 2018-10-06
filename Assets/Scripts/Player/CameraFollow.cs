@@ -8,7 +8,8 @@ public class CameraFollow : MonoBehaviour {
     public float cameraDistance = 8;
 
     private GameObject target;
-    private Rigidbody2D targetRigidbody;
+    private PlayerController player;
+    private Rigidbody2D playerRigidbody;
     private bool trackAhead = false;
     private Camera cam;
 
@@ -16,6 +17,9 @@ public class CameraFollow : MonoBehaviour {
     private Vector3 targetPosition;
 
     private float cameraLerpPercentage = 0.05f;
+
+    private float playerTurnaroundX;
+    private float playerGroundedY;
 
     private float shakeTime = 0f;
     private float trauma = 0f;
@@ -36,7 +40,8 @@ public class CameraFollow : MonoBehaviour {
 
         // Initial/normal target is the player
         target = GameObject.FindWithTag("Player");
-        targetRigidbody = target.GetComponent<Rigidbody2D>();
+        player = target.GetComponentInChildren<PlayerController>();
+        playerRigidbody = player.GetComponent<Rigidbody2D>();
 
         cam = this.GetComponent<Camera>();
         if (cam == null) {
@@ -51,6 +56,10 @@ public class CameraFollow : MonoBehaviour {
         }
     }
 
+    public void SetPlayerTurnaroundX(float x) {
+        playerTurnaroundX = x;
+    }
+
     // We run in FixedUpdate to keep up with the player velocity, which is also set in FixedUpdate
     void FixedUpdate() {
 
@@ -63,12 +72,33 @@ public class CameraFollow : MonoBehaviour {
 
         targetPosition = target.transform.position;
         targetPosition.z = transform.position.z;
-        if (targetRigidbody != null) {
-            targetPosition += new Vector3(targetRigidbody.velocity.x, targetRigidbody.velocity.y, 0f).normalized * Mathf.Min(targetRigidbody.velocity.magnitude, 2f);
+        if (playerRigidbody != null) {
+            // targetPosition += new Vector3(Mathf.Min(playerRigidbody.velocity.x, 2f), 0f, 0f);// new Vector3(targetRigidbody.velocity.x, targetRigidbody.velocity.y, 0f).normalized * Mathf.Min(targetRigidbody.velocity.magnitude, 2f);
         }
 
-        //float lerpPercentage = 0.1f;
-        Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, cameraLerpPercentage);
+        float xLerpPercentage = 0f;
+        float playerBacktrackXDist = Mathf.Abs(playerRigidbody.transform.position.x - playerTurnaroundX);
+        if (Mathf.Abs(playerRigidbody.transform.position.x - playerTurnaroundX) > 4f) {
+            xLerpPercentage = cameraLerpPercentage * (playerBacktrackXDist - 4f) / (8f - 4f);
+        }
+
+        float yLerpPercentage = cameraLerpPercentage;
+        /*
+        if (player.IsGrounded()) {
+            yLerpPercentage = cameraLerpPercentage;
+        }
+        */
+        /*
+        float playerBacktrackYDist = Mathf.Abs(playerRigidbody.transform.position.y - lastPlayerPosition.y);
+        if (Mathf.Abs(playerRigidbody.transform.position.y - lastPlayerPosition.y) > 4f) {
+            yLerpPercentage = cameraLerpPercentage * (playerBacktrackYDist - 4f) / (8f - 4f);
+        }
+        */
+
+        Vector3 newPosition = transform.position;
+        newPosition.x = Mathf.Lerp(transform.position.x, targetPosition.x, xLerpPercentage);
+        newPosition.y = Mathf.Lerp(transform.position.y, targetPosition.y, yLerpPercentage);
+        //Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, 1f - Mathf.Pow(1f - 0.05f, Time.fixedDeltaTime * 30f));
         //Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, 0.3f);
 
         // Add in random screenshake depending on our current shakeRatio
@@ -83,12 +113,15 @@ public class CameraFollow : MonoBehaviour {
         shakeAngle = (Mathf.PerlinNoise(shakeTime, 50f) * 2f - 0.5f) * cameraShakeMagnitude;
 
         transform.position = newPosition + Vector3.Scale(shakeOffset, SHAKE_SCALE);
+        //newPosition = player.transform.position;
+        //newPosition.z = this.transform.position.z;
+        //transform.position = transform.position;
         transform.localRotation = Quaternion.Euler(0f, 0f, shakeAngle);
         cam.orthographicSize = cameraDistance;
 	}
 
     public void setTarget(GameObject newTarget) {
         target = newTarget;
-        targetRigidbody = target.GetComponent<Rigidbody2D>();
+        playerRigidbody = target.GetComponent<Rigidbody2D>();
     }
 }

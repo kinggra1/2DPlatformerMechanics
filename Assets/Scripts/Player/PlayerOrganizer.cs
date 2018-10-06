@@ -22,7 +22,7 @@ public class PlayerOrganizer : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void FixedUpdate () {
         // weaponParent.transform.position = playerBody.transform.position;
         this.transform.position = playerBody.transform.position;
         playerBody.transform.localPosition = Vector3.zero;

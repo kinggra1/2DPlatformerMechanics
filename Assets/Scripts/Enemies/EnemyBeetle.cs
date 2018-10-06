@@ -183,7 +183,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
             // The amount of "up" our knockback has. We're small and low so we knock the player up a little in a predictable way.
             float knockbackY = Mathf.Sin(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
 
-            player.GetHit(new Vector2(knockbackX, knockbackY)*7f);
+            player.GetHit(new Vector2(knockbackX, knockbackY)*2f);
         }
     }
 }

@@ -7,6 +7,8 @@ public class WeaponHand : MonoBehaviour {
     [Tooltip("The object that is the position/scale parent of the weapon itself. May move around with weapon usage.")]
     public GameObject weaponParent;
 
+    private PlayerController player;
+
     private float animationTimer = 0f;
     private float animationDuration = 0.2f;
 
@@ -16,6 +18,7 @@ public class WeaponHand : MonoBehaviour {
 
     private bool usingWeapon = false;
 
+
     // Array to hold Physics collision results for the beginning of each weapon swing (using Rigidbody2D.OverlapCollider)
     private Collider2D[] results = new Collider2D[100];
 
@@ -23,9 +26,10 @@ public class WeaponHand : MonoBehaviour {
     HitObjectHistory hitHistory = new HitObjectHistory();
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         rb = GetComponent<Rigidbody2D>();
-	}
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -105,6 +109,15 @@ public class WeaponHand : MonoBehaviour {
     private void HandleWeaponHit(Collider2D other) {
         // we can only "hit" something if we're using our weapon, not when it's just sitting idle
         if (usingWeapon) {
+
+            // If this is on the enemy layer, give us a little knockback when we hit it.
+            // TODO: Figure out how to do "pogo" knockback for swinging downwards later
+            if ((1 << other.gameObject.layer == AI.EnemyLayermask) && !hitHistory.HitSomethingAlready()) {
+                // -1 or 1 exclusively in x, 0 on y, depending on position relative to enemy
+                Vector2 hKnockback = (player.transform.position - other.transform.position).x < 0f ? Vector2.left : Vector2.right;
+                player.GetPushed(hKnockback * 5f, 0.1f);
+            }
+
             IStrikeable strikeable = other.GetComponent<IStrikeable>();
             if (strikeable != null && !hitHistory.HaveHit(other.gameObject)) {
                 strikeable.Strike(this.transform.position, this.weapon);
@@ -124,9 +137,15 @@ public class WeaponHand : MonoBehaviour {
     private class HitObjectHistory {
 
         private Dictionary<int, GameObject> lookupTable = new Dictionary<int, GameObject>();
+        private bool hitThisSwing = false;
 
         public void MarkObjectAsHit(GameObject obj) {
             lookupTable.Add(obj.GetHashCode(), obj);
+            hitThisSwing = true;
+        }
+
+        public bool HitSomethingAlready() {
+            return hitThisSwing;
         }
 
         public bool HaveHit(GameObject obj) {
@@ -135,6 +154,7 @@ public class WeaponHand : MonoBehaviour {
 
         public void Clear() {
             lookupTable.Clear();
+            hitThisSwing = false;
         }
 
         public List<GameObject> AllObjects() {
