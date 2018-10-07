@@ -34,6 +34,14 @@ public class CameraFollow : MonoBehaviour {
 
     private readonly Vector3 SHAKE_SCALE = new Vector3(2f, 1.5f, 0f);
 
+    private void Awake() {
+        cam = this.GetComponent<Camera>();
+        if (cam == null) {
+            Debug.LogError("No Camera attached to CameraFollower");
+        }
+        cam.orthographicSize = cameraDistance;
+    }
+
     // Use this for initialization
     void Start () {
         // This keeps camera lerp consistent if we change the physics timescale.
@@ -44,10 +52,6 @@ public class CameraFollow : MonoBehaviour {
         player = target.GetComponentInChildren<PlayerController>();
         playerRigidbody = player.GetComponent<Rigidbody2D>();
 
-        cam = this.GetComponent<Camera>();
-        if (cam == null) {
-            Debug.LogError("No Camera attached to CameraFollower");
-        }
 	}
 
     public void AddShakeTrauma(float change) {

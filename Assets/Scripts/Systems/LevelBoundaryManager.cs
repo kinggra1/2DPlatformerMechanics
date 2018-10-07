@@ -15,11 +15,6 @@ public class LevelBoundaryManager : MonoBehaviour {
         Vector2 cameraLimit = new Vector2(boundary.size.x - cameraWidth, boundary.size.y - cameraHeight);
 
         Camera.main.GetComponent<CameraFollow>().SetSceneLimitDims(cameraLimit);
-
-        DestroyImmediate(boundary);
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        mesh.triangles = mesh.triangles.Reverse().ToArray();
-        gameObject.AddComponent<MeshCollider>();
     }
 
     // Update is called once per frame
