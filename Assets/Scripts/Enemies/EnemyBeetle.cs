@@ -178,7 +178,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private void OnTriggerStay2D(Collider2D collider) {
         PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
         if (player && !player.IsInvulnerable()) {
-            float knockbackX = Vector3.Project(player.transform.position - this.transform.position, Vector2.right).normalized.x;
+            float knockbackX = Vector3.Project(AI.VectorToPlayer(this.gameObject), Vector2.right).normalized.x;
             knockbackX = knockbackX * Mathf.Cos(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
             // The amount of "up" our knockback has. We're small and low so we knock the player up a little in a predictable way.
             float knockbackY = Mathf.Sin(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);

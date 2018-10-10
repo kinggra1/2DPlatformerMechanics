@@ -76,6 +76,7 @@ public class PlayerController : MonoBehaviour {
     private IPlantableZone currentPlantableZone = null; // usually null
 
     private InventorySystem inventory;
+    private LevelBoundaryManager levelBoundaryManager;
 
     private float xInput;
     private float yInput;
@@ -113,6 +114,7 @@ public class PlayerController : MonoBehaviour {
         playerLayer = LayerMask.NameToLayer("Player");
         platformLayer = LayerMask.NameToLayer("Platform");
         groundLayer = LayerMask.NameToLayer("Ground");
+
     }
 
     // Put any singleton instance accessing here
@@ -121,9 +123,14 @@ public class PlayerController : MonoBehaviour {
     // Start() calls runs after Awake() calls
     // ( yes this happened and that's why I'm writing this -__- )
     private void Start() {
+        FindNeededObjects();
+        playerOrganizer.SetFacing(playerFacing);
+        cameraFollowScript.SetPlayerTurnaroundX(transform.position.x);
+    }
+
+    private void FindNeededObjects() {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();
-
         cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
     }
 
@@ -622,6 +629,17 @@ public class PlayerController : MonoBehaviour {
     private Vector2 getPlayerCenter() {
         return transform.position;
     }    
+
+    // Moves all components player, the watersprite, and the camera to a location for a smooth teleport experience
+    public void TeleportAfterSceneLoad(Vector3 newPlayerLocation) {
+        // Reset object references
+        FindNeededObjects();
+        cameraFollowScript.SetPlayerTurnaroundX(transform.position.x);
+
+        playerOrganizer.TeleportAfterSceneLoad(newPlayerLocation);
+        cameraFollowScript.TeleportAfterSceneLoad(newPlayerLocation);
+        waterSprite.TeleportTo(newPlayerLocation);
+    }
 
     private void OnTriggerEnter2D(Collider2D collider) {
         Collectible collectible = collider.GetComponent<Collectible>();

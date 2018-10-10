@@ -121,7 +121,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
                     break;
                 }
 
-                direction = (player.transform.position - transform.position).normalized;
+                direction = ((Vector2)(player.transform.position - transform.position)).normalized;
                 if (rb.velocity.magnitude < MAX_FLIGHT_SPEED) {
                     rb.AddForce(direction * 10f);
                 } else {
@@ -172,7 +172,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
     private void OnTriggerStay2D(Collider2D collider) {
         PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
         if (player && !player.IsInvulnerable()) {
-            Vector2 knockback = (player.transform.position - this.transform.position).normalized;
+            Vector2 knockback = AI.VectorToPlayer(this.gameObject).normalized;
 
             player.GetHit(knockback * 20f);
         }

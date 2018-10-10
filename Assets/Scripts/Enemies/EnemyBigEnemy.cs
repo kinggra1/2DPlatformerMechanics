@@ -70,8 +70,8 @@ public class EnemyBigEnemy : Enemy, IStrikeable {
 
         switch (moveState) {
             case MoveState.IDLE:
-                SetMotionState(MoveState.IDLE);
-                if (Vector3.Distance(player.transform.position, this.transform.position) < PLAYER_DETECTION_DISTANCE) {
+                Debug.Log(Vector2.Distance(player.transform.position, this.transform.position));
+                if (Vector2.Distance(player.transform.position, this.transform.position) < PLAYER_DETECTION_DISTANCE) {
                     SetMotionState(MoveState.TELEGRAPH_CHARGE);
                     break;
                 }
@@ -114,7 +114,7 @@ public class EnemyBigEnemy : Enemy, IStrikeable {
     private void OnTriggerStay2D(Collider2D collider) {
         PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
         if (player && !player.IsInvulnerable()) {
-            Vector2 knockback = (player.transform.position - this.transform.position).normalized;
+            Vector2 knockback = AI.VectorToPlayer(this.gameObject).normalized;
 
             player.GetHit(knockback * 20f);
         }

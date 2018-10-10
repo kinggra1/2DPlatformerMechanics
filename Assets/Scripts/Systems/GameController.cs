@@ -17,9 +17,18 @@ public class GameController : MonoBehaviour {
         }
         instance = this;
 
+        FindNeededObjects();
+
+        // Keep this object around between scenes.
+        DontDestroyOnLoad(this.gameObject);
+	}
+
+    private void FindNeededObjects() {
         player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         timeSystem = TimeSystem.GetInstance();
-	}
+    }
+
+    public LevelBoundaryManager.DoorLocation lastDoorLocationUsed;
 
     // now if we forget to put a GameController in the scene, we can still
     // call this and one will be dynamically created
@@ -49,5 +58,15 @@ public class GameController : MonoBehaviour {
 
     private void QuitGame() {
         Application.Quit();
+    }
+
+    private void OnLevelWasLoaded(int level) {
+        FindNeededObjects();
+        // TODO: FIX CAUZE THIS IS GOING TO BE BUGGY ON FIRST LOAD OOPS
+        LevelBoundaryManager levelBoundaryManager = GameObject.Find("LevelBoundaryManager").GetComponent<LevelBoundaryManager>();
+        Doorway playerEnteredFrom = levelBoundaryManager.doorMap[lastDoorLocationUsed];
+        if (playerEnteredFrom != null) {
+            player.TeleportAfterSceneLoad(playerEnteredFrom.playerSpawnMarker.transform.position);
+        }
     }
 }

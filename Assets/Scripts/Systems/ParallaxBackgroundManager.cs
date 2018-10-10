@@ -36,12 +36,13 @@ public class ParallaxBackgroundManager : MonoBehaviour {
 	
     // We run in FixedUpdate to keep up exactly with the camera velocity, which is also set in FixedUpdate
 	void FixedUpdate () {
-        // We assume that the player starts at (0, 0, 0) I guess
         foreach (ScrollLayer layer in scrollLayers) {
 
             float distance = layer.distance;
-            Vector2 newPosition = this.transform.position + mainCamera.transform.position * (distance/vanishingDistance);
-            // newPosition.y = layer.entityParent.transform.position.y;
+            Vector2 newPosition = this.transform.position + 
+                // Offset of the main camera from the center of the entire parallax system is used as offset into background location
+                (mainCamera.transform.position - this.transform.position) * (distance/vanishingDistance);
+
             layer.entityParent.transform.position = newPosition;
             
         }

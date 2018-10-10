@@ -165,6 +165,10 @@ public static class AI {
         return Vector2.Distance(go.transform.position, GetPlayer().transform.position);
     }
 
+    public static Vector2 VectorToPlayer(GameObject go) {
+        return ((Vector2)(GetPlayer().transform.position - go.transform.position)).normalized;
+    }
+
 
     public static Collider2D FindPlantInRange(Vector2 pos, float distance) {
         return Physics2D.OverlapCircle(pos, distance, PlantLayermask);

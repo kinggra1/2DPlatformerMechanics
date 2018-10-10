@@ -16,7 +16,7 @@ public class PlayerOrganizer : MonoBehaviour {
     private Vector3 startingBodyScale;
     private Vector3 startingWeaponScale;
 
-    private void Start() {
+    private void Awake() {
         startingBodyScale = playerBody.transform.localScale;
         startingWeaponScale = weaponParent.transform.localScale;
     }
@@ -27,6 +27,11 @@ public class PlayerOrganizer : MonoBehaviour {
         this.transform.position = playerBody.transform.position;
         playerBody.transform.localPosition = Vector3.zero;
 	}
+
+    public void TeleportAfterSceneLoad(Vector3 location) {
+        this.transform.position = location;
+        playerBody.transform.localPosition = Vector3.zero;
+    }
 
     public void SetPlayerScale(Vector3 scale) {
         playerBody.transform.localScale = scale;

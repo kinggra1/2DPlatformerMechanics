@@ -20,7 +20,8 @@ public class CameraFollow : MonoBehaviour {
 
     private float playerTurnaroundX;
     private float playerGroundedY;
-    private Vector2 sceneLimitDims;
+    private Vector2 bottomLeftLimit;
+    private Vector2 topRightLimit;
 
     private float shakeTime = 0f;
     private float trauma = 0f;
@@ -128,31 +129,36 @@ public class CameraFollow : MonoBehaviour {
 	}
 
     private Vector3 CapInSceneBounds(Vector3 pos) {
-        float maxXOffset = sceneLimitDims.x / 2f;
-        float maxYOffset = sceneLimitDims.y / 2f;
 
-        if (pos.x > maxXOffset) {
-            pos.x = maxXOffset;
+        if (pos.x > topRightLimit.x) {
+            pos.x = topRightLimit.x;
         }
-        if (pos.x < -maxXOffset) {
-            pos.x = -maxXOffset;
+        if (pos.x < bottomLeftLimit.x) {
+            pos.x = bottomLeftLimit.x;
         }
-        if (pos.y > maxYOffset) {
-            pos.y = maxYOffset;
+        if (pos.y > topRightLimit.y) {
+            pos.y = topRightLimit.y;
         }
-        if (pos.y < -maxYOffset) {
-            pos.y = -maxYOffset;
+        if (pos.y < bottomLeftLimit.y) {
+            pos.y = bottomLeftLimit.y;
         }
 
         return pos;
     }
 
-    public void SetSceneLimitDims(Vector2 dimensions) {
-        sceneLimitDims = dimensions;
+    public void SetSceneLimitDims(Vector2 bottomLeft, Vector2 topRight) {
+        bottomLeftLimit = bottomLeft;
+        topRightLimit = topRight;
     }
 
     public void SetTarget(GameObject newTarget) {
         target = newTarget;
         playerRigidbody = target.GetComponent<Rigidbody2D>();
+    }
+
+    public void TeleportAfterSceneLoad(Vector3 location) {
+        // Retain our current offset relative to the player
+        location.z = this.transform.position.z;
+        this.transform.position = location; // + (transform.position - target.transform.position);
     }
 }

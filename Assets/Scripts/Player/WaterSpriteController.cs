@@ -45,10 +45,10 @@ public class WaterSpriteController : MonoBehaviour {
         drippingParticles = this.GetComponentInChildren<ParticleSystem>();
 
         // randomSwayFactor = Random.Range(0.1f, 0.8f);
-	}
-	
-	// Update is called once per frame
-	void FixedUpdate() {
+    }
+
+    // Update is called once per frame
+    void FixedUpdate() {
 
         // TODO: Update this to work with Input Manager
         specialButtonPressed = Input.GetKeyDown(KeyCode.E);
@@ -239,5 +239,9 @@ public class WaterSpriteController : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    public void TeleportTo(Vector3 location) {
+        this.transform.position = location + floatingOffset;
     }
 }
