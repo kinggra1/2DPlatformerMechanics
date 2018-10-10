@@ -657,7 +657,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1617026991, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
       propertyPath: m_Interpolate
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 278306883, guid: e146cc9d6fa1db64aa3a0a5e9591add5, type: 3}
       propertyPath: m_Simulated
