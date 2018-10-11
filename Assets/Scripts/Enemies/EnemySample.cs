@@ -68,7 +68,7 @@ public class EnemySample : Enemy, IStrikeable {
         }
     }
 
-    void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
+    void IStrikeable.Strike(Vector2 weaponLocation, ItemWeapon weapon) {
         // Debug.Log("Smap");
         base.TakeDamage(0f);
         SetMotionState(MoveState.HIT);

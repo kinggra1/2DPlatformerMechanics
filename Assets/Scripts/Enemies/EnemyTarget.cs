@@ -8,7 +8,7 @@ public class EnemyTarget : Enemy, IStrikeable {
     private MoveState moveState = MoveState.IDLE;
 
     Rigidbody2D rb;
-    Vector3 homePosition;
+    Vector2 homePosition;
     private Vector2 velocity;
 
     private float stunTimer = 0f;
@@ -59,9 +59,9 @@ public class EnemyTarget : Enemy, IStrikeable {
         }
     }
 
-    void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
+    void IStrikeable.Strike(Vector2 weaponLocation, ItemWeapon weapon) {
         SetMotionState(MoveState.HIT);
-        Vector2 knockbackDirection = (this.transform.position - weaponLocation).normalized;
+        Vector2 knockbackDirection = ((Vector2)this.transform.position - weaponLocation).normalized;
         rb.AddForce(knockbackDirection*1000f);
     }
 }

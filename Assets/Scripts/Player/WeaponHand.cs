@@ -10,7 +10,7 @@ public class WeaponHand : MonoBehaviour {
     private PlayerController player;
 
     private float animationTimer = 0f;
-    private float animationDuration = 0.2f;
+    private float animationDuration = 0.1f;
 
     private Rigidbody2D rb;
     private GameObject weaponObject = null;

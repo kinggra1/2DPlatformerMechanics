@@ -156,14 +156,14 @@ public class EnemyLadybug : Enemy, IStrikeable {
         }
     }
 
-    void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
+    void IStrikeable.Strike(Vector2 weaponLocation, ItemWeapon weapon) {
         // Debug.Log("Smap");
         base.TakeDamage(1f);
         SetMotionState(MoveState.HIT);
 
         // Effects for getting hit here
         // Project vector from weapon to us onto the X axis and normalize to decide direction (left or right)
-        Vector2 knockback = (this.transform.position - weaponLocation).normalized;
+        Vector2 knockback = ((Vector2)this.transform.position - weaponLocation).normalized;
         rb.AddForce(knockback * 1000f);
         // rb.velocity = knockback;
     }

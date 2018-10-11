@@ -164,13 +164,13 @@ public class EnemyBeetle : Enemy, IStrikeable {
         targetXValue = transform.position.x + MAX_ROAM_DISTANCE * AI.DirectionScalarX(direction);
     }
 
-    void IStrikeable.Strike(Vector3 weaponLocation, ItemWeapon weapon) {
+    void IStrikeable.Strike(Vector2 weaponLocation, ItemWeapon weapon) {
         base.TakeDamage(1f);
         SetMotionState(MoveState.HIT);
 
         // Effects for getting hit here
         // Project vector from weapon to us onto the X axis and normalize to decide direction (left or right)
-        float knockbackX = Vector3.Project(this.transform.position - weaponLocation, Vector2.right).normalized.x;
+        float knockbackX = ((Vector2)this.transform.position - weaponLocation).normalized.x;
         rb.velocity = new Vector2(knockbackX * SELF_KNOCKBACK_VELOCITY, rb.velocity.y);
     }
 
@@ -178,12 +178,12 @@ public class EnemyBeetle : Enemy, IStrikeable {
     private void OnTriggerStay2D(Collider2D collider) {
         PlayerController player = collider.gameObject.GetComponentInParent<PlayerController>();
         if (player && !player.IsInvulnerable()) {
-            float knockbackX = Vector3.Project(AI.VectorToPlayer(this.gameObject), Vector2.right).normalized.x;
+            float knockbackX = Mathf.Sign(AI.VectorToPlayer(this.gameObject).x);
             knockbackX = knockbackX * Mathf.Cos(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
             // The amount of "up" our knockback has. We're small and low so we knock the player up a little in a predictable way.
             float knockbackY = Mathf.Sin(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
 
-            player.GetHit(new Vector2(knockbackX, knockbackY)*2f);
+            player.GetHit(new Vector2(knockbackX, knockbackY)*5f);
         }
     }
 }
