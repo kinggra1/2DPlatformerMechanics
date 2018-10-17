@@ -32,6 +32,26 @@ public class WaterSpriteController : MonoBehaviour {
 
     private bool specialButtonPressed;
 
+    private static WaterSpriteController instance;
+
+    void Awake() {
+        if (instance == null) {
+            // Keep this object around between scenes.
+            DontDestroyOnLoad(this.gameObject);
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public static WaterSpriteController GetInstance() {
+        if (instance == null) {
+            Debug.LogError("WaterSprite not present in scene.");
+        }
+        return instance;
+    }
+
 	// Use this for initialization
 	void Start () {
         inventory = InventorySystem.GetInstance();
@@ -62,7 +82,7 @@ public class WaterSpriteController : MonoBehaviour {
             if (targetList.Count > 0) {
                 NextTarget();
             }
-        } else if (Vector3.Distance(this.transform.position, target.transform.position) < 0.5f) {
+        } else if (Vector2.Distance(this.transform.position, target.transform.position) < 0.5f) {
             NextTarget(); // this could set target to be null if we ran out of targets
         }
 
@@ -147,8 +167,8 @@ public class WaterSpriteController : MonoBehaviour {
     }
 
     private int ClosestComponentCompare(Component x, Component y) {
-        float xDist = Vector3.Distance(x.transform.position, this.transform.position);
-        float yDist = Vector3.Distance(y.transform.position, this.transform.position);
+        float xDist = Vector2.Distance(x.transform.position, this.transform.position);
+        float yDist = Vector2.Distance(y.transform.position, this.transform.position);
 
         if (xDist < yDist) {
             return -1;

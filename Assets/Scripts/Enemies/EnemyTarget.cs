@@ -52,7 +52,7 @@ public class EnemyTarget : Enemy, IStrikeable {
 
             case MoveState.GOINGHOME:
                 this.transform.position = Vector2.Lerp(this.transform.position, homePosition, Time.deltaTime*5f);
-                if (Vector3.Distance(this.transform.position, homePosition) < 0.01f) {
+                if (Vector2.Distance(this.transform.position, homePosition) < 0.01f) {
                     SetMotionState(MoveState.IDLE);
                 }
                 break;

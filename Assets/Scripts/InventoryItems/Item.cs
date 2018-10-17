@@ -1,12 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public abstract class Item : MonoBehaviour {
 
     public bool consumable;
     public Sprite menuSprite;
     public GameObject inGamePrefab;
+
+    public enum ItemType { Seed, Weapon, Resource }
 
     public enum Seed { PlatformPlant, DewdropPlant, FruitPlantOrange }
     public enum Tool { None, Axe, Shovel }
@@ -26,6 +30,7 @@ public abstract class Item : MonoBehaviour {
         return menuSprite;
     }
 
+    public abstract ItemType GetItemType();
     public abstract bool CanUse();
     public abstract void Use();
 
@@ -49,4 +54,21 @@ public abstract class Item : MonoBehaviour {
     public override string ToString() {
         return base.ToString();
     }
+
+
+
+
+
+
+    public abstract ItemData Save();
+}
+
+[Serializable]
+public class ItemData {
+    public Item.ItemType type;
+    public Item.Seed seed;
+    public Item.Weapon weapon;
+    public Item.Tool tool;
+    public Item.Resource resource;
+    public Item.ElementCrystal crystal;
 }

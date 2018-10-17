@@ -27,7 +27,7 @@ public class Doorway : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if ((1<<collision.gameObject.layer) == AI.PlayerLayermask) {
-            GameController.GetInstance().lastDoorLocationUsed = whereToAppear;
+            GameController.GetInstance().ExitCurrentRoom(whereToAppear);
             SceneManager.LoadScene(scenePath);
         }
     }

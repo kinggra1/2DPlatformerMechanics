@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using System;using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
@@ -91,8 +91,20 @@ public class PlayerController : MonoBehaviour {
     private GameController gameController;
     public float currentStateTimer = 0f;
 
+    private static PlayerController instance;
+
 	// Use this for initialization
 	void Awake () {
+
+        if (instance == null) {
+            // Keep this object around between scenes.
+            DontDestroyOnLoad(this.transform.parent.gameObject);
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(this.transform.parent.gameObject);
+        }
+
         // This keeps our motion consistent if we ever change the physics timescale.
         jumpForce /= (Time.fixedDeltaTime * 60f);
 
@@ -132,6 +144,13 @@ public class PlayerController : MonoBehaviour {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();
         cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
+    }
+
+    public static PlayerController GetInstance() {
+        if (instance == null) {
+            Debug.LogError("PlayerController not found in scene.");
+        }
+        return instance;
     }
 
     public WaterSpriteController GetWaterSprite() {
@@ -598,8 +617,8 @@ public class PlayerController : MonoBehaviour {
     private void FindClosestWall() {
         if (objectOnLeft && objectOnRight) {
             // Left object is closer
-            if (Vector3.Distance(objectOnLeft.transform.position, transform.position) <
-                Vector3.Distance(objectOnRight.transform.position, transform.position)) {
+            if (Vector2.Distance(objectOnLeft.transform.position, transform.position) <
+                Vector2.Distance(objectOnRight.transform.position, transform.position)) {
                 wallDirection = AI.Direction.LEFT;
             } else {
                 wallDirection = AI.Direction.RIGHT;
@@ -652,4 +671,35 @@ public class PlayerController : MonoBehaviour {
             waterSprite.AddImmediateToTargetList(collider.gameObject);
         }
     }
+
+
+
+
+
+
+
+
+    // Saving and Loading functions for maintaining stateful information about player.
+    public PlayerData Save() {
+        PlayerData data = new PlayerData();
+        data.facingLeft = (playerFacing == AI.Direction.LEFT);
+
+        return data;
+    }
+
+    public void Load(PlayerData data) {
+        playerFacing = data.facingLeft ? (AI.Direction.LEFT) : (AI.Direction.RIGHT);
+    }
+}
+
+
+
+
+
+
+// This is the object that will hold data about the player for actual game saving/loading.
+// Things that are persistant across play sessions.
+[Serializable]
+public class PlayerData {
+    public bool facingLeft; // otherwise right
 }

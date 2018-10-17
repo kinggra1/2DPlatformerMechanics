@@ -70,7 +70,6 @@ public class EnemyBigEnemy : Enemy, IStrikeable {
 
         switch (moveState) {
             case MoveState.IDLE:
-                Debug.Log(Vector2.Distance(player.transform.position, this.transform.position));
                 if (Vector2.Distance(player.transform.position, this.transform.position) < PLAYER_DETECTION_DISTANCE) {
                     SetMotionState(MoveState.TELEGRAPH_CHARGE);
                     break;

@@ -18,7 +18,7 @@ public class InventorySystem : MonoBehaviour {
     private WaterSpriteController waterSprite;
     private TimeSystem timeSystem;
 
-    private List<InventorySlot> itemSlots = new List<InventorySlot>();
+    private List<InventorySlot> inventorySlots = new List<InventorySlot>();
 
     private int selectedItemIndex = 0;
 
@@ -33,33 +33,39 @@ public class InventorySystem : MonoBehaviour {
 
     // Use this for initialization
     void Awake() {
-        if (instance != null) {
-            return;
+
+        if (instance == null) {
+            // Keep this object around between scenes.
+            DontDestroyOnLoad(this.transform.parent.gameObject);
+            instance = this;
         }
-        instance = this;
+        else if (instance != this) {
+            Destroy(this.transform.parent.gameObject);
+        }
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         waterSprite = player.GetWaterSprite();
         timeSystem = TimeSystem.GetInstance();
 
         // Set up our list of available InventorySlots
-        itemSlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
+        inventorySlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
         LoadItemsFromResources();
 
-        itemSlots[0].Assign(weaponItemMap[Item.Weapon.Axe]);
-        itemSlots[1].Assign(weaponItemMap[Item.Weapon.Shovel]);
-        itemSlots[2].Assign(weaponItemMap[Item.Weapon.Sword]);
+        inventorySlots[0].Assign(weaponItemMap[Item.Weapon.Axe]);
+        inventorySlots[1].Assign(weaponItemMap[Item.Weapon.Shovel]);
+        inventorySlots[2].Assign(weaponItemMap[Item.Weapon.Sword]);
 
-        itemSlots[3].Assign(seedItemMap[Item.Seed.PlatformPlant], 5);
-        itemSlots[4].Assign(seedItemMap[Item.Seed.DewdropPlant], 1);
-        itemSlots[5].Assign(seedItemMap[Item.Seed.FruitPlantOrange], 3);
+        inventorySlots[3].Assign(seedItemMap[Item.Seed.PlatformPlant], 5);
+        inventorySlots[4].Assign(seedItemMap[Item.Seed.DewdropPlant], 1);
+        inventorySlots[5].Assign(seedItemMap[Item.Seed.FruitPlantOrange], 3);
 
         cursorRectTransform = cursorImage.GetComponent<RectTransform>();
 
         UpdateUI();
     }
 
+    // TODO: Make this assignment happen through a ScriptableObject or something instead of Resources loading
     public void LoadItemsFromResources() {
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedPlatformPlant", typeof(GameObject));
         GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedDewdropPlant", typeof(GameObject));
@@ -104,7 +110,7 @@ public class InventorySystem : MonoBehaviour {
     {
         // Check to see if this item can be stacked on another consumable
         if (item.IsConsumable()) {
-            foreach (InventorySlot slot in itemSlots) {
+            foreach (InventorySlot slot in inventorySlots) {
                 if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
                     // TODO: If we add resource stacking limits for consumables, this is where to check those
                     return true;
@@ -113,7 +119,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         // Check to see if there are any empty slots
-        foreach (InventorySlot slot in itemSlots) {
+        foreach (InventorySlot slot in inventorySlots) {
             if (slot.IsEmpty()) {
                 return true;
             }
@@ -126,7 +132,7 @@ public class InventorySystem : MonoBehaviour {
     public void PickupItem(Item item) {
         // Check to see if this item already exists somewhere in our inventory if it's a consumable
         if (item.IsConsumable()) {
-            foreach (InventorySlot slot in itemSlots) {
+            foreach (InventorySlot slot in inventorySlots) {
                 if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
                     // TODO: If we add resource stacking limits for consumables, this is where to check those
                     slot.IncrementCount(1);
@@ -136,7 +142,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         // If all of the above fails, put it in the first free inventory slot
-        foreach (InventorySlot slot in itemSlots) {
+        foreach (InventorySlot slot in inventorySlots) {
             if (slot.IsEmpty()) {
                 slot.Assign(item, 1);
                 return;
@@ -148,12 +154,11 @@ public class InventorySystem : MonoBehaviour {
         Debug.LogError("We shouldn't have tried picking this up. Oops. Fix your code.");
     }
 
-    // now if we forget to put a InventorySystem in the scene, we can still
-    // call this and one will be dynamically created
     public static InventorySystem GetInstance() {
         if (instance == null) {
-            instance = new GameObject().AddComponent<InventorySystem>();
-            instance.name = "InventorySystem";
+            Debug.LogError("Scene needs a Canvas + Inventory");
+            //instance = new GameObject().AddComponent<InventorySystem>();
+            //instance.name = "InventorySystem";
         }
         return instance;
     }
@@ -177,7 +182,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         if (useItemPressed) {
-            InventorySlot currentItem = itemSlots[selectedItemIndex];
+            InventorySlot currentItem = inventorySlots[selectedItemIndex];
 
             // Right now all we can do is use items, so nothing left to do.
             if (currentItem.IsEmpty()) {
@@ -274,20 +279,20 @@ public class InventorySystem : MonoBehaviour {
 
     private void SetSelectedItemIndex(int newIndex) {
         if (newIndex < 0) {
-            newIndex += itemSlots.Count;
+            newIndex += inventorySlots.Count;
         }
-        if (newIndex >= itemSlots.Count) {
-            newIndex -= itemSlots.Count;
+        if (newIndex >= inventorySlots.Count) {
+            newIndex -= inventorySlots.Count;
         }
         selectedItemIndex = newIndex;
         UpdateUI();
     }
 
     private void UpdateUI() {
-        itemRectTransform = itemSlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
+        itemRectTransform = inventorySlots[selectedItemIndex].gameObject.GetComponent<RectTransform>();
         cursorRectTransform.anchoredPosition = new Vector2(itemRectTransform.localPosition.x, 0f);
 
-        Item weaponItem = itemSlots[selectedItemIndex].GetItem();
+        Item weaponItem = inventorySlots[selectedItemIndex].GetItem();
         if (weaponItem && weaponItem.GetComponent<ItemWeapon>() != null) {
             player.SetWeapon(weaponItem.GetComponent<ItemWeapon>());
         } else {
@@ -347,4 +352,42 @@ public class InventorySystem : MonoBehaviour {
                 // handle other tools here
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+    public InventoryData Save() {
+        InventoryData data = new InventoryData();
+
+        foreach (InventorySlot slot in inventorySlots) {
+            data.inventorySlots.Add(slot.Save());
+        }
+        data.selectedItemIndex = selectedItemIndex;
+        data.waterLevel = waterLevel;
+
+        return data;
+    }
+
+    public void Load(InventoryData data) { 
+
+        for (int i = 0; i < data.inventorySlots.Count; i++) {
+            inventorySlots[i].Load(data.inventorySlots[i]);
+        }
+        SetSelectedItemIndex(data.selectedItemIndex);
+        waterLevel = data.waterLevel;
+    }
+}
+
+[Serializable]
+public class InventoryData {
+    public List<InventorySlotData> inventorySlots = new List<InventorySlotData>();
+    public int selectedItemIndex;
+    public int waterLevel;
 }

@@ -13,6 +13,10 @@ public class ItemWeapon : Item {
         return InventorySystem.GetInstance().CanUseTool();
     }
 
+    public override ItemType GetItemType() {
+        return ItemType.Weapon;
+    }
+
     override public void Use() {
         InventorySystem.GetInstance().SetToolUsageCooldown(usageCooldown);
 
@@ -23,5 +27,18 @@ public class ItemWeapon : Item {
             InventorySystem inventory = InventorySystem.GetInstance();
             inventory.UseTool(toolType);
         }
+    }
+
+
+
+
+    public override ItemData Save() {
+        ItemData data = new ItemData();
+
+        data.type = GetItemType();
+        data.weapon = weaponType;
+        data.tool = toolType;
+
+        return data;
     }
 }

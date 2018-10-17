@@ -10,6 +10,9 @@ public class ItemTool : Item {
         return true;
     }
 
+    public override ItemType GetItemType() {
+        return ItemType.Weapon;
+    }
 
     override public void Use() {
         InventorySystem inventory = InventorySystem.GetInstance();
@@ -19,5 +22,13 @@ public class ItemTool : Item {
             Debug.LogError("Unable to find Inventory.");
         }
         
+    }
+
+    public override ItemData Save() {
+        ItemData data = new ItemData();
+
+        data.type = GetItemType();
+
+        return data;
     }
 }

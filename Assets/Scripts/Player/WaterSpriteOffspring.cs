@@ -38,7 +38,7 @@ public class WaterSpriteOffspring : MonoBehaviour {
             return;
         }
 
-        if (Vector3.Distance(this.transform.position, target.transform.position) < 0.5f) {
+        if (Vector2.Distance(this.transform.position, target.transform.position) < 0.5f) {
             InteractWithTarget(); // this could set target to be null if we ran out of targets
         }
 

@@ -35,7 +35,20 @@ public class CameraFollow : MonoBehaviour {
 
     private readonly Vector3 SHAKE_SCALE = new Vector3(2f, 1.5f, 0f);
 
+    private static CameraFollow instance;
+
     private void Awake() {
+
+        if (instance == null) {
+            // Keep this object around between scenes.
+            DontDestroyOnLoad(this.gameObject);
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(gameObject);
+        }
+
+
         cam = this.GetComponent<Camera>();
         if (cam == null) {
             Debug.LogError("No Camera attached to CameraFollower");
@@ -54,6 +67,13 @@ public class CameraFollow : MonoBehaviour {
         playerRigidbody = player.GetComponent<Rigidbody2D>();
 
 	}
+
+    public static CameraFollow GetInstance() {
+        if (instance == null) {
+            Debug.LogError("No camera found in scene :o");
+        }
+        return instance;
+    }
 
     public void AddShakeTrauma(float change) {
         trauma += change;
