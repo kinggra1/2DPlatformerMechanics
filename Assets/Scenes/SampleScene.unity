@@ -5166,7 +5166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6890539040454289606, guid: 8f1296ce9f43e8143a18711140691506, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6890539038696661050, guid: 8f1296ce9f43e8143a18711140691506, type: 3}
       propertyPath: scrollLayers.Array.data[3].distance
