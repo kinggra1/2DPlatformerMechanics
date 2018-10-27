@@ -67,7 +67,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
                 Collider2D plant = AI.FindPlantInRange(transform.position, PLANT_DETECTION_DISTANCE);
                 Collider2D[] plants = new Collider2D[20];
                 if (plant) {
-                    targetPlantZone = plant.GetComponentInParent<IPlantableZone>();
+                    targetPlantZone = plant.GetComponentInParent<PlantableZone>();
                     if (targetPlantZone != null && targetPlantZone.IsPlanted()) {
                         targetPlantPosition = plant.transform.position;
                         SetMotionState(MoveState.SEEKPLANT);

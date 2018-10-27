@@ -76,7 +76,7 @@ public class WaterSpriteOffspring : MonoBehaviour {
             }
 
             // If current target is a PlantableZone, water it
-            IPlantableZone plantableZone = target.GetComponent<IPlantableZone>();
+            PlantableZone plantableZone = target.GetComponent<PlantableZone>();
             if (plantableZone != null) {
                 plantableZone.Water();
             }

@@ -34,6 +34,7 @@ public class CameraFollow : MonoBehaviour {
     private readonly float SHAKE_SPEED = 10f;
 
     private readonly Vector3 SHAKE_SCALE = new Vector3(2f, 1.5f, 0f);
+    private readonly Vector3 DEFAULT_OFFSET = new Vector3(0f, 2f, 0f);
 
     private static CameraFollow instance;
 
@@ -96,7 +97,7 @@ public class CameraFollow : MonoBehaviour {
             trauma = 0f;
         }
 
-        targetPosition = target.transform.position;
+        targetPosition = target.transform.position + DEFAULT_OFFSET;
         targetPosition.z = transform.position.z;
         if (playerRigidbody != null) {
             // targetPosition += new Vector3(Mathf.Min(playerRigidbody.velocity.x, 2f), 0f, 0f);// new Vector3(targetRigidbody.velocity.x, targetRigidbody.velocity.y, 0f).normalized * Mathf.Min(targetRigidbody.velocity.magnitude, 2f);

@@ -10,9 +10,11 @@ public class InventorySystem : MonoBehaviour {
     public GameObject itemSlotParent;
     public GameObject cursorImage;
 
-    public Dictionary<Item.Seed, Item> seedItemMap = new Dictionary<Item.Seed, Item>();
-    public Dictionary<Item.Weapon, Item> weaponItemMap = new Dictionary<Item.Weapon, Item>();
+    public Dictionary<Item.Seed, ItemSeed> seedItemMap = new Dictionary<Item.Seed, ItemSeed>();
+    public Dictionary<Item.Weapon, ItemWeapon> weaponItemMap = new Dictionary<Item.Weapon, ItemWeapon>();
     public Dictionary<Item.Resource, Item> resourceItemMap = new Dictionary<Item.Resource, Item>();
+
+    public Dictionary<PlantableZone.Type, GameObject> plantableZonePrefabMap = new Dictionary<PlantableZone.Type, GameObject>();
 
     private PlayerController player;
     private WaterSpriteController waterSprite;
@@ -70,19 +72,22 @@ public class InventorySystem : MonoBehaviour {
         GameObject platformPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedPlatformPlant", typeof(GameObject));
         GameObject dewdropPlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedDewdropPlant", typeof(GameObject));
         GameObject fruitOrangePlantSeedItem = (GameObject)Resources.Load("PlantPrefabs/Inventory/ItemSeedFruitPlantOrange", typeof(GameObject));
-        seedItemMap.Add(Item.Seed.PlatformPlant, platformPlantSeedItem.GetComponent<Item>());
-        seedItemMap.Add(Item.Seed.DewdropPlant, dewdropPlantSeedItem.GetComponent<Item>());
-        seedItemMap.Add(Item.Seed.FruitPlantOrange, fruitOrangePlantSeedItem.GetComponent<Item>());
+        seedItemMap.Add(Item.Seed.PlatformPlant, platformPlantSeedItem.GetComponent<ItemSeed>());
+        seedItemMap.Add(Item.Seed.DewdropPlant, dewdropPlantSeedItem.GetComponent<ItemSeed>());
+        seedItemMap.Add(Item.Seed.FruitPlantOrange, fruitOrangePlantSeedItem.GetComponent<ItemSeed>());
 
         GameObject axeItem = (GameObject)Resources.Load("ToolPrefabs/Inventory/ItemToolAxe", typeof(GameObject));
         GameObject shovelItem = (GameObject)Resources.Load("ToolPrefabs/Inventory/ItemToolShovel", typeof(GameObject));
         GameObject swordItem = (GameObject)Resources.Load("WeaponPrefabs/Inventory/ItemWeaponSword", typeof(GameObject));
-        weaponItemMap.Add(Item.Weapon.Axe, axeItem.GetComponent<Item>());
-        weaponItemMap.Add(Item.Weapon.Shovel, shovelItem.GetComponent<Item>());
-        weaponItemMap.Add(Item.Weapon.Sword, swordItem.GetComponent<Item>());
+        weaponItemMap.Add(Item.Weapon.Axe, axeItem.GetComponent<ItemWeapon>());
+        weaponItemMap.Add(Item.Weapon.Shovel, shovelItem.GetComponent<ItemWeapon>());
+        weaponItemMap.Add(Item.Weapon.Sword, swordItem.GetComponent<ItemWeapon>());
 
         GameObject dirtItem = (GameObject)Resources.Load("ResourcePrefabs/ItemResourceDirt", typeof(GameObject));
         resourceItemMap.Add(Item.Resource.Dirt, dirtItem.GetComponent<Item>());
+
+        GameObject dirtPatch = (GameObject)Resources.Load("PlantableZonePrefabs/DirtPatch", typeof(GameObject));
+        plantableZonePrefabMap.Add(PlantableZone.Type.DirtPatch, dirtPatch);
     }
 
     public bool WaterLevelFull() {
@@ -190,15 +195,16 @@ public class InventorySystem : MonoBehaviour {
             }
 
             // Check to see if we have a variety of things and if we can use them
-            Growable  plantableSeed = currentItem.GetGamePrefab().GetComponent<Growable >();
+            Growable  plantableSeed = currentItem.GetGamePrefab().GetComponent<Growable>();
             DirtPatch dirtPatch = currentItem.GetGamePrefab().GetComponent<DirtPatch>();
 
-            IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+            PlantableZone plantableZone = player.GetAvailablePlantableZone();
 
             // Planting a seed
             if (plantableSeed != null) {
+                ItemSeed seed = (ItemSeed)currentItem.GetItem();
                 if (plantableZone != null && !plantableZone.IsPlanted()) {
-                    plantableZone.PlantSeed(currentItem.GetGamePrefab());
+                    plantableZone.PlantSeed(seed);
                     currentItem.Use();
                 }
             }
@@ -224,7 +230,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         if (waterButtonPressed) {
-            IPlantableZone plantableZone = player.GetAvailablePlantableZone();
+            PlantableZone plantableZone = player.GetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanBeWatered()) {
                 GameObject target = (plantableZone as MonoBehaviour).gameObject;
                 if (waterLevel > 0) {
@@ -315,7 +321,7 @@ public class InventorySystem : MonoBehaviour {
 
     internal void UseTool(Item.Tool toolType) {
 
-        IPlantableZone currentPlantableZone = player.GetAvailablePlantableZone();
+        PlantableZone currentPlantableZone = player.GetAvailablePlantableZone();
 
         switch (toolType) {
 

@@ -73,7 +73,7 @@ public class PlayerController : MonoBehaviour {
     private bool onWall;
     private GameObject objectOnLeft;
     private GameObject objectOnRight;
-    private IPlantableZone currentPlantableZone = null; // usually null
+    private PlantableZone currentPlantableZone = null; // usually null
 
     private InventorySystem inventory;
     private LevelBoundaryManager levelBoundaryManager;
@@ -165,11 +165,11 @@ public class PlayerController : MonoBehaviour {
         return playerFacing;
     }
 
-    public IPlantableZone GetAvailablePlantableZone() {
+    public PlantableZone GetAvailablePlantableZone() {
         return this.currentPlantableZone;
     }
 
-    public void SetAvailablePlantableZone(IPlantableZone zone) {
+    public void SetAvailablePlantableZone(PlantableZone zone) {
         this.currentPlantableZone = zone;
     }
 

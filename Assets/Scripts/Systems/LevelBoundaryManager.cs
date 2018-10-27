@@ -6,7 +6,6 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(EdgeCollider2D))]
-[Serializable]
 public class LevelBoundaryManager : MonoBehaviour {
 
     // Collection of possible locations for doors. This is kind of abstract, so it's up to your interpretation as to
@@ -21,30 +20,27 @@ public class LevelBoundaryManager : MonoBehaviour {
     [SerializeField]
     private LevelDoorDictionary _doorMap = new LevelDoorDictionary();
 
-    [SerializeField]
-    private int testFieldBoop;
-
     public LevelDoorDictionary doorMap { get { return _doorMap; } }
 
     private EdgeCollider2D boundary;
+    private Vector2 maxBoundaryDimensions;
 
-    // Start is called before the first frame update
-    void Start() {
+    void Awake() {
         boundary = GetComponent<EdgeCollider2D>();
         float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect * 2f;
         float cameraHeight = Camera.main.orthographicSize * 2f;
 
-        Vector2 maxBoundaryDimensions = CalculateBoundaryDimensions();
+        maxBoundaryDimensions = CalculateBoundaryDimensions();
 
         Vector2 cameraLimit = new Vector2(maxBoundaryDimensions.x - cameraWidth*2f, maxBoundaryDimensions.y - cameraHeight*2f);
         Vector2 playerLimit = new Vector2(maxBoundaryDimensions.x - cameraWidth, maxBoundaryDimensions.y - cameraHeight);
 
-        Vector2 bottomLeft = (Vector2)transform.position - cameraLimit / 2f;
-        Vector2 topRight = (Vector2)transform.position + cameraLimit / 2f;
+        Vector2 bottomLeft = (Vector2)transform.position - playerLimit / 2f;
+        Vector2 topRight = (Vector2)transform.position + playerLimit / 2f;
         Camera.main.GetComponent<CameraFollow>().SetSceneLimitDims(bottomLeft, topRight);
 
         // Rescale the bounds so that we run into the edge in the appropriate location for the smaller far background
-        this.transform.localScale = (playerLimit) / maxBoundaryDimensions;
+        // this.transform.localScale = (playerLimit) / maxBoundaryDimensions;
         
     }
 
@@ -68,6 +64,10 @@ public class LevelBoundaryManager : MonoBehaviour {
         }
 
         return new Vector2(maxX - minX, maxY - minY);
+    }
+
+    public Vector2 GetMaxBoundaryDimensions() {
+        return maxBoundaryDimensions;
     }
 
     // Update is called once per frame

@@ -1,12 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DirtPatch : MonoBehaviour, IPlantableZone {
+public class DirtPatch : PlantableZone {
 
     public GameObject wetDirtSprite;
-
-    private Growable plant = null;
 
     // Use this for initialization
     void Start () {
@@ -16,7 +15,8 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
 	// Update is called once per frame
 	void Update () {
 
-        // Can probably do this more cleanly/on water/grow, but in the current setup that would require a callback
+        // Can probably do this more cleanly/on water/grow, but in the current setup that would require a callback?
+        // We have the SetActive(true) part handled below, need to figure out SetActive(false)
         // TODO: Consider optimizing
 		if (plant != null && plant.IsWatered()) {
             wetDirtSprite.SetActive(true);
@@ -25,54 +25,11 @@ public class DirtPatch : MonoBehaviour, IPlantableZone {
         }
 	}
 
-    bool IPlantableZone.IsPlanted() {
-        return plant != null;
-    }
+    public override void Water() {
+        base.Water();
 
-    void IPlantableZone.Fertalize() {
-        throw new System.NotImplementedException();
-    }
-
-    void IPlantableZone.PlantSeed(GameObject seed) {
-        plant = Instantiate(seed, this.transform).GetComponent<Growable>();
-        // Make sure we have a Growable being planted
-        if (plant == null) {
-            Debug.LogError("Error trying to plant seed.");
-        }
-    }
-
-    bool IPlantableZone.CanBeWatered() {
-        return plant != null && plant.CanBeWatered();
-    }
-
-    void IPlantableZone.Water() {
-        plant.Water();
-    }
-
-    void IPlantableZone.Chop() {
-        plant.Chop();
-
-        // One chop chump
-        //ResetPatch();
-    }
-
-    private void ResetPatch() {
-        plant = null;
-    }
-
-    void OnTriggerEnter2D(Collider2D collider) {
-        PlayerController player = collider.GetComponentInParent<PlayerController>();
-        if (player) {
-            //Debug.Log("In plantable zone");
-            player.SetAvailablePlantableZone(this);
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D collider) {
-        PlayerController player = collider.GetComponentInParent<PlayerController>();
-        if (player && (DirtPatch)player.GetAvailablePlantableZone() == this) {
-            //Debug.Log("No plantable zone");
-            player.SetAvailablePlantableZone(null);
+        if (plant != null && plant.IsWatered()) {
+            wetDirtSprite.SetActive(true);
         }
     }
 }

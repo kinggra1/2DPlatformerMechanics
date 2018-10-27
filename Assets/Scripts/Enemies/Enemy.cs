@@ -21,7 +21,7 @@ public abstract class Enemy : MonoBehaviour {
 
     protected float stateTimer = 0f;
     protected Vector3 targetPlantPosition;
-    protected IPlantableZone targetPlantZone = null;
+    protected PlantableZone targetPlantZone = null;
 
     protected SpriteRenderer[] renderers;
 

@@ -25,7 +25,8 @@ public class LevelBoundaryManagerEditor : Editor {
         foreach (LevelBoundaryManager.DoorLocation doorLocation in doorLocations) {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(doorLocation.ToString());
-            doorways.Add(EditorGUILayout.ObjectField(oldDoorMap[doorLocation], typeof(Doorway), true) as Doorway);
+            Doorway oldDoorway = oldDoorMap.ContainsKey(doorLocation) ? oldDoorMap[doorLocation] : null;
+            doorways.Add(EditorGUILayout.ObjectField(oldDoorway, typeof(Doorway), true) as Doorway);
             EditorGUILayout.EndHorizontal();
         }
         //SceneAsset newScene = EditorGUILayout.ObjectField("scene", oldScene, typeof(SceneAsset), false) as SceneAsset;

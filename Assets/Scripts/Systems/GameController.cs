@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -78,11 +79,40 @@ public class GameController : MonoBehaviour {
     private void OnLevelWasLoaded(int level) {
         FindNeededObjects();
         Load();
-        // TODO: FIX CAUZE THIS IS GOING TO BE BUGGY ON FIRST LOAD OOPS
+
         LevelBoundaryManager levelBoundaryManager = GameObject.Find("LevelBoundaryManager").GetComponent<LevelBoundaryManager>();
         Doorway playerEnteredFrom = levelBoundaryManager.doorMap[whereToAppear];
         if (playerEnteredFrom != null) {
             player.TeleportAfterSceneLoad(playerEnteredFrom.playerSpawnMarker.transform.position);
+        }
+    }
+
+    private RoomData SaveRoomState() {
+        RoomData data = new RoomData();
+
+        foreach (PlantableZone zone in GameObject.FindObjectsOfType<PlantableZone>()) {
+            data.plantableZoneNames.Add(zone.name);
+            data.plantableZoneData.Add(zone.Save());
+        }
+
+        return data;
+    }
+
+    private void LoadRoomState(RoomData data) {
+        // Load is only called if we already have data for this room, so we should delete default plantable zones
+        foreach (PlantableZone zone in GameObject.FindObjectsOfType<PlantableZone>()) {
+            Destroy(zone.gameObject);
+        }
+
+        // Create all plants that were stored in level data.
+        for (int i = 0; i < data.plantableZoneNames.Count; i++) {
+            string name = data.plantableZoneNames[i];
+            PlantableZoneData zoneData = data.plantableZoneData[i];
+
+            GameObject obj = Instantiate(inventory.plantableZonePrefabMap[zoneData.zoneType]);
+            PlantableZone plantableZone = obj.GetComponent<PlantableZone>();
+
+            plantableZone.Load(zoneData);
         }
     }
 
@@ -102,6 +132,16 @@ public class GameController : MonoBehaviour {
         file = File.Create(Application.persistentDataPath + "/inventory.dat");
         bf.Serialize(file, inventory.Save());
         file.Close();
+
+        // Save information about the Scene that we are currently leaving
+        // Use the scene name as the file name, because Scene names are unique and immutable.
+        string levelPath = Application.persistentDataPath + "/levels/";
+        if (!Directory.Exists(levelPath)) {
+            Directory.CreateDirectory(levelPath);
+        }
+        file = File.Create(levelPath + SceneManager.GetActiveScene().name + ".dat");
+        bf.Serialize(file, SaveRoomState());
+        file.Close();
     }
 
     private void Load() {
@@ -118,5 +158,18 @@ public class GameController : MonoBehaviour {
             inventory.Load((InventoryData)bf.Deserialize(file));
             file.Close();
         }
+
+        string levelPath = Application.persistentDataPath + "/levels/";
+        if (File.Exists(levelPath + SceneManager.GetActiveScene().name + ".dat")) {
+            file = File.Open(levelPath + SceneManager.GetActiveScene().name + ".dat", FileMode.Open);
+            LoadRoomState((RoomData)bf.Deserialize(file));
+            file.Close();
+        }
     }
+}
+
+[Serializable]
+public class RoomData {
+    public List<string> plantableZoneNames = new List<string>();
+    public List<PlantableZoneData> plantableZoneData = new List<PlantableZoneData>();
 }

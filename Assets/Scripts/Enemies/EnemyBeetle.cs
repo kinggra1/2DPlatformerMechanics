@@ -113,9 +113,8 @@ public class EnemyBeetle : Enemy, IStrikeable {
 
             if (hit.collider.isTrigger) {
                 // Check to see if this is a plant that we can eat
-                IPlantableZone plantableZone = hit.collider.GetComponentInParent<IPlantableZone>();
+                PlantableZone plantableZone = hit.collider.GetComponentInParent<PlantableZone>();
                 if (plantableZone != null && plantableZone.IsPlanted()) {
-                    Debug.Log(((MonoBehaviour)plantableZone).gameObject.name);
                     SetMotionState(MoveState.EATING);
                     targetPlantZone = plantableZone;
                     return true;

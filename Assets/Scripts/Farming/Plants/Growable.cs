@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * Growable s are things that can be watered, can grow, and can be "chopped"
+ * Growables are things that can be watered, can grow, and can be "chopped"
  */
 public abstract class Growable  : MonoBehaviour {
 
@@ -27,10 +28,7 @@ public abstract class Growable  : MonoBehaviour {
         timeSystem = TimeSystem.GetInstance();
         plantedTime = timeSystem.GetTime();
 
-        foreach (GameObject phase in growthPhases) {
-            phase.SetActive(false);
-        }
-        growthPhases[phaseIndex].SetActive(true);
+        SetPhaseIndex(0);
     }
 
     // Update is called once per frame
@@ -43,6 +41,14 @@ public abstract class Growable  : MonoBehaviour {
                 watered = false;
             }
         }
+    }
+
+    private void SetPhaseIndex(int index) {
+        phaseIndex = index;
+        foreach (GameObject phase in growthPhases) {
+            phase.SetActive(false);
+        }
+        growthPhases[phaseIndex].SetActive(true);
     }
 
     protected void ChangePhaseIndex(int delta) {
@@ -58,6 +64,10 @@ public abstract class Growable  : MonoBehaviour {
                 GrowablePhase.AnimatePhaseGrowth();
             }
         }
+    }
+
+    public virtual TimeInstant GetPlantedTime() {
+        return plantedTime;
     }
 
     public virtual bool CanBeWatered() {
@@ -83,4 +93,33 @@ public abstract class Growable  : MonoBehaviour {
             harvestable.Harvest();
         }
     }
+
+
+
+
+
+    public GrowableData Save() {
+        GrowableData data = new GrowableData();
+
+        data.plantedTime = plantedTime;
+        data.lastWateredTime = lastWateredTime;
+        data.phaseIndex = phaseIndex;
+
+        return data;
+    }
+
+    public void Load(GrowableData data) {
+        plantedTime = data.plantedTime;
+        lastWateredTime = data.lastWateredTime;
+        SetPhaseIndex(data.phaseIndex);
+    }
+}
+
+
+
+[Serializable]
+public class GrowableData {
+    public TimeInstant plantedTime;
+    public TimeInstant lastWateredTime;
+    public int phaseIndex;
 }
