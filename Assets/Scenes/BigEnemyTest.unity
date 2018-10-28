@@ -853,6 +853,46 @@ PrefabInstance:
       propertyPath: _doorMap.keys.Array.data[11]
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[0].x
+      value: -26
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[0].y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[1].x
+      value: 73
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[1].y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[2].x
+      value: 73
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[2].y
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[3].x
+      value: -26
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[3].y
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[4].x
+      value: -26
+      objectReference: {fileID: 0}
+    - target: {fileID: 5666601209970477310, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
+      propertyPath: m_Points.Array.data[4].y
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f21df94da44e6e04590712dba5e80c8a, type: 3}
 --- !u!1001 &1795219103

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-[RequireComponent(typeof(EdgeCollider2D))]
 public class LevelBoundaryManager : MonoBehaviour {
 
     // Collection of possible locations for doors. This is kind of abstract, so it's up to your interpretation as to
@@ -22,21 +20,23 @@ public class LevelBoundaryManager : MonoBehaviour {
 
     public LevelDoorDictionary doorMap { get { return _doorMap; } }
 
-    private EdgeCollider2D boundary;
     private Vector2 maxBoundaryDimensions;
+    private Vector2 boundaryCenter;
+
+    private CompositeCollider2D groundColliders;
 
     void Awake() {
-        boundary = GetComponent<EdgeCollider2D>();
+        groundColliders = GetComponentInChildren<CompositeCollider2D>();
         float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect * 2f;
         float cameraHeight = Camera.main.orthographicSize * 2f;
 
-        maxBoundaryDimensions = CalculateBoundaryDimensions();
+        CalculateBoundaryDimensions();
 
         Vector2 cameraLimit = new Vector2(maxBoundaryDimensions.x - cameraWidth*2f, maxBoundaryDimensions.y - cameraHeight*2f);
         Vector2 playerLimit = new Vector2(maxBoundaryDimensions.x - cameraWidth, maxBoundaryDimensions.y - cameraHeight);
 
-        Vector2 bottomLeft = (Vector2)transform.position - playerLimit / 2f;
-        Vector2 topRight = (Vector2)transform.position + playerLimit / 2f;
+        Vector2 bottomLeft = boundaryCenter - playerLimit / 2f;
+        Vector2 topRight = boundaryCenter + playerLimit / 2f;
         Camera.main.GetComponent<CameraFollow>().SetSceneLimitDims(bottomLeft, topRight);
 
         // Rescale the bounds so that we run into the edge in the appropriate location for the smaller far background
@@ -44,26 +44,14 @@ public class LevelBoundaryManager : MonoBehaviour {
         
     }
 
-    private Vector2 CalculateBoundaryDimensions() {
-        float minX = Mathf.Infinity, minY = Mathf.Infinity;
-        float maxX = Mathf.NegativeInfinity, maxY = Mathf.NegativeInfinity;
-
-        foreach (Vector2 point in boundary.points) {
-            if (point.x < minX) {
-                minX = point.x;
-            }
-            if (point.x > maxX) {
-                maxX = point.x;
-            }
-            if (point.y < minY) {
-                minY = point.y;
-            }
-            if (point.y > maxY) {
-                maxY = point.y;
-            }
+    private void CalculateBoundaryDimensions() {
+        if (groundColliders && groundColliders.bounds.size.magnitude > 1f) {
+            boundaryCenter = groundColliders.bounds.center;
+            maxBoundaryDimensions = groundColliders.bounds.size;
+        } else {
+            boundaryCenter = new Vector2(0f, 0f);
+            maxBoundaryDimensions = new Vector2(500f, 100f);
         }
-
-        return new Vector2(maxX - minX, maxY - minY);
     }
 
     public Vector2 GetMaxBoundaryDimensions() {
