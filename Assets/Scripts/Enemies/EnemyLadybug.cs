@@ -17,7 +17,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
     private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_DETECTION_DISTANCE = 15f;
-    private readonly float PLANT_DETECTION_DISTANCE = 35f;
+    private readonly float PLANT_DETECTION_DISTANCE = 20f;
 
     // Use this for initialization
     new void Start() {

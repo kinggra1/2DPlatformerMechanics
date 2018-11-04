@@ -48,7 +48,9 @@ public class LevelBoundaryManager : MonoBehaviour {
         if (groundColliders && groundColliders.bounds.size.magnitude > 1f) {
             boundaryCenter = groundColliders.bounds.center;
             maxBoundaryDimensions = groundColliders.bounds.size;
+            Debug.Log(maxBoundaryDimensions);
         } else {
+            Debug.Log("Ya background is fucked.");
             boundaryCenter = new Vector2(0f, 0f);
             maxBoundaryDimensions = new Vector2(500f, 100f);
         }
@@ -56,6 +58,10 @@ public class LevelBoundaryManager : MonoBehaviour {
 
     public Vector2 GetMaxBoundaryDimensions() {
         return maxBoundaryDimensions;
+    }
+
+    public Vector2 GetBoundaryCenter() {
+        return boundaryCenter;
     }
 
     // Update is called once per frame

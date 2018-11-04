@@ -67,7 +67,9 @@ public class CameraFollow : MonoBehaviour {
         player = target.GetComponentInChildren<PlayerController>();
         playerRigidbody = player.GetComponent<Rigidbody2D>();
 
-	}
+        // Set camera to start on player
+        TeleportAfterSceneLoad(player.transform.position);
+    }
 
     public static CameraFollow GetInstance() {
         if (instance == null) {

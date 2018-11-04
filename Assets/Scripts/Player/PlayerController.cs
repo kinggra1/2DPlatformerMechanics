@@ -11,8 +11,6 @@ public class PlayerController : MonoBehaviour {
     public float maxFallspeed = -15f;
     [Tooltip("Upwards force applied to Rigidbody2D to create a jump in N")]
     public float jumpForce = 1000;
-    [Tooltip("A reference to our best friend.")]
-    public WaterSpriteController waterSprite;
     [Tooltip("Movement speed when dash/roll/dodge-ing.")]
     public float dodgeMoveSpeed = 30f;
     [Tooltip("Length of time that the dash/roll/dodge-ing motion takes place. Will also set invulnerability timer.")]
@@ -77,6 +75,7 @@ public class PlayerController : MonoBehaviour {
 
     private InventorySystem inventory;
     private LevelBoundaryManager levelBoundaryManager;
+    private WaterSpriteController waterSprite;
 
     private float xInput;
     private float yInput;
@@ -144,6 +143,7 @@ public class PlayerController : MonoBehaviour {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();
         cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
+        waterSprite = WaterSpriteController.GetInstance();
     }
 
     public static PlayerController GetInstance() {
