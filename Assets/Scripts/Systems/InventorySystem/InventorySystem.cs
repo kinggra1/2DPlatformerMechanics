@@ -44,8 +44,10 @@ public class InventorySystem : MonoBehaviour {
         else if (instance != this) {
             Destroy(this.transform.parent.gameObject);
         }
+    }
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+    void Start() {
+        player = PlayerController.GetInstance();
         waterSprite = player.GetWaterSprite();
         timeSystem = TimeSystem.GetInstance();
 
@@ -175,6 +177,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         bool useItemPressed = Input.GetButton("Fire1");
+        bool useItemSpecialPressed = Input.GetButton("SpecialAttack");
         bool waterButtonPressed = Input.GetButton("Fire2");
 
         int indexChange = 0;
@@ -229,6 +232,17 @@ public class InventorySystem : MonoBehaviour {
             }
         }
 
+        if (useItemSpecialPressed) {
+            InventorySlot currentItem = inventorySlots[selectedItemIndex];
+
+            // Make sure we have something equipped.
+            if (currentItem.IsEmpty()) {
+                return;
+            }
+
+            currentItem.UseSpecial();
+        }
+
         if (waterButtonPressed) {
             PlantableZone plantableZone = player.GetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanBeWatered()) {
@@ -244,6 +258,8 @@ public class InventorySystem : MonoBehaviour {
                         // TODO: Consider implications of this call. It means we can't possibly overwater, but it
                         // also changes the watersprite visual before it actually reaches the PlantableZone
                         ChangeWaterLevel(-1);
+                    } else {
+                        Debug.LogError("D:");
                     }
 
                 } else {

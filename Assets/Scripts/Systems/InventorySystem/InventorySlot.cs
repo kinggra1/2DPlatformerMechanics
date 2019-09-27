@@ -78,6 +78,10 @@ public class InventorySlot : MonoBehaviour {
         }
     }
 
+    public void UseSpecial() {
+        item.UseSpecial();
+    }
+
     private void UpdateUI() {
         if (item != null) {
             this.itemImage.gameObject.SetActive(true);

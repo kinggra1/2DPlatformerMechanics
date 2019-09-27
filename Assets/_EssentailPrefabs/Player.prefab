@@ -100,7 +100,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4259778419634920}
-  - component: {fileID: 114012240798056940}
   m_Layer: 8
   m_Name: WeaponParent
   m_TagString: Untagged
@@ -123,19 +122,6 @@ Transform:
   m_Father: {fileID: 4981921624222546}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114012240798056940
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1240562606271752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19e32bf5e18f97a4393d3f22efcb0561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponParent: {fileID: 0}
 --- !u!1 &1349533900634218
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,6 +416,7 @@ GameObject:
   - component: {fileID: 212873835691488966}
   - component: {fileID: 1617026990}
   - component: {fileID: 1617026991}
+  - component: {fileID: 1690491771}
   m_Layer: 8
   m_Name: PlayerBody
   m_TagString: Untagged
@@ -515,7 +502,6 @@ MonoBehaviour:
   hMoveSpeed: 10
   maxFallspeed: -15
   jumpForce: 1000
-  waterSprite: {fileID: 0}
   dodgeMoveSpeed: 30
   dodgeStateTime: 0.2
   dodgeCooldown: 2
@@ -548,6 +534,30 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!233 &1690491771
+HingeJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801823162172638}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 0
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0, y: 0}
+  m_UseMotor: 0
+  m_Motor:
+    m_MotorSpeed: 0
+    m_MaximumMotorForce: 10000
+  m_UseLimits: 0
+  m_AngleLimits:
+    m_LowerAngle: 0
+    m_UpperAngle: 359
 --- !u!1 &6209562627274556813
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,6 +603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponParent: {fileID: 0}
+  ropeSegmentPrefab: {fileID: 789350062820800415, guid: d8bc316886a5bea44baec5d4b5bf424d, type: 3}
 --- !u!50 &278306883
 Rigidbody2D:
   serializedVersion: 4

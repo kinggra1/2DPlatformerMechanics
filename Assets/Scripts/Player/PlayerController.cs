@@ -33,8 +33,11 @@ public class PlayerController : MonoBehaviour {
     [Tooltip("Debugging text to see our current facing direction (in code).")]
     public TextMesh debugDirectionText;
 
-    // Horizontal eceleration rate when there is no input in the air. m/s^2
+    // Horizontal deceleration rate when there is no input in the air. m/s^2
     private readonly float AIR_X_DECEL_RATE = 50f;
+
+    // Horizontal deceleration rate when there is no input on a rope. m/s^2
+    private readonly float SWING_X_DECEL_RATE = 10f;
 
     private Vector2 wallJumpDirection = (Vector2.up + Vector2.right).normalized;
 
@@ -43,7 +46,7 @@ public class PlayerController : MonoBehaviour {
     private AI.Direction wallDirection = AI.Direction.NONE;
     private AI.Direction dodgeDirection = AI.Direction.RIGHT;
 
-    private enum MotionState { IDLE, RUN, DODGE, JUMP, FALL, SWIM, WALLSLIDE };
+    private enum MotionState { IDLE, RUN, DODGE, JUMP, FALL, SWIM, SWING, WALLSLIDE };
     private MotionState motionState = MotionState.IDLE;
     private MotionState prevMotionState = MotionState.IDLE;
 
@@ -79,6 +82,7 @@ public class PlayerController : MonoBehaviour {
 
     private float xInput;
     private float yInput;
+    private bool jumpPressed;
     private bool jumpHeld;
     private bool ePressed;
     private float dodgeInput;
@@ -197,6 +201,10 @@ public class PlayerController : MonoBehaviour {
         cameraFollowScript.AddShakeTrauma(0.5f);
     }
 
+    public void GrabRope() {
+        SetMotionState(MotionState.SWING);
+    }
+
     public void GetPushed(Vector2 knockback, float stunTime) {
         rb.velocity += knockback;
         SetStunTime(stunTime);
@@ -215,10 +223,19 @@ public class PlayerController : MonoBehaviour {
         return onGround;
     }
 
+    // Reset input that is held between Update and FixedUpdate.
+    private void ResetInput() {
+        jumpPressed = false;
+    }
+
     void Update() {
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
+        // boolean guard makes sure FixedUpdate has time to process the input.
+        if (!jumpPressed) { 
+            jumpPressed = Input.GetButtonDown("Jump");
+        }
         jumpHeld = Input.GetButton("Jump");
 
         ePressed = Input.GetKeyDown(KeyCode.E);
@@ -352,7 +369,8 @@ public class PlayerController : MonoBehaviour {
 
             // Shit, we're heading towards the ground at a non-zero velocity
             case MotionState.FALL:
-
+                //xVel = rb.velocity.x;
+                //break;
                 ApplyAirSpeedModifier();
 
                 // More gravity when falling for a "faster" fall
@@ -408,6 +426,30 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 break;
+
+            // Swingin' from a rope
+            case MotionState.SWING:
+                SwingControlModifier();
+
+                // JUMP 
+                // jumpPressed is used here, unlike other places, so holding jump doesn't cut off rope. 
+                // Need to re-press.
+                if (jumpPressed) {
+                    rb.AddForce(Vector2.up * jumpForce);
+                    SetMotionState(MotionState.JUMP);
+                    break;
+                }
+
+                if (onGround) {
+                    SetMotionState(MotionState.IDLE);
+                    break;
+                }
+
+                if (inWater) {
+                    SetMotionState(MotionState.SWIM);
+                }
+
+                break;
             
             // We. Look. So. Cool.
             case MotionState.WALLSLIDE:
@@ -460,6 +502,8 @@ public class PlayerController : MonoBehaviour {
         // adjust the velocity on our rigidbody.
         rb.velocity = new Vector2(xVel, yVel);
 
+        ResetInput();
+
 	} // END OF UPDATE FUNCTION
 
     private void SetMotionState(MotionState newMotionState) {
@@ -468,9 +512,20 @@ public class PlayerController : MonoBehaviour {
             return;
         }
 
+        prevMotionState = motionState;
+        motionState = newMotionState;
         currentStateTimer = 0f;
 
-        switch (newMotionState) {
+        switch (prevMotionState) {
+            case MotionState.SWING:
+                if (weaponHand.HasRope()) {
+                    weaponHand.BreakRope();
+                }
+                break;
+        }
+
+
+        switch (motionState) {
 
             case MotionState.DODGE:
                 dodgeDirection = AI.FloatToHorizontalDirection(dodgeInput);
@@ -509,15 +564,34 @@ public class PlayerController : MonoBehaviour {
             case Item.Weapon.Sword:
                 // Have character do whatever animation is associated with their sprite
                 // Add animation here
-
-                // And also tell the WeaponController animate
-                weaponHand.SwingSword();
                 break;
         }
+
+        // Delegate to weapon hand to handle each weapon as it sees fit.
+        weaponHand.UseWeapon(weaponType);
     }
 
+    public void UseSpecial(Item.Weapon weaponType) {
+        switch (weaponType) {
+            // Have character do whatever animation is associated with their sprite
+            // Add animation here
+            case Item.Weapon.None:
+                break;
+            case Item.Weapon.Axe:
+                break;
+            case Item.Weapon.Shovel:
+                break;
+            case Item.Weapon.Sword:
+                break;
+            case Item.Weapon.Whip:
+                break;
+        }
 
-    private void UpdatePlayerDirectionFromInput() {
+        // And also tell the WeaponController animate
+        weaponHand.UseSpecial(weaponType);
+    }
+
+private void UpdatePlayerDirectionFromInput() {
         if (Mathf.Approximately(xInput, 0f)) {
             return;
         }
@@ -536,11 +610,28 @@ public class PlayerController : MonoBehaviour {
      * NOTE: This function should only be called from FixedUpdate because it uses fixedDeltaTime
      */
     private void ApplyAirSpeedModifier() {
+
         if (Mathf.Abs(xInput) >= 0.01f) {
             // xVel = Mathf.MoveTowards(rb.velocity.x, xVel, Time.fixedDeltaTime * AIR_X_DECEL_RATE);
         }
         else {
             xVel = Mathf.MoveTowards(rb.velocity.x, 0, Time.fixedDeltaTime * AIR_X_DECEL_RATE);
+        }
+    }
+
+    private void SwingControlModifier() {
+        // If there is input, apply it as a force to the player rigidbody2D.
+        if (Mathf.Abs(xInput) >= 0.01f) {
+            xVel = rb.velocity.x;
+            rb.AddForce(Vector2.right * xInput * 10f);
+        }
+        else if (Mathf.Abs(rb.velocity.x) > 1f) {
+            // decay our velocity if there is no input and we're moving at least a certain speed.
+            xVel = Mathf.MoveTowards(rb.velocity.x, 0, Time.fixedDeltaTime * SWING_X_DECEL_RATE);
+        }
+        else {
+            // Let physics move us if we're going less than 1 m/s with no input.
+            xVel = rb.velocity.x;
         }
     }
 

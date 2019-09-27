@@ -7,6 +7,9 @@ public class WeaponHand : MonoBehaviour {
     [Tooltip("The object that is the position/scale parent of the weapon itself. May move around with weapon usage.")]
     public GameObject weaponParent;
 
+    [Tooltip("Helper prefab for building in-game rope to swing from.")]
+    public GameObject ropeSegmentPrefab;
+
     private PlayerController player;
 
     private float animationTimer = 0f;
@@ -18,6 +21,9 @@ public class WeaponHand : MonoBehaviour {
 
     private bool usingWeapon = false;
 
+    // HingeJoint2D in the player object where ropes will be attached when we swing.
+    private HingeJoint2D ropeConnectionPoint;
+    private GameObject ropeParent;
 
     // Array to hold Physics collision results for the beginning of each weapon swing (using Rigidbody2D.OverlapCollider)
     private Collider2D[] results = new Collider2D[100];
@@ -25,18 +31,24 @@ public class WeaponHand : MonoBehaviour {
     // History hold all objects hit on this attack so we don't double collide on a single attack.
     HitObjectHistory hitHistory = new HitObjectHistory();
 
+    private float specialAttackTimer = 0f;
+    private readonly float SPECIAL_ATTACK_COOLDOWN = 1f;
+
     // Use this for initialization
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        ropeConnectionPoint = player.GetComponentInChildren<HingeJoint2D>();
+        ropeConnectionPoint.enabled = false;
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
-    // TODO: Make this more memory efficient. Save references to weapons and activate/deactivate them
+    void Update() {
+        if (specialAttackTimer < SPECIAL_ATTACK_COOLDOWN) {
+            specialAttackTimer += Time.deltaTime;
+        }
+    }
+
+    // TODO: Make this more memory efficient? Save references to weapons and activate/deactivate them
     public void SetWeapon(ItemWeapon weaponItem) {
         if (weaponObject) {
             Destroy(weaponObject);
@@ -49,6 +61,108 @@ public class WeaponHand : MonoBehaviour {
         weaponObject.transform.localPosition = Vector3.zero;
 
         weapon = weaponItem;
+    }
+
+    public bool HasRope() {
+        return ropeConnectionPoint.enabled;
+    }
+
+    public void BreakRope() {
+        // Destroy rope object, and disable HingeJoint2D in player object.
+        Destroy(ropeParent);
+        ropeConnectionPoint.enabled = false;
+    }
+
+    private bool AttemptToMakeRope() {
+        // If we already have a rope, fail.
+        if (this.HasRope()) {
+            return false;
+        }
+
+        // How far we can reach out to hit an anchorpoint. May be longer than length of whip.
+        float whipReach = 8f;
+        // How long the actual whip we're swinging on is.
+        float whipLength = 5f;
+        // The number of links that whipLength is divided across.
+        int linkCount = 8;
+
+        float linkSeperation = whipLength / linkCount;
+
+        Vector2 weaponHandPos = this.transform.position;
+        Vector2 diagonal = (AI.DirectionToVector2(player.PlayerFacing()) + Vector2.up).normalized;
+        RaycastHit2D hit2D = Physics2D.Linecast(weaponHandPos, weaponHandPos + diagonal * whipReach, AI.StandableRaycastLayers);
+        Debug.DrawLine(weaponHandPos, weaponHandPos + diagonal * whipReach, Color.blue);
+        if (hit2D) {
+            ropeParent = new GameObject();
+            Vector2 startPos = hit2D.point;
+            Vector2 endPos = this.transform.position;
+            // int linkCount = (int)(Vector2.Distance(startPos, endPos) / 1f); // LINK SPACING CONSTANT of 0.5f m
+            // linkCount = Mathf.Max(2, linkCount); // Ensure 2 links. Avoid divide by 0.
+            // linkCount = 8;
+            // float linkSpacing = Vector2.Distance(startPos, endPos) / (linkCount - 1);
+            Rigidbody2D previousLinkBody = null;
+            for (int i = 0; i < linkCount; i++) {
+                Vector2 linkPos = Vector2.Lerp(startPos, endPos, i / (linkCount - 1));
+                GameObject link = Instantiate(ropeSegmentPrefab, ropeParent.transform) as GameObject;
+                link.transform.position = linkPos;
+                Rigidbody2D linkRigidbody = link.GetComponent<Rigidbody2D>(); 
+                HingeJoint2D joint = link.GetComponent<HingeJoint2D>();
+
+                // First attachment. Hook to the wall/ceiling itself.
+                if (previousLinkBody == null) {
+                    joint.autoConfigureConnectedAnchor = true;
+                    joint.connectedBody = hit2D.rigidbody;
+                } else {
+                    joint.connectedBody = previousLinkBody;
+                    joint.connectedAnchor = new Vector2(0f, -linkSeperation);
+
+                    // TESTING: Also add a sprint joint between each hinge for finer control over Physics.
+                    //GameObject springSpacer = new GameObject("SpringSpacer");
+                    //springSpacer.transform.position = linkPos;
+                    //Rigidbody2D springBody = springSpacer.AddComponent<Rigidbody2D>();
+                    //springBody.mass = 0.01f;
+                    //SpringJoint2D springJoint = springSpacer.AddComponent<SpringJoint2D>();
+
+                    //springJoint.connectedBody = previousLinkBody;
+                    //joint.connectedBody = springBody;
+                    //joint.connectedAnchor = new Vector2(0f, -linkSeperation);
+                }
+                previousLinkBody = linkRigidbody;
+            }
+            // Connect the last link to the player's hand.
+            ropeConnectionPoint.enabled = true;
+            ropeConnectionPoint.connectedBody = previousLinkBody;
+            return true;
+        }
+        return false;
+    }
+
+    public void UseWeapon(Item.Weapon weaponType) {
+        switch (weaponType) {
+            case Item.Weapon.None:
+            case Item.Weapon.Axe:
+            case Item.Weapon.Shovel:
+            case Item.Weapon.Sword:
+            case Item.Weapon.Whip:
+                SwingSword();
+                break;
+        }
+    }
+
+    public void UseSpecial(Item.Weapon weaponType) {
+        switch (weaponType) {
+            case Item.Weapon.None:
+            case Item.Weapon.Axe:
+            case Item.Weapon.Shovel:
+            case Item.Weapon.Sword:
+            case Item.Weapon.Whip:
+
+                if (specialAttackTimer >= SPECIAL_ATTACK_COOLDOWN && AttemptToMakeRope()) {
+                    specialAttackTimer = 0f;
+                    player.GrabRope();
+                }
+                break;
+        }
     }
 
     // TODO: Take in a time to specify speed

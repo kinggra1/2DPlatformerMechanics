@@ -9,6 +9,8 @@ public class ItemWeapon : Item {
 
     public float usageCooldown = 0.4f;
 
+    private PlayerController player;
+
     override public bool CanUse() {
         return InventorySystem.GetInstance().CanUseTool();
     }
@@ -19,8 +21,7 @@ public class ItemWeapon : Item {
 
     override public void Use() {
         InventorySystem.GetInstance().SetToolUsageCooldown(usageCooldown);
-
-        PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
         player.UseWeapon(weaponType);
 
         if (toolType != Tool.None) {
@@ -29,6 +30,11 @@ public class ItemWeapon : Item {
         }
     }
 
+    override public void UseSpecial() {
+        InventorySystem.GetInstance().SetToolUsageCooldown(usageCooldown);
+        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        player.UseSpecial(Weapon.Whip); // TODO: Change this once done testing whip special functionality.
+    }
 
 
 

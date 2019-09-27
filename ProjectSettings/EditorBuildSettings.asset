@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SceneTransitionTesting/MainArea.unity
+    guid: 4398f02884dde5142adf870449818b49
+  - enabled: 1
+    path: Assets/Scenes/SceneTransitionTesting/TopLeft.unity
+    guid: 97b57007e3ddb004fa0c23a6e25f240c
+  - enabled: 1
+    path: Assets/Scenes/SceneTransitionTesting/TopRight.unity
+    guid: e4b33e7c94301d64c801edb903815504
+  - enabled: 1
+    path: Assets/Scenes/SceneTransitionTesting/Bottom.unity
+    guid: 8065c85a608132e42a126e47e74e5902
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/BigEnemyTest.unity
+    guid: 796719f235d0d9c4289586d18fbca564
+  m_configObjects: {}

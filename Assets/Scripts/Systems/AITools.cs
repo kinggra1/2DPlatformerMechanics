@@ -160,6 +160,14 @@ public static class AI {
         (1 << LayerMask.NameToLayer("Water"))
     );
 
+    public static int StandableRaycastLayers = (
+    (1 << LayerMask.NameToLayer("Ground"))
+            | (1 << LayerMask.NameToLayer("Platform"))
+            // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanStandOn")
+            // ...
+            );
+
+
 
     public static float DistanceToPlayer(GameObject go) {
         return Vector2.Distance(go.transform.position, GetPlayer().transform.position);
