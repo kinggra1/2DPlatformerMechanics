@@ -5,10 +5,16 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class GameController : MonoBehaviour {
 
     private static GameController instance = null;
+
+    public GameObject mainCameraPrefab;
+    public GameObject playerPrefab;
+    public GameObject waterSpritePrefab;
+    public GameObject canvasPrefab;
 
     private PlayerController player;
     private InventorySystem inventory;
@@ -18,9 +24,11 @@ public class GameController : MonoBehaviour {
 
     public LevelBoundaryManager.DoorLocation whereToAppear;
 
+    // Set before loading a new level, this is the GUID of the Doorway we should find and appear at when loading in.
+    private System.Guid targetDoorwayGuid;
+
     // Use this for initialization
     void Awake () {
-
         if (instance == null) {
             // Keep this object around between scenes.
             DontDestroyOnLoad(this.gameObject);
@@ -29,10 +37,36 @@ public class GameController : MonoBehaviour {
         else if (instance != this) {
             Destroy(gameObject);
         }
-	}
+
+        // Initialize everything else we need to play the game! 
+        // This covers scenes where the only thing we add is a GameController and everything should create itself.
+        if (!GameObject.FindGameObjectWithTag("MainCamera")) {
+            Instantiate(mainCameraPrefab);
+        }
+        if (!GameObject.FindObjectOfType<PlayerController>()) {
+            Instantiate(playerPrefab);
+        }
+        if (!GameObject.FindObjectOfType<WaterSpriteController>()) {
+            Instantiate(waterSpritePrefab);
+        }
+        // This includes InventorySystem and TimeSystem, which are children of the Canvas.
+        if (!GameObject.FindObjectOfType<Canvas>()) {
+            Instantiate(canvasPrefab);
+        }
+
+
+        // Objects that don't have a GameObject prefab manage their own object initialization.
+    }
 
     private void Start() {
         FindNeededObjects();
+    }
+
+    private void OnEnable() {
+        SceneManager.sceneLoaded += LevelLoadedCallback;
+    }
+    private void OnDisable() {
+        SceneManager.sceneLoaded -= LevelLoadedCallback;
     }
 
     private void FindNeededObjects() {
@@ -71,19 +105,31 @@ public class GameController : MonoBehaviour {
         Application.Quit();
     }
 
-    public void ExitCurrentRoom(LevelBoundaryManager.DoorLocation whereToAppear) {
+    public void ExitCurrentRoom(System.Guid targetDoorwayGuid) {
         Save();
-        this.whereToAppear = whereToAppear;
+        this.targetDoorwayGuid = targetDoorwayGuid;
+        // this.whereToAppear = whereToAppear;
     }
 
-    private void OnLevelWasLoaded(int level) {
+    private void LevelLoadedCallback(Scene scene, LoadSceneMode mode) {
         FindNeededObjects();
         Load();
 
         LevelBoundaryManager levelBoundaryManager = GameObject.Find("LevelBoundaryManager").GetComponent<LevelBoundaryManager>();
-        Doorway playerEnteredFrom = levelBoundaryManager.doorMap[whereToAppear];
-        if (playerEnteredFrom != null) {
-            player.TeleportAfterSceneLoad(playerEnteredFrom.playerSpawnMarker.transform.position);
+
+        // Find the Doorway to appear at by raw matching search :( 
+        // TODO: Serlize and pass around spawn position efficiently.
+        bool foundDoor = false;
+        foreach (Doorway doorway in FindObjectsOfType<Doorway>()) {
+            if (doorway.guid.Equals(targetDoorwayGuid)) {
+                player.TeleportAfterSceneLoad(doorway.playerSpawnMarker.transform.position);
+                foundDoor = true;
+                break;
+            }
+        }
+
+        if (!foundDoor) {
+            Debug.LogError("Unable to find Doorway to load into level at. DoorwayGuid: " + targetDoorwayGuid);
         }
     }
 
@@ -120,7 +166,8 @@ public class GameController : MonoBehaviour {
 
 
 
-    // These are THE saving and loading functions, which will recursively manage all saving and loading
+
+    // These are THE game state saving and loading functions, which will recursively manage all saving and loading
     private void Save() {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file;

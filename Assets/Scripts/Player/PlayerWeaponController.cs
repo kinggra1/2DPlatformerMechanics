@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponHand : MonoBehaviour {
+
+// Private nested controller for weapon controlling logic.
+public class PlayerWeaponController : MonoBehaviour {
+    private static PlayerWeaponController instance = null;
 
     [Tooltip("The object that is the position/scale parent of the weapon itself. May move around with weapon usage.")]
     public GameObject weaponParent;
@@ -33,6 +36,24 @@ public class WeaponHand : MonoBehaviour {
 
     private float specialAttackTimer = 0f;
     private readonly float SPECIAL_ATTACK_COOLDOWN = 1f;
+
+    void Awake() {
+        if (instance == null) {
+            // Keep this object around between scenes.
+            DontDestroyOnLoad(this.transform.parent.gameObject);
+            instance = this;
+        }
+        else if (instance != this) {
+            Destroy(this.transform.gameObject);
+        }
+    }
+
+    internal static PlayerWeaponController GetInstance() {
+        if (instance == null) {
+            Debug.LogError("No PlayerWeaponController Intiialized.");
+        }
+        return instance;
+    }
 
     // Use this for initialization
     void Start() {
@@ -105,14 +126,15 @@ public class WeaponHand : MonoBehaviour {
                 Vector2 linkPos = Vector2.Lerp(startPos, endPos, i / (linkCount - 1));
                 GameObject link = Instantiate(ropeSegmentPrefab, ropeParent.transform) as GameObject;
                 link.transform.position = linkPos;
-                Rigidbody2D linkRigidbody = link.GetComponent<Rigidbody2D>(); 
+                Rigidbody2D linkRigidbody = link.GetComponent<Rigidbody2D>();
                 HingeJoint2D joint = link.GetComponent<HingeJoint2D>();
 
                 // First attachment. Hook to the wall/ceiling itself.
                 if (previousLinkBody == null) {
                     joint.autoConfigureConnectedAnchor = true;
                     joint.connectedBody = hit2D.rigidbody;
-                } else {
+                }
+                else {
                     joint.connectedBody = previousLinkBody;
                     joint.connectedAnchor = new Vector2(0f, -linkSeperation);
 
@@ -146,6 +168,40 @@ public class WeaponHand : MonoBehaviour {
             case Item.Weapon.Whip:
                 SwingSword();
                 break;
+        }
+    }
+
+    public void UseTool(Item.Tool toolType) {
+        PlantableZone currentPlantableZone = player.TryGetAvailablePlantableZone();
+        switch (toolType) {
+
+            case Item.Tool.Axe:
+                if (currentPlantableZone) {
+                    if (currentPlantableZone.IsPlanted()) {
+                        currentPlantableZone.Chop();
+                    }
+                }
+                else {
+                    // Swiping at empty space with axe
+                }
+                break;
+
+            case Item.Tool.Shovel:
+                if (currentPlantableZone) {
+                    // can only dig up empty dirt patch
+                    if (!currentPlantableZone.IsPlanted()) {
+                        // Destroy dirt and try to add one to our inventory.
+                        Destroy((currentPlantableZone as MonoBehaviour).gameObject);
+                        InventorySystem.GetInstance().TryPickupItem(Item.Resource.Dirt);
+                    }
+                }
+                else {
+                    // Swiping at empty space with shovel
+                }
+                break;
+
+
+                // handle other tools here
         }
     }
 

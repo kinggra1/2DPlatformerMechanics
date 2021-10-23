@@ -1,10 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;using UnityEngine.UI;
+using System;
+using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour {
+/*
+ * PlayerController deals primarily with the movement of the player itself. So anything that controls walk/run/jump/climb/swim/etc.
+ * It is also used as the central source of delegation for player-related actions. The bottom of this file is a collection of
+ * wrapper functions that allow other systems (e.g. InventorySystem) to tell the player to manage an action (e.g. UseWeapon),
+ * which will be passed down to PlayerWeaponController. All Controllers with the prefix Player- should only be visible to the PlayerController.
+ */
+public partial class PlayerController : MonoBehaviour {
 
+    // Controllers to delegate work to (just to keep this file reasonably sized). 
+    private PlayerWeaponController weaponController;
+
+    // Publicly settable/customizable fields in UnityInspector.
     [Tooltip("Max horizontal movement speed in m/s")]
     public float hMoveSpeed = 10f;
     [Tooltip("Max fall speed in m/s")]
@@ -19,8 +30,6 @@ public class PlayerController : MonoBehaviour {
     public float dodgeCooldown = 2f;
     [Tooltip("A reference to the visual sprite of the actual player")]
     public GameObject playerBody;
-    [Tooltip("A reference to the hand where we physically hold Weapons/Tools.")]
-    public WeaponHand weaponHand;
     [Tooltip("The amount of time player cannot be hit after sustaining damage.")]
     public float knockbackInvulnerabilityTime = 2f;
     [Tooltip("The amount of time that input has no effect on the player after they've been hit.")]
@@ -74,7 +83,6 @@ public class PlayerController : MonoBehaviour {
     private bool onWall;
     private GameObject objectOnLeft;
     private GameObject objectOnRight;
-    private PlantableZone currentPlantableZone = null; // usually null
 
     private InventorySystem inventory;
     private LevelBoundaryManager levelBoundaryManager;
@@ -96,9 +104,8 @@ public class PlayerController : MonoBehaviour {
 
     private static PlayerController instance;
 
-	// Use this for initialization
-	void Awake () {
-
+    // Use this for initialization
+    void Awake() {
         if (instance == null) {
             // Keep this object around between scenes.
             DontDestroyOnLoad(this.transform.parent.gameObject);
@@ -125,7 +132,7 @@ public class PlayerController : MonoBehaviour {
             // | (1 << LayerMask.NameToLayer("NameOfALayerWeCanWallSlideOn?")
             // ...
             );
-     
+
         playerLayer = LayerMask.NameToLayer("Player");
         platformLayer = LayerMask.NameToLayer("Platform");
         groundLayer = LayerMask.NameToLayer("Ground");
@@ -138,12 +145,18 @@ public class PlayerController : MonoBehaviour {
     // Start() calls runs after Awake() calls
     // ( yes this happened and that's why I'm writing this -__- )
     private void Start() {
-        FindNeededObjects();
+        FindNestedControllers();
+        FindExternalControllers();
+
         playerOrganizer.SetFacing(playerFacing);
         cameraFollowScript.SetPlayerTurnaroundX(transform.position.x);
     }
 
-    private void FindNeededObjects() {
+    private void FindNestedControllers() {
+        weaponController = PlayerWeaponController.GetInstance();
+    }
+
+    private void FindExternalControllers() {
         gameController = GameController.GetInstance();
         inventory = InventorySystem.GetInstance();
         cameraFollowScript = Camera.main.GetComponent<CameraFollow>();
@@ -167,14 +180,6 @@ public class PlayerController : MonoBehaviour {
 
     public AI.Direction PlayerFacing() {
         return playerFacing;
-    }
-
-    public PlantableZone GetAvailablePlantableZone() {
-        return this.currentPlantableZone;
-    }
-
-    public void SetAvailablePlantableZone(PlantableZone zone) {
-        this.currentPlantableZone = zone;
     }
 
     public void SetInvulnerabilityTime(float time) {
@@ -233,7 +238,7 @@ public class PlayerController : MonoBehaviour {
         yInput = Input.GetAxisRaw("Vertical");
 
         // boolean guard makes sure FixedUpdate has time to process the input.
-        if (!jumpPressed) { 
+        if (!jumpPressed) {
             jumpPressed = Input.GetButtonDown("Jump");
         }
         jumpHeld = Input.GetButton("Jump");
@@ -275,7 +280,7 @@ public class PlayerController : MonoBehaviour {
         // IDLE case we detect jump and do foo, inside of the WALLSLIDE case we
         // detect jump and do bar".
         switch (motionState) {
-            
+
             // We hangin' out.
             case MotionState.IDLE:
 
@@ -311,7 +316,7 @@ public class PlayerController : MonoBehaviour {
                     SetMotionState(MotionState.DODGE);
                     break;
                 }
-                if(jumpHeld && onGround) {
+                if (jumpHeld && onGround) {
                     rb.AddForce(Vector2.up * jumpForce);
                     SetMotionState(MotionState.JUMP);
                     break;
@@ -450,7 +455,7 @@ public class PlayerController : MonoBehaviour {
                 }
 
                 break;
-            
+
             // We. Look. So. Cool.
             case MotionState.WALLSLIDE:
                 // My current defnition of "wallslide" involves constantly moving
@@ -477,7 +482,7 @@ public class PlayerController : MonoBehaviour {
                 if (jumpHeld) {
                     Vector2 jump = wallJumpDirection * jumpForce;
                     // flip x if wall to the right
-                    jump.x = wallDirection == AI.Direction.RIGHT ? -jump.x : jump.x; 
+                    jump.x = wallDirection == AI.Direction.RIGHT ? -jump.x : jump.x;
                     rb.AddForce(jump);
                     SetMotionState(MotionState.JUMP);
                     break;
@@ -504,7 +509,7 @@ public class PlayerController : MonoBehaviour {
 
         ResetInput();
 
-	} // END OF UPDATE FUNCTION
+    } // END OF UPDATE FUNCTION
 
     private void SetMotionState(MotionState newMotionState) {
         if (newMotionState == motionState) {
@@ -518,8 +523,8 @@ public class PlayerController : MonoBehaviour {
 
         switch (prevMotionState) {
             case MotionState.SWING:
-                if (weaponHand.HasRope()) {
-                    weaponHand.BreakRope();
+                if (weaponController.HasRope()) {
+                    weaponController.BreakRope();
                 }
                 break;
         }
@@ -549,49 +554,29 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public void SetWeapon(ItemWeapon weaponItem) {
-        weaponHand.SetWeapon(weaponItem);
-    }
+    public PlantableZone TryGetAvailablePlantableZone() {
+        PlantableZone closestZone = null;
+        float closestZoneDist = float.MaxValue;
 
-    public void UseWeapon(Item.Weapon weaponType) {
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.useTriggers = true;
+        Collider2D[] results = new Collider2D[100];
 
-        // Different animations for different weapons
-        switch(weaponType) {
-
-            // Set of "swordlike" animations
-            case Item.Weapon.Axe:
-            case Item.Weapon.Shovel:
-            case Item.Weapon.Sword:
-                // Have character do whatever animation is associated with their sprite
-                // Add animation here
-                break;
+        int hits = rb.OverlapCollider(filter, results);
+        for (int i = 0; i < hits; i++) {
+            PlantableZone zone = results[i].GetComponent<PlantableZone>();
+            if (zone) {
+                float dist = Vector2.Distance(transform.position, zone.transform.position);
+                if (dist < closestZoneDist) {
+                    closestZone = zone;
+                    closestZoneDist = dist;
+                }
+            }
         }
-
-        // Delegate to weapon hand to handle each weapon as it sees fit.
-        weaponHand.UseWeapon(weaponType);
+        return closestZone;
     }
 
-    public void UseSpecial(Item.Weapon weaponType) {
-        switch (weaponType) {
-            // Have character do whatever animation is associated with their sprite
-            // Add animation here
-            case Item.Weapon.None:
-                break;
-            case Item.Weapon.Axe:
-                break;
-            case Item.Weapon.Shovel:
-                break;
-            case Item.Weapon.Sword:
-                break;
-            case Item.Weapon.Whip:
-                break;
-        }
-
-        // And also tell the WeaponController animate
-        weaponHand.UseSpecial(weaponType);
-    }
-
-private void UpdatePlayerDirectionFromInput() {
+    private void UpdatePlayerDirectionFromInput() {
         if (Mathf.Approximately(xInput, 0f)) {
             return;
         }
@@ -606,11 +591,10 @@ private void UpdatePlayerDirectionFromInput() {
     }
 
     /*
-     * Decelerate (and possibly limit) the player's X velocity when they are airbourne
-     * NOTE: This function should only be called from FixedUpdate because it uses fixedDeltaTime
-     */
+    * Decelerate (and possibly limit) the player's X velocity when they are airbourne
+    * NOTE: This function should only be called from FixedUpdate because it uses fixedDeltaTime
+    */
     private void ApplyAirSpeedModifier() {
-
         if (Mathf.Abs(xInput) >= 0.01f) {
             // xVel = Mathf.MoveTowards(rb.velocity.x, xVel, Time.fixedDeltaTime * AIR_X_DECEL_RATE);
         }
@@ -636,7 +620,6 @@ private void UpdatePlayerDirectionFromInput() {
     }
 
     private void CheckSurroundings() {
-
         objectBelow = null;
         objectOnRight = null;
         objectOnLeft = null;
@@ -650,14 +633,14 @@ private void UpdatePlayerDirectionFromInput() {
         float minPlatformDistance = 0.5f;
 
         // check if we are in the water
-        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.down * downRaycastDist*0.5f, AI.WaterLayermask);
-        Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist*0.5f, Color.blue);
+        RaycastHit2D hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.down * downRaycastDist * 0.5f, AI.WaterLayermask);
+        Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist * 0.5f, Color.blue);
         if (hit2D) {
             inWater = true;
         }
 
         // center grounded check
-        hit2D = Physics2D.Linecast(playerCenter, playerCenter  + Vector2.down * downRaycastDist, standableRaycastLayers);
+        hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.down * downRaycastDist, standableRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.up * downRaycastDist, Color.red);
         if (hit2D) {
             objectBelow = hit2D.collider.gameObject;
@@ -698,27 +681,30 @@ private void UpdatePlayerDirectionFromInput() {
 
         hit2D = Physics2D.Linecast(playerCenter, playerCenter + Vector2.left * sideRaycastDist, wallRaycastLayers);
         Debug.DrawLine(playerCenter, playerCenter - Vector2.right * sideRaycastDist, Color.red);
-        if (hit2D)
-        {
+        if (hit2D) {
             objectOnLeft = hit2D.collider.gameObject;
             onWall = true;
         }
     }
-     
+
     private void FindClosestWall() {
         if (objectOnLeft && objectOnRight) {
             // Left object is closer
             if (Vector2.Distance(objectOnLeft.transform.position, transform.position) <
                 Vector2.Distance(objectOnRight.transform.position, transform.position)) {
                 wallDirection = AI.Direction.LEFT;
-            } else {
+            }
+            else {
                 wallDirection = AI.Direction.RIGHT;
             }
-        } else if (objectOnLeft) {
+        }
+        else if (objectOnLeft) {
             wallDirection = AI.Direction.LEFT;
-        } else if (objectOnRight) {
+        }
+        else if (objectOnRight) {
             wallDirection = AI.Direction.RIGHT;
-        } else {
+        }
+        else {
             wallDirection = AI.Direction.NONE;
         }
     }
@@ -738,12 +724,13 @@ private void UpdatePlayerDirectionFromInput() {
 
     private Vector2 getPlayerCenter() {
         return transform.position;
-    }    
+    }
 
     // Moves all components player, the watersprite, and the camera to a location for a smooth teleport experience
     public void TeleportAfterSceneLoad(Vector3 newPlayerLocation) {
         // Reset object references
-        FindNeededObjects();
+        FindNestedControllers();
+        FindExternalControllers();
         cameraFollowScript.SetPlayerTurnaroundX(transform.position.x);
 
         playerOrganizer.TeleportAfterSceneLoad(newPlayerLocation);
@@ -758,10 +745,58 @@ private void UpdatePlayerDirectionFromInput() {
         }
 
         // If we just landed in some water, then tell the WaterSprite to refill if it isn't already full
-        if ((1<<collider.gameObject.layer) == AI.WaterLayermask && !inventory.WaterLevelFull()) {
+        if ((1 << collider.gameObject.layer) == AI.WaterLayermask && !inventory.WaterLevelFull()) {
             waterSprite.AddImmediateToTargetList(collider.gameObject);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+    // Wrapper functions to pass behavior down to sub-controllers.
+    // Weapon Controller functions.
+    public void SetWeapon(ItemWeapon weaponItem) {
+        weaponController.SetWeapon(weaponItem);
+    }
+
+    public void UseWeapon(Item.Weapon weaponType) {
+        weaponController.UseWeapon(weaponType);
+    }
+
+    public void UseTool(Item.Tool toolType) {
+        weaponController.UseTool(toolType);
+    }
+
+    public void UseSpecial(Item.Weapon weaponType) {
+        switch (weaponType) {
+            // Have character do whatever animation is associated with their sprite
+            // Add animation here
+            case Item.Weapon.None:
+                break;
+            case Item.Weapon.Axe:
+                break;
+            case Item.Weapon.Shovel:
+                break;
+            case Item.Weapon.Sword:
+                break;
+            case Item.Weapon.Whip:
+                break;
+        }
+
+        // And also tell the WeaponController animate
+        weaponController.UseSpecial(weaponType);
+    }
+
+
+
+
 
 
 

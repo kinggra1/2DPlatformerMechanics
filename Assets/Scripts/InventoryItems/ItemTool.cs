@@ -15,13 +15,15 @@ public class ItemTool : Item {
     }
 
     override public void Use() {
+        throw new UnityException("Is this class even being used?");
+        /*
         InventorySystem inventory = InventorySystem.GetInstance();
         if (inventory != null) {
             inventory.UseTool(toolType);
         } else {
             Debug.LogError("Unable to find Inventory.");
         }
-        
+        */
     }
 
     public override ItemData Save() {

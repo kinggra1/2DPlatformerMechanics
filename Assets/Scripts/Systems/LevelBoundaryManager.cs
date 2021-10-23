@@ -25,7 +25,7 @@ public class LevelBoundaryManager : MonoBehaviour {
 
     private CompositeCollider2D groundColliders;
 
-    void Awake() {
+    void Start() {
         groundColliders = GetComponentInChildren<CompositeCollider2D>();
         float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect * 2f;
         float cameraHeight = Camera.main.orthographicSize * 2f;

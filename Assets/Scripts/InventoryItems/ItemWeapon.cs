@@ -19,20 +19,24 @@ public class ItemWeapon : Item {
         return ItemType.Weapon;
     }
 
+    public Weapon GetWeaponType() {
+        return weaponType;
+    }
+
+    public Tool GetToolType() {
+        return toolType;
+    }
+
     override public void Use() {
         InventorySystem.GetInstance().SetToolUsageCooldown(usageCooldown);
-        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        player = PlayerController.GetInstance();
         player.UseWeapon(weaponType);
-
-        if (toolType != Tool.None) {
-            InventorySystem inventory = InventorySystem.GetInstance();
-            inventory.UseTool(toolType);
-        }
+        player.UseTool(toolType);
     }
 
     override public void UseSpecial() {
         InventorySystem.GetInstance().SetToolUsageCooldown(usageCooldown);
-        player = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<PlayerController>();
+        player = PlayerController.GetInstance();
         player.UseSpecial(Weapon.Whip); // TODO: Change this once done testing whip special functionality.
     }
 

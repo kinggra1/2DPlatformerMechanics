@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InventorySystem : MonoBehaviour {
-
     private static InventorySystem instance = null;
 
     public GameObject itemSlotParent;
@@ -44,6 +43,20 @@ public class InventorySystem : MonoBehaviour {
         else if (instance != this) {
             Destroy(this.transform.parent.gameObject);
         }
+
+        // Initializing things that other classes may use in their "Start" methods.
+        // Set up our list of available InventorySlots
+        inventorySlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
+
+        LoadItemsFromResources();
+        DebugInitializeInventory();
+    }
+
+    public static InventorySystem GetInstance() {
+        if (instance == null) {
+            Debug.LogError("Scene needs a Canvas + Inventory");
+        }
+        return instance;
     }
 
     void Start() {
@@ -51,11 +64,12 @@ public class InventorySystem : MonoBehaviour {
         waterSprite = player.GetWaterSprite();
         timeSystem = TimeSystem.GetInstance();
 
-        // Set up our list of available InventorySlots
-        inventorySlots = new List<InventorySlot>(GetComponentsInChildren<InventorySlot>());
 
-        LoadItemsFromResources();
+        cursorRectTransform = cursorImage.GetComponent<RectTransform>();
+        UpdateUI();
+    }
 
+    void DebugInitializeInventory() {
         inventorySlots[0].Assign(weaponItemMap[Item.Weapon.Axe]);
         inventorySlots[1].Assign(weaponItemMap[Item.Weapon.Shovel]);
         inventorySlots[2].Assign(weaponItemMap[Item.Weapon.Sword]);
@@ -64,9 +78,7 @@ public class InventorySystem : MonoBehaviour {
         inventorySlots[4].Assign(seedItemMap[Item.Seed.DewdropPlant], 1);
         inventorySlots[5].Assign(seedItemMap[Item.Seed.FruitPlantOrange], 3);
 
-        cursorRectTransform = cursorImage.GetComponent<RectTransform>();
-
-        UpdateUI();
+        inventorySlots[6].Assign(resourceItemMap[Item.Resource.Dirt], 5);
     }
 
     // TODO: Make this assignment happen through a ScriptableObject or something instead of Resources loading
@@ -135,15 +147,27 @@ public class InventorySystem : MonoBehaviour {
         return false;
     }
 
-    // Usages should probably always be guarded with checks to CanPickupItem
-    public void PickupItem(Item item) {
+    public bool TryPickupItem(Item.Resource resourceType) {
+        return TryPickupItem(resourceItemMap[resourceType]);
+    }
+
+    public bool TryPickupItem(Item.Seed seedType) {
+        return TryPickupItem(seedItemMap[seedType]);
+    }
+
+    public bool TryPickupItem(Item.Weapon weaponType) {
+        return TryPickupItem(weaponItemMap[weaponType]);
+    }
+
+    // Usages should TryPickupItem always be guarded with checks to CanPickupItem. Will Return true/false depending on success though.
+    public bool TryPickupItem(Item item) {
         // Check to see if this item already exists somewhere in our inventory if it's a consumable
         if (item.IsConsumable()) {
             foreach (InventorySlot slot in inventorySlots) {
                 if (!slot.IsEmpty() && slot.IsConsumable() && slot.GetItem().Equals(item)) {
                     // TODO: If we add resource stacking limits for consumables, this is where to check those
                     slot.IncrementCount(1);
-                    return;
+                    return true;
                 }
             }
         }
@@ -152,22 +176,10 @@ public class InventorySystem : MonoBehaviour {
         foreach (InventorySlot slot in inventorySlots) {
             if (slot.IsEmpty()) {
                 slot.Assign(item, 1);
-                return;
+                return true;
             }
         }
-
-        // Uhoh, there are no remaining open inventory slots, and this will involve rewriting
-        // a number of systems, particularly sending the WaterSprite out ot go pick up Collectables 
-        Debug.LogError("We shouldn't have tried picking this up. Oops. Fix your code.");
-    }
-
-    public static InventorySystem GetInstance() {
-        if (instance == null) {
-            Debug.LogError("Scene needs a Canvas + Inventory");
-            //instance = new GameObject().AddComponent<InventorySystem>();
-            //instance.name = "InventorySystem";
-        }
-        return instance;
+        return false;
     }
 
     private void Update() {
@@ -176,7 +188,7 @@ public class InventorySystem : MonoBehaviour {
             toolUsageCooldownTimer -= Time.deltaTime;
         }
 
-        bool useItemPressed = Input.GetButton("Fire1");
+        bool useHeldItemPressed = Input.GetButton("Fire1");
         bool useItemSpecialPressed = Input.GetButton("SpecialAttack");
         bool waterButtonPressed = Input.GetButton("Fire2");
 
@@ -189,7 +201,7 @@ public class InventorySystem : MonoBehaviour {
             SetSelectedItemIndex(selectedItemIndex += indexChange);
         }
 
-        if (useItemPressed) {
+        if (useHeldItemPressed) {
             InventorySlot currentItem = inventorySlots[selectedItemIndex];
 
             // Right now all we can do is use items, so nothing left to do.
@@ -197,38 +209,45 @@ public class InventorySystem : MonoBehaviour {
                 return;
             }
 
-            // Check to see if we have a variety of things and if we can use them
-            Growable  plantableSeed = currentItem.GetGamePrefab().GetComponent<Growable>();
-            DirtPatch dirtPatch = currentItem.GetGamePrefab().GetComponent<DirtPatch>();
+            PlantableZone plantableZone = player.TryGetAvailablePlantableZone();
+            switch (currentItem.GetItem().GetItemType()) {
 
-            PlantableZone plantableZone = player.GetAvailablePlantableZone();
+                case Item.ItemType.Seed:
+                    Growable plantableSeed = currentItem.GetGamePrefab().GetComponent<Growable>();
+                    ItemSeed seed = (ItemSeed)currentItem.GetItem();
+                    if (plantableZone != null && !plantableZone.IsPlanted()) {
+                        plantableZone.PlantSeed(seed);
+                        currentItem.Use();
+                    }
+                    break;
 
-            // Planting a seed
-            if (plantableSeed != null) {
-                ItemSeed seed = (ItemSeed)currentItem.GetItem();
-                if (plantableZone != null && !plantableZone.IsPlanted()) {
-                    plantableZone.PlantSeed(seed);
+                // This includes tools, some weapons also have a ToolType. I don't even know WTF I'm doing anymore, this should probably be cleaned up.
+                case Item.ItemType.Weapon:
                     currentItem.Use();
-                }
-            }
-            // Placing dirt on the ground
-            else if (dirtPatch != null) {
-                if (plantableZone == null && player.OnPlantableGround()) {
+                    break;
 
-                    GameObject dirt = Instantiate(dirtPatch.gameObject);
+                case Item.ItemType.Resource:
+                    DirtPatch dirtPatch = currentItem.GetGamePrefab().GetComponent<DirtPatch>();
+                    if (dirtPatch != null) {
+                        if (plantableZone == null && player.OnPlantableGround()) {
 
-                    // Assign the dirt patch to be parented to whatever the player is standing on
-                    // This allows us to recursively destroy plants after we plant on top of them 
-                    // (e.g. dirt pile on a leaf platform. Destroy bottom plant, it destroys the rest)
-                    Transform parent = player.GetObjectBelow().transform;
-                    dirt.transform.parent = parent;
+                            GameObject dirt = Instantiate(dirtPatch.gameObject);
 
-                    // Place this dirt roughly on the ground
-                    dirt.transform.position = player.transform.position + Vector3.down * 0.5f;
-                    currentItem.Use();
-                }
-            } else {
-                currentItem.Use();
+                            // Assign the dirt patch to be parented to whatever the player is standing on
+                            // This allows us to recursively destroy plants after we plant on top of them 
+                            // (e.g. dirt pile on a leaf platform. Destroy bottom plant, it destroys the rest)
+                            Transform parent = player.GetObjectBelow().transform;
+                            dirt.transform.parent = parent;
+
+                            // Place this dirt roughly on the ground
+                            dirt.transform.position = player.transform.position + Vector3.down * 0.5f;
+                            currentItem.Use();
+                        }
+                    }
+                    else {
+                        currentItem.Use();
+                    }
+                    break;
             }
         }
 
@@ -244,7 +263,7 @@ public class InventorySystem : MonoBehaviour {
         }
 
         if (waterButtonPressed) {
-            PlantableZone plantableZone = player.GetAvailablePlantableZone();
+            PlantableZone plantableZone = player.TryGetAvailablePlantableZone();
             if (plantableZone != null && plantableZone.CanBeWatered()) {
                 GameObject target = (plantableZone as MonoBehaviour).gameObject;
                 if (waterLevel > 0) {
@@ -256,10 +275,12 @@ public class InventorySystem : MonoBehaviour {
                         waterSprite.AddImmediateToTargetList((plantableZone as MonoBehaviour).gameObject);
 
                         // TODO: Consider implications of this call. It means we can't possibly overwater, but it
-                        // also changes the watersprite visual before it actually reaches the PlantableZone
+                        // also changes the watersprite visual before it actually reaches the PlantableZone. 
+                        // It should probably track a "waterLevel" and also "reservedWater" and limit new targets 
+                        // by waterLevel - reservedWater.
                         ChangeWaterLevel(-1);
                     } else {
-                        Debug.LogError("D:");
+                        // Already planning on water this. Not sure if we want a sound or something.
                     }
 
                 } else {
@@ -334,49 +355,6 @@ public class InventorySystem : MonoBehaviour {
 
         toolUsageCooldownTimer = time;
     }
-
-    internal void UseTool(Item.Tool toolType) {
-
-        PlantableZone currentPlantableZone = player.GetAvailablePlantableZone();
-
-        switch (toolType) {
-
-            case Item.Tool.Axe:
-                if (currentPlantableZone != null) {
-                    if (currentPlantableZone.IsPlanted()) {
-                        currentPlantableZone.Chop();
-                    }
-                }
-                else {
-                    // Swiping at empty space with axe
-                }
-                break;
-
-            case Item.Tool.Shovel:
-                if (currentPlantableZone != null) {
-                    // can only dig up empty dirt patch
-                    if (!currentPlantableZone.IsPlanted()) {
-                        Destroy((currentPlantableZone as MonoBehaviour).gameObject);
-
-                        // reworked the InvetorySystem to track a dictionary of items from enums, this is so much nicer now
-                        PickupItem(resourceItemMap[Item.Resource.Dirt]);
-
-                        // seriously look at how gross this used to be
-                        // PickupItem(((GameObject)Resources.Load("PlantPrefabs/ItemDirtPatch", typeof(GameObject))).GetComponent<Item>());
-                    }
-                }
-                else {
-                    // Swiping at empty space with shovel
-                }
-                break;
-
-
-                // handle other tools here
-        }
-    }
-
-
-
 
 
 

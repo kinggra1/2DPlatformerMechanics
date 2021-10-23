@@ -75,22 +75,6 @@ public abstract class PlantableZone : MonoBehaviour {
         plant = null;
     }
 
-    void OnTriggerEnter2D(Collider2D collider) {
-        PlayerController player = collider.GetComponentInParent<PlayerController>();
-        if (player) {
-            //Debug.Log("In plantable zone");
-            player.SetAvailablePlantableZone(this);
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D collider) {
-        PlayerController player = collider.GetComponentInParent<PlayerController>();
-        if (player && (DirtPatch)player.GetAvailablePlantableZone() == this) {
-            //Debug.Log("No plantable zone");
-            player.SetAvailablePlantableZone(null);
-        }
-    }
-
 
 
 

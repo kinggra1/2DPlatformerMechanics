@@ -12,9 +12,9 @@ public abstract class Enemy : MonoBehaviour {
     protected AI.Direction direction = AI.Direction.RIGHT;
 
     // Health bar related variables
-    protected Canvas healthCanvas;
-    protected Image healthBackgroundImage;
-    protected Image healthImage;
+    private Canvas healthCanvas;
+    private Image healthBackgroundImage;
+    private Image healthImage;
 
     [Tooltip("Scalar from 0 to 1 indicating what percentage of damage is blocked.")]
     public float defense = 1f;

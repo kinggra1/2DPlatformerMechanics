@@ -32,7 +32,7 @@ public class CollectibleSeed : Collectible {
     }
 
     protected override void Collect() {
-        InventorySystem.GetInstance().PickupItem(associatedItem);
+        InventorySystem.GetInstance().TryPickupItem(associatedItem);
         base.Collect();
     }
 }
