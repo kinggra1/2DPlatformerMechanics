@@ -10,7 +10,6 @@ public class CameraFollow : MonoBehaviour {
     private GameObject target;
     private PlayerController player;
     private Rigidbody2D playerRigidbody;
-    private bool trackAhead = false;
     private Camera cam;
 
     private Vector3 velocity;
@@ -112,23 +111,10 @@ public class CameraFollow : MonoBehaviour {
         }
 
         float yLerpPercentage = cameraLerpPercentage;
-        /*
-        if (player.IsGrounded()) {
-            yLerpPercentage = cameraLerpPercentage;
-        }
-        */
-        /*
-        float playerBacktrackYDist = Mathf.Abs(playerRigidbody.transform.position.y - lastPlayerPosition.y);
-        if (Mathf.Abs(playerRigidbody.transform.position.y - lastPlayerPosition.y) > 4f) {
-            yLerpPercentage = cameraLerpPercentage * (playerBacktrackYDist - 4f) / (8f - 4f);
-        }
-        */
 
         Vector3 newPosition = transform.position;
         newPosition.x = Mathf.Lerp(transform.position.x, targetPosition.x, xLerpPercentage);
         newPosition.y = Mathf.Lerp(transform.position.y, targetPosition.y, yLerpPercentage);
-        //Vector3 newPosition = Vector3.Lerp(transform.position, targetPosition, 1f - Mathf.Pow(1f - 0.05f, Time.fixedDeltaTime * 30f));
-        //Vector3 newPosition = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, 0.3f);
 
         // Add in random screenshake depending on our current shakeRatio
         // Our camera shakes at trauma^2. Since trauma is [0,1], this creates an increasing slope curve from [0,1]
@@ -139,7 +125,7 @@ public class CameraFollow : MonoBehaviour {
         shakeOffset.y = Mathf.PerlinNoise(shakeTime, 20f) - 0.5f;
         // Normalize in [-1, 1]
         shakeOffset = shakeOffset * 2f * cameraShakeMagnitude;
-        shakeAngle = (Mathf.PerlinNoise(shakeTime, 50f) * 2f - 0.5f) * cameraShakeMagnitude;
+        shakeAngle = (Mathf.PerlinNoise(shakeTime, 50f) * 2f - 1f) * cameraShakeMagnitude * MAX_SHAKE_ANGLE;
 
         newPosition = CapInSceneBounds(newPosition);
 

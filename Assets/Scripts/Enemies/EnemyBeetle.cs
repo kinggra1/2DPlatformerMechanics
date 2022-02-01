@@ -14,7 +14,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
 
     private readonly float ROAM_SPEED = 2f; // m/s
     private readonly float MAX_ROAM_DISTANCE = 6000f; // basically roam forever
-    private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
+    private readonly float SELF_KNOCKBACK_VELOCITY = 5f;
     private readonly float PLAYER_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_KNOCKBACK_ANGLE = 30f; // degrees from horizontal
 
@@ -182,7 +182,7 @@ public class EnemyBeetle : Enemy, IStrikeable {
             // The amount of "up" our knockback has. We're small and low so we knock the player up a little in a predictable way.
             float knockbackY = Mathf.Sin(PLAYER_KNOCKBACK_ANGLE * Mathf.Deg2Rad);
 
-            player.GetHit(new Vector2(knockbackX, knockbackY)*5f);
+            player.GetHit(new Vector2(knockbackX, knockbackY) * PLAYER_KNOCKBACK_VELOCITY);
         }
     }
 }

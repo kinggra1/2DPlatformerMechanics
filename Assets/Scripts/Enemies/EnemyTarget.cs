@@ -15,7 +15,7 @@ public class EnemyTarget : Enemy, IStrikeable {
     private float stunTime = 1f;
 
     // Use this for initialization
-    void Start () {
+    new void Start () {
         rb = this.GetComponent<Rigidbody2D>();
         homePosition = this.transform.position;
 	}

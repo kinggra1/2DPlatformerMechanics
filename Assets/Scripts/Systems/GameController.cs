@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour {
     // Set before loading a new level, this is the GUID of the Doorway we should find and appear at when loading in.
     private System.Guid targetDoorwayGuid;
 
+    private bool paused = false;
+
     // Use this for initialization
     void Awake () {
         if (instance == null) {
@@ -95,6 +97,18 @@ public class GameController : MonoBehaviour {
         if (escapeGamePressed) {
             QuitGame();
         }
+    }
+
+    public void PauseGame() {
+        paused = true;
+    }
+
+    public void ResumeGame() {
+        paused = false;
+    }
+
+    public bool IsPaused() {
+        return paused;
     }
 
     public void ReloadScene() {

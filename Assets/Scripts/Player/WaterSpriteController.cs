@@ -6,8 +6,6 @@ public class WaterSpriteController : MonoBehaviour {
 
     public GameObject waterSpriteChildPrefab;
 
-    private Item.ElementCrystal crystal = Item.ElementCrystal.None;
-
     private float xSwayRadius = 0.2f;
     private float ySwayRadius = 0.2f;
     private Vector3 floatingOffset = new Vector3(1.2f, 1f, 0f);

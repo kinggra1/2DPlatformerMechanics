@@ -14,7 +14,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
     private readonly float EAT_TIME = 5f;
 
     private readonly float MAX_FLIGHT_SPEED = 5f; // m/s
-    private readonly float SELF_KNOCKBACK_VELOCITY = 20f;
+    private readonly float SELF_KNOCKBACK_FORCE = 1000f;
     private readonly float PLAYER_KNOCKBACK_VELOCITY = 20f;
     private readonly float PLAYER_DETECTION_DISTANCE = 15f;
     private readonly float PLANT_DETECTION_DISTANCE = 20f;
@@ -163,8 +163,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
         // Effects for getting hit here
         // Project vector from weapon to us onto the X axis and normalize to decide direction (left or right)
         Vector2 knockback = ((Vector2)this.transform.position - weaponLocation).normalized;
-        rb.AddForce(knockback * 1000f);
-        // rb.velocity = knockback;
+        rb.AddForce(knockback * SELF_KNOCKBACK_FORCE);
     }
 
     // Handle how we hit the player
@@ -173,7 +172,7 @@ public class EnemyLadybug : Enemy, IStrikeable {
         if (player && !player.IsInvulnerable()) {
             Vector2 knockback = AI.VectorToPlayer(this.gameObject).normalized;
 
-            player.GetHit(knockback * 20f);
+            player.GetHit(knockback * PLAYER_KNOCKBACK_VELOCITY);
         }
     }
 }

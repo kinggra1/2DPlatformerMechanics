@@ -6,9 +6,6 @@ using UnityEngine;
  * directly to it quickly, attacks it, and is destroyed
  */
 public class WaterSpriteOffspring : MonoBehaviour {
-
-    private Item.ElementCrystal crystal = Item.ElementCrystal.None;
-
     private GameObject target = null;
 
     private Vector3 targetVector;

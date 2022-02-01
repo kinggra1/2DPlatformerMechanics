@@ -10,7 +10,6 @@ public class EnemyBigEnemy : Enemy, IStrikeable {
     private PlayerController player;
     Rigidbody2D rb;
 
-    private readonly float STUN_TIME = 1f;
     private readonly float TELEGRAPH_CHARGE_TIME = 1f;
     private readonly float CHARGE_TIME = 0.5f;
     private readonly float ATTACK_RECOVERY_TIME = 2f;

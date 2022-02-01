@@ -6,61 +6,85 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using System.Runtime.Serialization;
 
-[ExecuteAlways]
-public class NodeBasedMapEditor : EditorWindow {
-    private List<SceneNode> nodes = new List<SceneNode>();
-    private List<RoomConnection> connections = new List<RoomConnection>();
-    private Dictionary<Guid, DoorwayHandle> allDoorwaysById = new Dictionary<Guid, DoorwayHandle>();
+// [ExecuteAlways]
+public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
+    [SerializeField] private List<SceneNode> nodes = new List<SceneNode>();
+    [SerializeField] private List<RoomConnection> connections = new List<RoomConnection>();
+    private SerializableDictionary<Guid, DoorwayHandle> allDoorwaysById = new SerializableDictionary<Guid, DoorwayHandle>();
 
     private GUIStyle nodeStyle;
     private GUIStyle selectedNodeStyle;
     private GUIStyle doorwayStyle;
     private GUIStyle outPointStyle;
 
-    private DoorwayHandle selectedDoorway;
+    private bool betweenPlayStates = false;
+
+    [NonSerialized] private DoorwayHandle selectedDoorway;
 
     private Vector2 offset;
     private Vector2 drag;
 
-    [MenuItem("Window/Node Based Editor")]
+    [MenuItem("Window/Level Connection Editor")]
     private static void OpenWindow() {
         NodeBasedMapEditor window = GetWindow<NodeBasedMapEditor>();
         window.titleContent = new GUIContent("Level Connection Editor");
     }
 
     protected void Awake() {
-        Initialize();
+        ClearEditor();
+        Debug.Log("Awake Editor");
+        // Initialize();
+        //EditorApplication.playModeStateChanged -= Initialize;
+        //EditorApplication.playModeStateChanged += Initialize;
     }
 
-    protected void Start() {
-        Initialize();
+    protected void OnValidate() {
+        Debug.Log("OnValidate");
+        // Initialize();
     }
 
     protected void OnDestroy() {
-        Debug.Log("OnDestroy called");
+        Debug.Log("OnDestroy");
+        EditorApplication.playModeStateChanged -= Initialize;
     }
 
     protected void OnDisable() {
-        Debug.Log("OnDisable called");
+        Debug.Log("OnDisable");
+        EditorApplication.playModeStateChanged -= Initialize;
     }
 
     protected void OnEnable() {
-        Debug.Log("OnEnable called");
-#if UNITY_EDITOR
         // Initialize();
+        Debug.Log("OnEnable");
+        EditorApplication.playModeStateChanged -= Initialize;
         EditorApplication.playModeStateChanged += Initialize;
-#endif
+    }
+
+    private void OnInspectorUpdate() {
+        // Repaint();
+    }
+
+    public void OnBeforeSerialize() {
+        Debug.Log("Serialized!");
+    }
+
+    public void OnAfterDeserialize() {
+        Debug.Log("Deserialized!");
     }
 
     private void Initialize(PlayModeStateChange state) {
-        Debug.Log("State: " + state);
+        Debug.Log("MapEditor state processing new State: " + state);
+        if (state == PlayModeStateChange.ExitingEditMode || state == PlayModeStateChange.ExitingPlayMode) {
+            betweenPlayStates = true;
+            // Initialize();
+        }
         if (state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.EnteredPlayMode) {
-            Initialize();
+            betweenPlayStates = false;
+            // Initialize();
         }
     }
 
     private void Initialize() {
-        Debug.Log("Initializing NodeBasedMapEditor");
         ClearEditor();
         LoadNodesFromFile();
         nodeStyle = new GUIStyle();
@@ -78,6 +102,13 @@ public class NodeBasedMapEditor : EditorWindow {
     }
 
     protected void OnGUI() {
+        // Strange Serialization behavior causes some GUI elements to go
+        // out of scope for ~2 OnGUI calls right before EnterEditMode is called.
+        // Couldn't figure out why but this delay/check makes it consistent.
+        if (betweenPlayStates) {
+            // return;
+        }
+
         DrawGrid(20, 0.2f, Color.gray);
         DrawGrid(100, 0.4f, Color.gray);
 
@@ -95,21 +126,16 @@ public class NodeBasedMapEditor : EditorWindow {
     }
 
     private void DrawButtons() {
-        if (GUI.Button(new Rect(0, 0, 100, 20), "Reload From File")) {
-            ClearEditor();
-            LoadNodesFromFile();
-        }
-
-        if (GUI.Button(new Rect(0, 30, 100, 20), "Save To File")) {
+        if (GUI.Button(new Rect(30, 30, 200, 20), "Save To File")) {
             SaveEditorDataToFile();
         }
 
-        if (GUI.Button(new Rect(0, 60, 100, 20), "Reset Editor")) {
+        if (GUI.Button(new Rect(30, 60, 200, 20), "Reload From File")) {
             ClearEditor();
             LoadNodesFromFile();
         }
 
-        if (GUI.Button(new Rect(0, 90, 300, 20), "Build ALL Scene Data")) {
+        if (GUI.Button(new Rect(30, 90, 200, 20), "Build ALL Scene Data")) {
             ClearEditor();
             GlobalMapWriteSceneData.WriteDataForAllScenesInBuildSettings();
             LoadNodesFromFile();
@@ -190,13 +216,14 @@ public class NodeBasedMapEditor : EditorWindow {
 
     private void DrawConnectionLine(Event e) {
         if (selectedDoorway != null) {
+            Rect selectedDoorwayRect = (Rect)selectedDoorway.doorwayRect;
             bool ltr = selectedDoorway.doorwayRect.x < e.mousePosition.x;
             Vector2 handleDirection = ltr ? Vector2.left : Vector2.right;
             // Vector2 handleDirection = new Vector2(secondDoorway.doorwayRect.x - firstDoorway.doorwayRect.x, secondDoorway.doorwayRect.y - firstDoorway.doorwayRect.y).normalized;
             Handles.DrawBezier(
-                selectedDoorway.doorwayRect.center,
+                selectedDoorwayRect.center,
                 e.mousePosition,
-                selectedDoorway.doorwayRect.center - handleDirection * 25f,
+                selectedDoorwayRect.center - handleDirection * 25f,
                 e.mousePosition + handleDirection * 25f,
                 RoomConnection.CONNECTION_COLOR,
                 null,
@@ -236,11 +263,11 @@ public class NodeBasedMapEditor : EditorWindow {
         // nodes.Add(new SceneNode(position, 200, 50, nodeStyle, selectedNodeStyle, doorwayStyle, outPointStyle, OnClickDoorwayHandle, OnClickRemoveNode));
     }
 
-    private void AddSceneNode(Vector2 position, int width, int height, Texture2D image, string sceneName, List<EditorDoorwayData> doorwayData) {
+    private void AddSceneNode(Vector2 position, int width, int height, Texture2D image, string sceneName, EditorRoomData roomData) {
         if (nodes == null) {
             nodes = new List<SceneNode>();
         }
-        nodes.Add(new SceneNode(sceneName, position, width, height, image, doorwayData, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
+        nodes.Add(new SceneNode(sceneName, position, width, height, image, roomData, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
     }
 
     private void OnClickDoorwayHandle(DoorwayHandle doorway) {
@@ -331,10 +358,13 @@ public class NodeBasedMapEditor : EditorWindow {
         
         byte[] imageData = File.ReadAllBytes(imagePath);
         string sceneName = new DirectoryInfo(directory).Name;
+        string relativePath = "Assets/_EditorGenerated/Maps/" + sceneName;
 
-        Texture2D image = new Texture2D(2, 2); // TODO: Allocate appropriate space.
+        Texture2D image = AssetDatabase.LoadAssetAtPath(relativePath + "/bounds_image.png", typeof(Texture2D)) as Texture2D;
+        // Texture2D image = new Texture2D(2, 2); // TODO: Allocate appropriate space.
         image.filterMode = FilterMode.Point;
-        image.LoadImage(imageData);
+        // image.LoadImage(imageData);
+        // AssetDatabase.CreateAsset(image, "Assets/TESTINGASSETDATABASE/"+sceneName);
 
         string doorwayDataPath = directory + "/doorways.dat";
         BinaryFormatter bf = new BinaryFormatter();
@@ -352,10 +382,10 @@ public class NodeBasedMapEditor : EditorWindow {
         if (File.Exists(editorDataPath)) {
             file = File.Open(editorDataPath, FileMode.Open);
             sceneNode = (SceneNode)bf.Deserialize(file);
-            AddSceneNode(new Vector2(sceneNode.rect.x, sceneNode.rect.y), image.width, image.height, image, sceneName, roomData.doorwayData);
+            AddSceneNode(new Vector2(sceneNode.rect.x, sceneNode.rect.y), image.width, image.height, image, sceneName, roomData);
             file.Close();
         } else {
-            AddSceneNode(new Vector2(200, 200), image.width, image.height, image, sceneName, roomData.doorwayData);
+            AddSceneNode(new Vector2(200, 200), image.width, image.height, image, sceneName, roomData);
         }
 
     }
@@ -381,11 +411,20 @@ public class NodeBasedMapEditor : EditorWindow {
             FileStream file = File.Open(doorwayConnectionsFilePath, FileMode.Open);
             if (file.Length > 0) {
                 DoorwayConnections doorwayConnections = (DoorwayConnections)bf.Deserialize(file);
+                HashSet<Guid> loadedDoorways = new HashSet<Guid>();
                 foreach (KeyValuePair<Guid, Guid> connection in doorwayConnections) {
                     // If Initialization of all Scene data found both doorways, add to list of connections. Otherwise
                     // we drop the connection if either doorway has disappeared.
                     if (allDoorwaysById.ContainsKey(connection.Key) && allDoorwaysById.ContainsKey(connection.Value)) {
+                        
+                        // Skip over this doorway if we've already loaded a connection associted with it.
+                        // TODO: Clean up the relationship between file serialized and Editor Doorway connections.
+                        if (loadedDoorways.Contains(connection.Key)) {
+                            continue;
+                        }
                         CreateConnection(allDoorwaysById[connection.Key], allDoorwaysById[connection.Value]);
+                        loadedDoorways.Add(connection.Key);
+                        loadedDoorways.Add(connection.Value);
                     }
                 }
             }

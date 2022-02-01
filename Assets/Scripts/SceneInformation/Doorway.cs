@@ -22,18 +22,19 @@ public class Doorway : MonoBehaviour, ISerializationCallbackReceiver {
 
     void Awake() {
         CreateGuid();
-        Debug.Log(guid);
 #if UNITY_EDITOR
         // This lets us detect if we are a prefab instance or a prefab asset.
-        // A prefab asset cannot contain a GUID since it would then be duplicated when instanced.
-        PrefabType prefabType = PrefabUtility.GetPrefabType(this);
-        if (prefabType == PrefabType.Prefab || prefabType == PrefabType.ModelPrefab) {
+        // A prefab asset cannot contain a GUID since it would create invalid state (duplicate IDs) when instantiated.
+        PrefabAssetType prefabAssetType = PrefabUtility.GetPrefabAssetType(this);
+        if (prefabAssetType == PrefabAssetType.Regular
+            || prefabAssetType == PrefabAssetType.Model 
+            || prefabAssetType == PrefabAssetType.Variant) {
             serializedGuid = new byte[0];
             guid = System.Guid.Empty;
         }
 
-        // If we are creating a new GUID for a prefab instance of a prefab, allow GUID marking to break from Prefab instance.
-        else if (prefabType == PrefabType.PrefabInstance) {
+        // If we are creating a new GUID for an instance of a prefab, allow GUID marking to break from Prefab instance.
+        else if (prefabAssetType == PrefabAssetType.NotAPrefab) {
             PrefabUtility.RecordPrefabInstancePropertyModifications(this);
         }
 #endif 

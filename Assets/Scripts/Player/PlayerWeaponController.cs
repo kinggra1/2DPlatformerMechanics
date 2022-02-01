@@ -40,7 +40,7 @@ public class PlayerWeaponController : MonoBehaviour {
     void Awake() {
         if (instance == null) {
             // Keep this object around between scenes.
-            DontDestroyOnLoad(this.transform.parent.gameObject);
+            DontDestroyOnLoad(this.transform.parent.parent.gameObject);
             instance = this;
         }
         else if (instance != this) {

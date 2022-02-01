@@ -4,38 +4,45 @@ using UnityEditor;
 using UnityEngine;
 
 [Serializable]
-public class SceneNode {
+public class SceneNode : ISerializationCallbackReceiver {
     public SerializableRect rect;
     public string sceneName;
-    [NonSerialized] public Texture2D image;
+    public EditorRoomData roomData;
+    public Texture2D image;
+
+    // Rebuilt on Deserialize to avoid circular serialization.
+    public List<DoorwayHandle> doorways = new List<DoorwayHandle>();
+
+    public GUIStyle nodeStyle;
+    public GUIStyle doorwayStyle;
+    public GUIStyle defaultNodeStyle;
+    public GUIStyle selectedNodeStyle;
+
+    public Action<DoorwayHandle> OnClickDoorwayHandle;
+    public Action<SceneNode> OnRemoveNode;
 
     [NonSerialized] public bool isDragged;
     [NonSerialized] public bool isSelected;
 
-    [NonSerialized] public List<DoorwayHandle> doorways = new List<DoorwayHandle>();
-
-    [NonSerialized] public GUIStyle style;
-    [NonSerialized] public GUIStyle defaultNodeStyle;
-    [NonSerialized] public GUIStyle selectedNodeStyle;
-
-    [NonSerialized] public Action<SceneNode> OnRemoveNode;
-
-    public SceneNode(string sceneName, Vector2 position, float width, float height, Texture2D image, List<EditorDoorwayData> doorwayData, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle doorwayStyle, Action<DoorwayHandle> OnClickDoorwayHandle, Action<SceneNode> OnClickRemoveNode) {
+    public SceneNode(string sceneName, Vector2 position, float width, float height, Texture2D image, EditorRoomData roomData, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle doorwayStyle, Action<DoorwayHandle> OnClickDoorwayHandle, Action<SceneNode> OnClickRemoveNode) {
         this.sceneName = sceneName;
-        rect = new SerializableRect(position.x, position.y, width, height);
-        style = nodeStyle;
+        this.roomData = roomData;
+        this.rect = new SerializableRect(position.x, position.y, width, height);
+        this.nodeStyle = nodeStyle;
+        this.doorwayStyle = doorwayStyle;
         this.image = image;
-        defaultNodeStyle = nodeStyle;
-        selectedNodeStyle = selectedStyle;
-        OnRemoveNode = OnClickRemoveNode;
+        this.defaultNodeStyle = nodeStyle;
+        this.selectedNodeStyle = selectedStyle;
+        this.OnClickDoorwayHandle = OnClickDoorwayHandle;
+        this.OnRemoveNode = OnClickRemoveNode;
 
-        ConstructDoorwayHandles(image, doorwayData, doorwayStyle, OnClickDoorwayHandle);
+        ConstructDoorwayHandlesFromData();
     }
 
-    private void ConstructDoorwayHandles(Texture2D image, List<EditorDoorwayData> doorwayData, GUIStyle doorwayStyle, Action<DoorwayHandle> OnClickDoorwayHandle) {
+    private void ConstructDoorwayHandlesFromData() {
         int doorWidth = 10;
         int doorHeight = 10;
-        foreach (EditorDoorwayData doorway in doorwayData) {
+        foreach (EditorDoorwayData doorway in roomData.doorwayData) {
 
             System.Guid doorwayId = doorway.id;
             // Load old toggle state from static map.
@@ -116,12 +123,12 @@ public class SceneNode {
                         isDragged = true;
                         GUI.changed = true;
                         isSelected = true;
-                        style = selectedNodeStyle;
+                        nodeStyle = selectedNodeStyle;
                     }
                     else {
                         GUI.changed = true;
                         isSelected = false;
-                        style = defaultNodeStyle;
+                        nodeStyle = defaultNodeStyle;
                     }
                 }
 
@@ -176,6 +183,14 @@ public class SceneNode {
     private SceneNodeSaveData Save() {
         SceneNodeSaveData data = new SceneNodeSaveData();
         return data;
+    }
+
+    public void OnBeforeSerialize() {
+        // Debug.Log("Before Serialize Node");
+    }
+
+    public void OnAfterDeserialize() {
+        ConstructDoorwayHandlesFromData();
     }
 }
 
