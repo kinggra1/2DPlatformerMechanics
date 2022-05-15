@@ -56,13 +56,15 @@ public static class GlobalMapWriteSceneData {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file;
         // Write data about the doorways for this level.
-        file = File.Create(savePath + "doorways.dat");
+        file = File.Create(savePath + "room_data.dat");
         bf.Serialize(file, CreateRoomDataForEditor(tilemap));
         file.Close();
     }
 
     private static EditorRoomData CreateRoomDataForEditor(Tilemap tilemap) {
         EditorRoomData data = new EditorRoomData();
+        // Default value at (100, 100) for new Scene tile pos/size data.
+        data.sceneRect = new SerializableRect(100, 100, 100, 100);
 
         int xOffset = tilemap.cellBounds.min.x;
         int yOffset = tilemap.cellBounds.min.y;
@@ -83,6 +85,7 @@ public static class GlobalMapWriteSceneData {
 // Serialization objects for creating editor data for the map editor.
 [Serializable]
 public class EditorRoomData {
+    public SerializableRect sceneRect;
     public List<EditorDoorwayData> doorwayData = new List<EditorDoorwayData>();
 }
 

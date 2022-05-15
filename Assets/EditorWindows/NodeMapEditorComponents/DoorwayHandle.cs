@@ -4,25 +4,29 @@ using UnityEngine;
 
 [Serializable]
 public class DoorwayHandle {
-    public SceneNode node;
     public Guid id;
     public SerializableRect doorwayRect;
-    public Vector2 relativeOffset;
+    public Vector2 parentPosition;
+    public Vector2 relativePosition;
     public GUIStyle style;
     public Action<DoorwayHandle> OnClickDoorwayHandle;
 
-    public DoorwayHandle(SceneNode node, Guid id, Vector2 relativeOffset, GUIStyle style, Action<DoorwayHandle> OnClickDoorwayHandle) {
-        this.node = node;
+    public DoorwayHandle(Guid id, Vector2 parentPosition, Vector2 relativePosition, GUIStyle style, Action<DoorwayHandle> OnClickDoorwayHandle) {
         this.id = id;
-        this.relativeOffset = relativeOffset;
+        this.parentPosition = parentPosition;
+        this.relativePosition = relativePosition;
         this.style = style;
         this.OnClickDoorwayHandle = OnClickDoorwayHandle;
-        this.doorwayRect = new Rect(node.rect.x + relativeOffset.x, node.rect.y + relativeOffset.y, 15f, 15f);
+        this.doorwayRect = new Rect(parentPosition.x + relativePosition.x, parentPosition.y + relativePosition.y, 15f, 15f);
     }
 
-    public void Draw() {
-        doorwayRect.x = node.rect.x + relativeOffset.x - doorwayRect.width * 0.5f;
-        doorwayRect.y = node.rect.y + relativeOffset.y - doorwayRect.height * 0.5f;
+    public void SetParentPosition(Vector2 parentPosition) {
+        this.parentPosition = parentPosition;
+    }
+
+    public void Draw(float zoomLevel) {
+        doorwayRect.x = parentPosition.x * zoomLevel + relativePosition.x * zoomLevel - doorwayRect.width * 0.5f;
+        doorwayRect.y = parentPosition.y * zoomLevel + relativePosition.y * zoomLevel - doorwayRect.height * 0.5f;
 
         if (GUI.Button(doorwayRect, "", style)) {
             if (OnClickDoorwayHandle != null) {

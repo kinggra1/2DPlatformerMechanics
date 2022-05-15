@@ -10,19 +10,18 @@ using System.Runtime.Serialization;
 public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     [SerializeField] private List<SceneNode> nodes = new List<SceneNode>();
     [SerializeField] private List<RoomConnection> connections = new List<RoomConnection>();
-    private SerializableDictionary<Guid, DoorwayHandle> allDoorwaysById = new SerializableDictionary<Guid, DoorwayHandle>();
+    [SerializeField] private SerializableDictionary<Guid, DoorwayHandle> allDoorwaysById = new SerializableDictionary<Guid, DoorwayHandle>();
 
     private GUIStyle nodeStyle;
     private GUIStyle selectedNodeStyle;
     private GUIStyle doorwayStyle;
     private GUIStyle outPointStyle;
 
-    private bool betweenPlayStates = false;
-
     [NonSerialized] private DoorwayHandle selectedDoorway;
 
-    private Vector2 offset;
-    private Vector2 drag;
+    private static float zoomLevel = 1f;
+    private static Vector2 editorOffset = Vector2.zero;
+    private Vector2 drag = Vector2.zero;
 
     [MenuItem("Window/Level Connection Editor")]
     private static void OpenWindow() {
@@ -33,7 +32,7 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     protected void Awake() {
         ClearEditor();
         Debug.Log("Awake Editor");
-        // Initialize();
+        Initialize();
         //EditorApplication.playModeStateChanged -= Initialize;
         //EditorApplication.playModeStateChanged += Initialize;
     }
@@ -54,7 +53,6 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     }
 
     protected void OnEnable() {
-        // Initialize();
         Debug.Log("OnEnable");
         EditorApplication.playModeStateChanged -= Initialize;
         EditorApplication.playModeStateChanged += Initialize;
@@ -75,11 +73,9 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     private void Initialize(PlayModeStateChange state) {
         Debug.Log("MapEditor state processing new State: " + state);
         if (state == PlayModeStateChange.ExitingEditMode || state == PlayModeStateChange.ExitingPlayMode) {
-            betweenPlayStates = true;
             // Initialize();
         }
         if (state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.EnteredPlayMode) {
-            betweenPlayStates = false;
             // Initialize();
         }
     }
@@ -102,15 +98,11 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     }
 
     protected void OnGUI() {
-        // Strange Serialization behavior causes some GUI elements to go
-        // out of scope for ~2 OnGUI calls right before EnterEditMode is called.
-        // Couldn't figure out why but this delay/check makes it consistent.
-        if (betweenPlayStates) {
-            // return;
-        }
-
-        DrawGrid(20, 0.2f, Color.gray);
-        DrawGrid(100, 0.4f, Color.gray);
+        float minorTickSpacing = 20f * zoomLevel;
+        float majorTickSpacing = 100f * zoomLevel;
+        DrawGrid(minorTickSpacing, 0.2f, Color.gray);
+        DrawGrid(majorTickSpacing, 0.4f, Color.gray);
+        DrawGrid(300f * zoomLevel, 0.4f, Color.red);
 
         DrawNodes();
         DrawConnections();
@@ -119,7 +111,6 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
 
         DrawButtons();
 
-        ProcessNodeEvents(Event.current);
         ProcessEvents(Event.current);
 
         if (GUI.changed) Repaint();
@@ -143,21 +134,28 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     }
 
     private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor) {
-        int widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
-        int heightDivs = Mathf.CeilToInt(position.height / gridSpacing);
+        int widthDivs = Mathf.CeilToInt(position.width / gridSpacing) + 1;
+        int heightDivs = Mathf.CeilToInt(position.height / gridSpacing) + 1;
 
         Handles.BeginGUI();
         Handles.color = new Color(gridColor.r, gridColor.g, gridColor.b, gridOpacity);
 
-        offset += drag * 0.5f;
-        Vector3 newOffset = new Vector3(offset.x % gridSpacing, offset.y % gridSpacing, 0);
+        Vector2 screenSpaceEditorOffset = editorOffset * zoomLevel;
+
+        Vector3 newOffset = new Vector3(
+            screenSpaceEditorOffset.x % gridSpacing, 
+            screenSpaceEditorOffset.y % gridSpacing, 0);
 
         for (int i = 0; i < widthDivs; i++) {
-            Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset, new Vector3(gridSpacing * i, position.height, 0f) + newOffset);
+            Handles.DrawLine(
+                new Vector3(gridSpacing * i + newOffset.x, -gridSpacing, 0),
+                new Vector3(gridSpacing * i + newOffset.x , position.height, 0f));
         }
 
         for (int j = 0; j < heightDivs; j++) {
-            Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset, new Vector3(position.width, gridSpacing * j, 0f) + newOffset);
+            Handles.DrawLine(
+                new Vector3(-gridSpacing, gridSpacing * j + newOffset.y, 0), 
+                new Vector3(position.width, gridSpacing * j + newOffset.y, 0f));
         }
 
         Handles.color = Color.white;
@@ -167,7 +165,7 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     private void DrawNodes() {
         if (nodes != null) {
             for (int i = 0; i < nodes.Count; i++) {
-                nodes[i].Draw();
+                nodes[i].Draw(zoomLevel);
             }
         }
     }
@@ -175,13 +173,22 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     private void DrawConnections() {
         if (connections != null) {
             for (int i = 0; i < connections.Count; i++) {
-                connections[i].Draw();
+                connections[i].Draw(zoomLevel);
             }
         }
     }
 
     private void ProcessEvents(Event e) {
-        drag = Vector2.zero;
+        
+        // Allow Scene nodes to capture and handle the event first.
+        if (nodes != null) {
+            for (int i = nodes.Count - 1; i >= 0; i--) {
+                bool guiChanged = nodes[i].ProcessEvents(e);
+                if (guiChanged) {
+                    GUI.changed = true;
+                }
+            }
+        }
 
         switch (e.type) {
             case EventType.MouseDown:
@@ -196,21 +203,12 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
 
             case EventType.MouseDrag:
                 if (e.button == 0) {
-                    OnDrag(e.delta);
+                    OnDrag(ScreenToMapWorld(e.delta));
                 }
                 break;
-        }
-    }
-
-    private void ProcessNodeEvents(Event e) {
-        if (nodes != null) {
-            for (int i = nodes.Count - 1; i >= 0; i--) {
-                bool guiChanged = nodes[i].ProcessEvents(e);
-
-                if (guiChanged) {
-                    GUI.changed = true;
-                }
-            }
+            case EventType.ScrollWheel:
+                OnScroll(e.mousePosition, e.delta);
+                break;
         }
     }
 
@@ -236,44 +234,59 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
 
     private void ProcessContextMenu(Vector2 mousePosition) {
         GenericMenu genericMenu = new GenericMenu();
-        genericMenu.AddItem(new GUIContent("Add node"), false, () => OnClickAddSceneNode(mousePosition));
+        // genericMenu.AddItem(new GUIContent("Add node"), false, () => OnClickAddSceneNode(mousePosition));
         genericMenu.ShowAsContext();
     }
 
-    private void OnDrag(Vector2 delta) {
-        drag = delta;
+    // Drag the entire editor base around. 
+    // Input should be scaled to World Space, not Screen Space.
+    private void OnDrag(Vector2 mapWorldDelta) {
+        // Adjust global offset for drawing grid lines.
+        editorOffset += mapWorldDelta;
 
         if (nodes != null) {
             for (int i = 0; i < nodes.Count; i++) {
-                nodes[i].Drag(delta);
+                nodes[i].Drag(mapWorldDelta);
             }
         }
 
         GUI.changed = true;
     }
 
-    private void OnClickAddSceneNode(Vector2 mousePosition) {
-        AddSceneNode(mousePosition, 200, 50);
+    // Mouse Scroll Wheel handler for zooming.
+    private void OnScroll(Vector3 mousePosition, Vector2 delta) {
+
+        Vector2 oldMousePos = ScreenToMapWorld(mousePosition);
+        zoomLevel = zoomLevel * Mathf.Pow(1.01f, -delta.y);
+        zoomLevel = Mathf.Clamp(zoomLevel, 0.5f, 3f);
+        Vector2 newMousePos = ScreenToMapWorld(mousePosition); // Scale has changed
+
+        // Adjust where we are scrolled to keep the mouse in the same position. 
+        // This functionally zooms relative the mouse when zooming in/out
+        OnDrag(newMousePos - oldMousePos);
+        GUI.changed = true;
     }
 
-    private void AddSceneNode(Vector2 position, int width, int height) {
+    public static Vector2 ScreenToMapWorld(Vector2 screenPos) {
+        return screenPos / zoomLevel;
+    }
+
+    public static Vector2 MapWorldToScreen(Vector2 worldPos) {
+        return (worldPos - editorOffset) * zoomLevel;
+    }
+
+    private void AddSceneNode(EditorRoomData roomData, Texture2D image, string sceneName) {
         if (nodes == null) {
             nodes = new List<SceneNode>();
         }
-        // nodes.Add(new SceneNode(position, 200, 50, nodeStyle, selectedNodeStyle, doorwayStyle, outPointStyle, OnClickDoorwayHandle, OnClickRemoveNode));
-    }
-
-    private void AddSceneNode(Vector2 position, int width, int height, Texture2D image, string sceneName, EditorRoomData roomData) {
-        if (nodes == null) {
-            nodes = new List<SceneNode>();
-        }
-        nodes.Add(new SceneNode(sceneName, position, width, height, image, roomData, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
+        nodes.Add(new SceneNode(roomData, sceneName, image, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
     }
 
     private void OnClickDoorwayHandle(DoorwayHandle doorway) {
 
         if (selectedDoorway != null) {
-            if (selectedDoorway.node != doorway.node) {
+            // This previously checked scene != scene, but we now allow intra-scene connections.
+            if (selectedDoorway != doorway) {
                 ClearDoorwayHandleConnections(doorway);
                 CreateConnection(selectedDoorway, doorway);
                 ClearConnectionSelection();
@@ -356,7 +369,7 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
             return;
         }
         
-        byte[] imageData = File.ReadAllBytes(imagePath);
+        // byte[] imageData = File.ReadAllBytes(imagePath);
         string sceneName = new DirectoryInfo(directory).Name;
         string relativePath = "Assets/_EditorGenerated/Maps/" + sceneName;
 
@@ -366,38 +379,40 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         // image.LoadImage(imageData);
         // AssetDatabase.CreateAsset(image, "Assets/TESTINGASSETDATABASE/"+sceneName);
 
-        string doorwayDataPath = directory + "/doorways.dat";
+        string doorwayDataPath = directory + "/room_data.dat";
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file;
-        EditorRoomData roomData = new EditorRoomData(); // Default empty room data.
+        EditorRoomData roomData;
         if (File.Exists(doorwayDataPath)) {
             file = File.Open(doorwayDataPath, FileMode.Open);
             roomData = (EditorRoomData)bf.Deserialize(file);
+            Debug.Log(roomData.sceneRect.x);
+            AddSceneNode(roomData, image, sceneName);
             file.Close();
         }
 
-        string editorDataPath = directory + "/editor_tile.dat";
-        // Default scene created the first time this editor loads the scene. May be overwritten by file load below.
-        SceneNode sceneNode;
-        if (File.Exists(editorDataPath)) {
-            file = File.Open(editorDataPath, FileMode.Open);
-            sceneNode = (SceneNode)bf.Deserialize(file);
-            AddSceneNode(new Vector2(sceneNode.rect.x, sceneNode.rect.y), image.width, image.height, image, sceneName, roomData);
-            file.Close();
-        } else {
-            AddSceneNode(new Vector2(200, 200), image.width, image.height, image, sceneName, roomData);
-        }
+
+        //string editorDataPath = directory + "/editor_tile.dat";
+        //SceneNode sceneNode;
+        //if (File.Exists(editorDataPath)) {
+        //    file = File.Open(editorDataPath, FileMode.Open);
+        //    sceneNode = (SceneNode)bf.Deserialize(file);
+        //    AddSceneNode(new Vector2(sceneNode.rect.x, sceneNode.rect.y), image.width, image.height, image, sceneName, roomData);
+        //    file.Close();
+        //} else {
+        //    AddSceneNode(new Vector2(200, 200), image.width, image.height, image, sceneName, roomData);
+        //}
 
     }
 
     private void LoadNodesFromFile() {
         string sceneDataPath = GlobalMapManager.MAPS_FILEPATH_ROOTDIR;
+        // Initilaize each Scene from serialized data.
         foreach (string directory in Directory.GetDirectories(sceneDataPath)) {
             InitSceneNode(directory);
-            // AddSceneNode(Vector2.zero, 200, 50); 
         }
 
-        // Document all Doorways for this Scene
+        // Create a lookup index for all Doorways in all Scenes.
         foreach (SceneNode scene in nodes) {
             foreach (DoorwayHandle doorway in scene.doorways) {
                 allDoorwaysById.Add(doorway.id, doorway);
@@ -436,36 +451,65 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
     void SaveEditorDataToFile() {
         string savePath = GlobalMapManager.MAPS_FILEPATH_ROOTDIR;
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file;
+        FileStream file = null;
         foreach (SceneNode sceneNode in nodes) {
-            string roomDataPath = GlobalMapManager.GetFilePathForSceneName(sceneNode.sceneName) + "editor_tile.dat";
-            file = File.Create(roomDataPath);
-            bf.Serialize(file, sceneNode);
-            file.Close();
+            string roomDataPath = GlobalMapManager.GetFilePathForSceneName(sceneNode.sceneName) + "room_data.dat";
+            try {
+                file = File.Create(roomDataPath);
+                bf.Serialize(file, sceneNode.GetSavedState());
+                file.Close();
+            } catch (IOException e) {
+                Debug.LogError(String.Format("Error writing SceneNode File: %s", e));
+            }
+            catch (SerializationException e) {
+                Debug.LogError(String.Format("Error Serializing SceneNode: %s", e));
+            } finally {
+                file.Close();
+            }
         }
 
         // Store a mapping of all GUID to Doorway objects.
         string doorwaysById = GlobalMapManager.DOORS_BY_ID_FILEPATH;
-        file = File.Create(doorwaysById);
         DoorsById doorsById = new DoorsById();
         foreach (SceneNode scene in nodes) {
             foreach (DoorwayHandle doorway in scene.doorways) {
                 doorsById.Add(doorway.id, new SerlializedDoorway(scene.sceneName, doorway.id));
             }
         }
-        bf.Serialize(file, doorsById);
-        file.Close();
+        try {
+            file = File.Create(doorwaysById);
+            bf.Serialize(file, doorsById);
+        }
+        catch (IOException e) {
+            Debug.LogError(String.Format("Error writing Doorways file: %s", e));
+        }
+        catch (SerializationException e) {
+            Debug.LogError(String.Format("Error Serializing Doorways: %s ", e));
+        }
+        finally {
+            file.Close();
+        }
 
         // Split out the list of DoorwayConnections into a Symmetrical Map of doorway connections.
         string doorwayConnectionsFilePath = GlobalMapManager.DOOR_CONNECTIONS_FILEPATH;
-        file = File.Create(doorwayConnectionsFilePath);
         DoorwayConnections doorwayConnections = new DoorwayConnections();
         foreach (RoomConnection connection in connections) {
             doorwayConnections.Add(connection.firstDoorway.id, connection.secondDoorway.id);
             doorwayConnections.Add(connection.secondDoorway.id, connection.firstDoorway.id);
         }
-        bf.Serialize(file, doorwayConnections);
-        file.Close();
+        try {
+            file = File.Create(doorwayConnectionsFilePath);
+            bf.Serialize(file, doorwayConnections);
+        }
+        catch (IOException e) {
+            Debug.LogError(String.Format("Error writing Scene Connections file: %s", e));
+        }
+        catch (SerializationException e) {
+            Debug.LogError(String.Format("Error Serializing Scene Connections: %s ", e));
+        }
+        finally {
+            file.Close();
+        }
     }
 
 

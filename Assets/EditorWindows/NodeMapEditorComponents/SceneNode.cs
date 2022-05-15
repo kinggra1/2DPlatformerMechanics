@@ -8,7 +8,8 @@ public class SceneNode : ISerializationCallbackReceiver {
     public SerializableRect rect;
     public string sceneName;
     public EditorRoomData roomData;
-    public Texture2D image;
+    // Serialize to keep in Editor between Edit/Play
+    [SerializeField] private Texture2D image;
 
     // Rebuilt on Deserialize to avoid circular serialization.
     public List<DoorwayHandle> doorways = new List<DoorwayHandle>();
@@ -24,10 +25,13 @@ public class SceneNode : ISerializationCallbackReceiver {
     [NonSerialized] public bool isDragged;
     [NonSerialized] public bool isSelected;
 
-    public SceneNode(string sceneName, Vector2 position, float width, float height, Texture2D image, EditorRoomData roomData, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle doorwayStyle, Action<DoorwayHandle> OnClickDoorwayHandle, Action<SceneNode> OnClickRemoveNode) {
+    public SceneNode(EditorRoomData roomData, string sceneName, Texture2D image, GUIStyle nodeStyle, GUIStyle selectedStyle, GUIStyle doorwayStyle, Action<DoorwayHandle> OnClickDoorwayHandle, Action<SceneNode> OnClickRemoveNode) {
         this.sceneName = sceneName;
         this.roomData = roomData;
-        this.rect = new SerializableRect(position.x, position.y, width, height);
+        this.rect = roomData.sceneRect;
+        // Override width/height with passed in image in case the (unserialized) image has changed.
+        this.rect.width = image.width;
+        this.rect.height = image.height;
         this.nodeStyle = nodeStyle;
         this.doorwayStyle = doorwayStyle;
         this.image = image;
@@ -36,6 +40,7 @@ public class SceneNode : ISerializationCallbackReceiver {
         this.OnClickDoorwayHandle = OnClickDoorwayHandle;
         this.OnRemoveNode = OnClickRemoveNode;
 
+        Debug.Log("REconstructing");
         ConstructDoorwayHandlesFromData();
     }
 
@@ -45,81 +50,43 @@ public class SceneNode : ISerializationCallbackReceiver {
         foreach (EditorDoorwayData doorway in roomData.doorwayData) {
 
             System.Guid doorwayId = doorway.id;
-            // Load old toggle state from static map.
-            // bool toggleState = doorwayGuiToggles.ContainsKey(doorwayId) ? doorwayGuiToggles[doorwayId] : false;
-            // bool toggleState = false;
 
             int xPos = doorway.gridXPos;
-            // Unit Tilemap indexes from bottom-left. Rect is top-left. Invert height.
+            // Unity Tilemap indexes from bottom-left. Rect is top-left. Invert height.
             int yPos = image.height - doorway.gridYPos;
-
-            // Clamp the side to the edge of the image.
-            // int xPos = Mathf.Clamp(doorway.gridXPos, 0, image.width - doorWidth);
-            // int yPos = Mathf.Clamp(fixedY, 0, image.height - doorHeight);
-
-
-
             Rect localDoorwayRect = new Rect(xPos, yPos, doorWidth, doorHeight);
-
-            doorways.Add(new DoorwayHandle(this, doorwayId, localDoorwayRect.position, doorwayStyle, OnClickDoorwayHandle));
-
-
-            // Draw the Toggle element itself, and store current value to toggle state dictionary.
-            // toggleState = GUI.Toggle(localToggleRect, toggleState, "");
-            // doorwayGuiToggles[doorwayId] = toggleState;
-
-            // doorway.editorPosition = new Rect(data.localEditorPosition.x + localToggleRect.x, data.localEditorPosition.y + localToggleRect.y, doorWidth, doorHeight);
-            // toggleState is active when the user clicks on this specific Doorway toggle.
-            /*
-            if (toggleState) {
-                // If we already have a Doorway selected, see if we can make a connection to this one
-                if (doorwaySelected) {
-                    if (doorwayId != activeDoorway.doorwayGuid) {
-                        // Attempt to make a connection to this second doorway.
-                        TargetDoorway thisSceneTarget = new TargetDoorway(data.name, doorwayId, doorway.editorPosition);
-
-                        doorwayConnections[doorwayId] = activeDoorway;
-                        doorwayConnections[activeDoorway.doorwayGuid] = thisSceneTarget;
-                        Debug.Log("Connecting doorways: " + activeDoorway + " " + data.localEditorPosition);
-                    }
-                    ResetDoorwaySelection();
-                }
-                else {
-                    doorwaySelected = true;
-                    activeDoorway = new TargetDoorway(data.name, doorwayId, doorway.editorPosition);
-                }
-            }
-            
-
-            // Draw square color based on selection status.
-            if (doorwaySelected && activeDoorway.doorwayGuid == doorwayId) {
-                EditorGUI.DrawRect(new Rect(xPos, yPos, doorWidth, doorHeight), Color.green);
-            }
-            else {
-                EditorGUI.DrawRect(new Rect(xPos, yPos, doorWidth, doorHeight), Color.red);
-            }
-            */
+            doorways.Add(new DoorwayHandle(doorwayId, ((Rect)this.rect).position, localDoorwayRect.position, doorwayStyle, OnClickDoorwayHandle));
         }
     }
 
     public void Drag(Vector2 delta) {
         Rect r = (Rect)rect;
         r.position += delta;
+        foreach (DoorwayHandle handle in doorways) {
+            handle.SetParentPosition(r.position); 
+        }
         rect = r;
     }
 
-    public void Draw() {
-        GUI.DrawTexture(new Rect(rect.x, rect.y, image.width, image.height), image);
+    public void Draw(float zoomLevel) {
+        GUI.DrawTexture(
+            new Rect(
+                rect.x * zoomLevel, 
+                rect.y * zoomLevel, 
+                image.width * zoomLevel, 
+                image.height * zoomLevel
+            ), image);
         foreach (DoorwayHandle doorway in doorways) {
-            doorway.Draw();
+            doorway.Draw(zoomLevel);
         }
     }
 
     public bool ProcessEvents(Event e) {
+        Vector2 worldMousePos = NodeBasedMapEditor.ScreenToMapWorld(e.mousePosition);
         switch (e.type) {
             case EventType.MouseDown:
                 if (e.button == 0) {
-                    if (((Rect)rect).Contains(e.mousePosition)) {
+                    if (((Rect)rect).Contains(worldMousePos)) {
                         isDragged = true;
                         GUI.changed = true;
                         isSelected = true;
@@ -132,7 +99,7 @@ public class SceneNode : ISerializationCallbackReceiver {
                     }
                 }
 
-                if (e.button == 1 && isSelected && ((Rect)rect).Contains(e.mousePosition)) {
+                if (e.button == 1 && isSelected && ((Rect)rect).Contains(worldMousePos)) {
                     ProcessContextMenu();
                     e.Use();
                 }
@@ -144,7 +111,7 @@ public class SceneNode : ISerializationCallbackReceiver {
 
             case EventType.MouseDrag:
                 if (e.button == 0 && isDragged) {
-                    Drag(e.delta);
+                    Drag(NodeBasedMapEditor.ScreenToMapWorld(e.delta));
                     e.Use();
                     return true;
                 }
@@ -185,8 +152,13 @@ public class SceneNode : ISerializationCallbackReceiver {
         return data;
     }
 
+    public EditorRoomData GetSavedState() {
+        roomData.sceneRect = rect;
+        return roomData;
+    }
+
     public void OnBeforeSerialize() {
-        // Debug.Log("Before Serialize Node");
+
     }
 
     public void OnAfterDeserialize() {

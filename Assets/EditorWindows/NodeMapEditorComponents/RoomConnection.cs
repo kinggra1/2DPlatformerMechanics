@@ -15,7 +15,7 @@ public class RoomConnection {
         this.OnClickRemoveConnection = OnClickRemoveConnection;
     }
 
-    public void Draw() {
+    public void Draw(float zoomLevel) {
         Rect firstDoorwayRect = (Rect)firstDoorway.doorwayRect;
         Rect secondDoorwayRect = (Rect)secondDoorway.doorwayRect;
         bool ltr = firstDoorway.doorwayRect.x < secondDoorway.doorwayRect.x;
