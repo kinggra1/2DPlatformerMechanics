@@ -11,13 +11,6 @@ public class Doorway : MonoBehaviour, ISerializationCallbackReceiver {
     [SerializeField]
     public byte[] serializedGuid;
 
-    [SerializeField]
-    public string scenePath;
-
-    [Tooltip("Which door in the target scene to appear in.")]
-    [SerializeField]
-    public LevelBoundaryManager.DoorLocation whereToAppear;
-
     public GameObject playerSpawnMarker;
 
     void Awake() {
@@ -32,11 +25,11 @@ public class Doorway : MonoBehaviour, ISerializationCallbackReceiver {
             serializedGuid = new byte[0];
             guid = System.Guid.Empty;
         }
-
         // If we are creating a new GUID for an instance of a prefab, allow GUID marking to break from Prefab instance.
         else if (prefabAssetType == PrefabAssetType.Regular) {
             PrefabUtility.RecordPrefabInstancePropertyModifications(this);
         }
+        Debug.Log("GUID: " + guid.ToString());
 #endif 
     }
 
@@ -74,9 +67,6 @@ public class Doorway : MonoBehaviour, ISerializationCallbackReceiver {
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if ((1<<collision.gameObject.layer) == AI.PlayerLayermask) {
-            //GameController.GetInstance().ExitCurrentRoom(whereToAppear);
-            //SceneManager.LoadScene(scenePath);
-
             if (GlobalMapManager.Instance.HasConnectedDoor(guid)) {
                 NodeBasedMapEditor.SerlializedDoorway targetDoor = GlobalMapManager.Instance.GetConnectedDoor(guid);
                 GameController.GetInstance().ExitCurrentRoom(targetDoor.doorwayGuid);

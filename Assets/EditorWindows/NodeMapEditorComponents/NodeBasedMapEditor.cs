@@ -37,6 +37,13 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         //EditorApplication.playModeStateChanged += Initialize;
     }
 
+    private void ClearEditor() {
+        nodes.Clear();
+        connections.Clear();
+        allDoorwaysById.Clear();
+        ClearConnectionSelection();
+    }
+
     protected void OnValidate() {
         Debug.Log("OnValidate");
         // Initialize();
@@ -80,6 +87,7 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         }
     }
 
+    #region Initialization And Subclass Creation Helpers
     private void Initialize() {
         ClearEditor();
         LoadNodesFromFile();
@@ -90,13 +98,54 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         selectedNodeStyle = new GUIStyle();
         selectedNodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1 on.png") as Texture2D;
         selectedNodeStyle.border = new RectOffset(12, 12, 12, 12);
-
-        doorwayStyle = new GUIStyle();
-        doorwayStyle.normal.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left.png") as Texture2D;
-        doorwayStyle.active.background = EditorGUIUtility.Load("builtin skins/darkskin/images/btn left on.png") as Texture2D;
-        doorwayStyle.border = new RectOffset(4, 4, 12, 12);
     }
 
+    private void InitSceneNode(string directory) {
+        string imagePath = directory + "/bounds_image.png";
+
+        if (!File.Exists(imagePath)) {
+            return;
+        }
+
+        // byte[] imageData = File.ReadAllBytes(imagePath);
+        string sceneName = new DirectoryInfo(directory).Name;
+        string relativePath = "Assets/_EditorGenerated/Maps/" + sceneName;
+
+        Texture2D image = AssetDatabase.LoadAssetAtPath(relativePath + "/bounds_image.png", typeof(Texture2D)) as Texture2D;
+        // Texture2D image = new Texture2D(2, 2); // TODO: Allocate appropriate space.
+        image.filterMode = FilterMode.Point;
+        // image.LoadImage(imageData);
+        // AssetDatabase.CreateAsset(image, "Assets/TESTINGASSETDATABASE/"+sceneName);
+
+        string doorwayDataPath = directory + "/room_data.dat";
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file;
+        EditorRoomData roomData;
+        if (File.Exists(doorwayDataPath)) {
+            file = File.Open(doorwayDataPath, FileMode.Open);
+            roomData = (EditorRoomData)bf.Deserialize(file);
+            AddSceneNode(roomData, image, sceneName);
+            file.Close();
+        }
+    }
+
+    private void AddSceneNode(EditorRoomData roomData, Texture2D image, string sceneName) {
+        if (nodes == null) {
+            nodes = new List<SceneNode>();
+        }
+        nodes.Add(new SceneNode(roomData, sceneName, image, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
+    }
+
+    private void CreateConnection(DoorwayHandle selectedDoorway, DoorwayHandle secondClickedDoorway) {
+        if (connections == null) {
+            connections = new List<RoomConnection>();
+        }
+
+        connections.Add(new RoomConnection(selectedDoorway, secondClickedDoorway, OnClickRemoveConnection));
+    }
+    #endregion
+
+    #region OnGUI and Drawing Methods
     protected void OnGUI() {
         float minorTickSpacing = 20f * zoomLevel;
         float majorTickSpacing = 100f * zoomLevel;
@@ -107,7 +156,7 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         DrawNodes();
         DrawConnections();
 
-        DrawConnectionLine(Event.current);
+        DrawConnectionToMouse(Event.current);
 
         DrawButtons();
 
@@ -178,6 +227,28 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         }
     }
 
+    private void DrawConnectionToMouse(Event e) {
+        if (selectedDoorway != null) {
+            Rect selectedDoorwayRect = (Rect)selectedDoorway.doorwayRect;
+            bool ltr = selectedDoorway.doorwayRect.x < e.mousePosition.x;
+            Vector2 handleDirection = ltr ? Vector2.left : Vector2.right;
+            // Vector2 handleDirection = new Vector2(secondDoorway.doorwayRect.x - firstDoorway.doorwayRect.x, secondDoorway.doorwayRect.y - firstDoorway.doorwayRect.y).normalized;
+            Handles.DrawBezier(
+                selectedDoorwayRect.center,
+                e.mousePosition,
+                selectedDoorwayRect.center - handleDirection * 25f,
+                e.mousePosition + handleDirection * 25f,
+                RoomConnection.CONNECTION_COLOR,
+                null,
+                3f
+            );
+
+            GUI.changed = true;
+        }
+    }
+    #endregion
+
+    #region Input Handling (Process Events + Button Handlers)
     private void ProcessEvents(Event e) {
         
         // Allow Scene nodes to capture and handle the event first.
@@ -209,26 +280,6 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
             case EventType.ScrollWheel:
                 OnScroll(e.mousePosition, e.delta);
                 break;
-        }
-    }
-
-    private void DrawConnectionLine(Event e) {
-        if (selectedDoorway != null) {
-            Rect selectedDoorwayRect = (Rect)selectedDoorway.doorwayRect;
-            bool ltr = selectedDoorway.doorwayRect.x < e.mousePosition.x;
-            Vector2 handleDirection = ltr ? Vector2.left : Vector2.right;
-            // Vector2 handleDirection = new Vector2(secondDoorway.doorwayRect.x - firstDoorway.doorwayRect.x, secondDoorway.doorwayRect.y - firstDoorway.doorwayRect.y).normalized;
-            Handles.DrawBezier(
-                selectedDoorwayRect.center,
-                e.mousePosition,
-                selectedDoorwayRect.center - handleDirection * 25f,
-                e.mousePosition + handleDirection * 25f,
-                RoomConnection.CONNECTION_COLOR,
-                null,
-                3f
-            );
-
-            GUI.changed = true;
         }
     }
 
@@ -267,21 +318,6 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         GUI.changed = true;
     }
 
-    public static Vector2 ScreenToMapWorld(Vector2 screenPos) {
-        return screenPos / zoomLevel;
-    }
-
-    public static Vector2 MapWorldToScreen(Vector2 worldPos) {
-        return (worldPos - editorOffset) * zoomLevel;
-    }
-
-    private void AddSceneNode(EditorRoomData roomData, Texture2D image, string sceneName) {
-        if (nodes == null) {
-            nodes = new List<SceneNode>();
-        }
-        nodes.Add(new SceneNode(roomData, sceneName, image, nodeStyle, selectedNodeStyle, doorwayStyle, OnClickDoorwayHandle, OnClickRemoveNode));
-    }
-
     private void OnClickDoorwayHandle(DoorwayHandle doorway) {
 
         if (selectedDoorway != null) {
@@ -300,19 +336,8 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         }
     }
 
-    private void ClearDoorwayHandleConnections(DoorwayHandle handle) {
-        if (connections != null) {
-            List<RoomConnection> connectionsToRemove = new List<RoomConnection>();
-            for (int i = 0; i < connections.Count; i++) {
-                if (connections[i].firstDoorway == handle || connections[i].secondDoorway == handle) {
-                    connectionsToRemove.Add(connections[i]);
-                }
-            }
-            for (int i = 0; i < connectionsToRemove.Count; i++) {
-                connections.Remove(connectionsToRemove[i]);
-            }
-            connectionsToRemove = null;
-        }
+    private void ClearConnectionSelection() {
+        selectedDoorway = null;
     }
 
     private void OnClickRemoveNode(SceneNode node) {
@@ -339,72 +364,33 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         connections.Remove(connection);
     }
 
-    private void CreateConnection(DoorwayHandle selectedDoorway, DoorwayHandle secondClickedDoorway) {
-        if (connections == null) {
-            connections = new List<RoomConnection>();
+    private void ClearDoorwayHandleConnections(DoorwayHandle handle) {
+        if (connections != null) {
+            List<RoomConnection> connectionsToRemove = new List<RoomConnection>();
+            for (int i = 0; i < connections.Count; i++) {
+                if (connections[i].firstDoorway == handle || connections[i].secondDoorway == handle) {
+                    connectionsToRemove.Add(connections[i]);
+                }
+            }
+            for (int i = 0; i < connectionsToRemove.Count; i++) {
+                connections.Remove(connectionsToRemove[i]);
+            }
+            connectionsToRemove = null;
         }
+    }
+    #endregion
 
-        connections.Add(new RoomConnection(selectedDoorway, secondClickedDoorway, OnClickRemoveConnection));
+    #region Worldspace <-> Screenspace helpers
+    public static Vector2 ScreenToMapWorld(Vector2 screenPos) {
+        return screenPos / zoomLevel;
     }
 
-    private void ClearConnectionSelection() {
-        selectedDoorway = null;
+    public static Vector2 MapWorldToScreen(Vector2 worldPos) {
+        return (worldPos - editorOffset) * zoomLevel;
     }
+    #endregion
 
-
-
-
-
-
-    private void ClearEditor() {
-        nodes.Clear();
-        connections.Clear();
-        allDoorwaysById.Clear();
-    }
-
-    private void InitSceneNode(string directory) {
-        string imagePath = directory + "/bounds_image.png";
-       
-        if (!File.Exists(imagePath)) {
-            return;
-        }
-        
-        // byte[] imageData = File.ReadAllBytes(imagePath);
-        string sceneName = new DirectoryInfo(directory).Name;
-        string relativePath = "Assets/_EditorGenerated/Maps/" + sceneName;
-
-        Texture2D image = AssetDatabase.LoadAssetAtPath(relativePath + "/bounds_image.png", typeof(Texture2D)) as Texture2D;
-        // Texture2D image = new Texture2D(2, 2); // TODO: Allocate appropriate space.
-        image.filterMode = FilterMode.Point;
-        // image.LoadImage(imageData);
-        // AssetDatabase.CreateAsset(image, "Assets/TESTINGASSETDATABASE/"+sceneName);
-
-        string doorwayDataPath = directory + "/room_data.dat";
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file;
-        EditorRoomData roomData;
-        if (File.Exists(doorwayDataPath)) {
-            file = File.Open(doorwayDataPath, FileMode.Open);
-            roomData = (EditorRoomData)bf.Deserialize(file);
-            Debug.Log(roomData.sceneRect.x);
-            AddSceneNode(roomData, image, sceneName);
-            file.Close();
-        }
-
-
-        //string editorDataPath = directory + "/editor_tile.dat";
-        //SceneNode sceneNode;
-        //if (File.Exists(editorDataPath)) {
-        //    file = File.Open(editorDataPath, FileMode.Open);
-        //    sceneNode = (SceneNode)bf.Deserialize(file);
-        //    AddSceneNode(new Vector2(sceneNode.rect.x, sceneNode.rect.y), image.width, image.height, image, sceneName, roomData);
-        //    file.Close();
-        //} else {
-        //    AddSceneNode(new Vector2(200, 200), image.width, image.height, image, sceneName, roomData);
-        //}
-
-    }
-
+    #region Saving/Loading Methods
     private void LoadNodesFromFile() {
         string sceneDataPath = GlobalMapManager.MAPS_FILEPATH_ROOTDIR;
         // Initilaize each Scene from serialized data.
@@ -445,7 +431,6 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
             }
             file.Close();
         }
-
     }
 
     void SaveEditorDataToFile() {
@@ -511,16 +496,9 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
             file.Close();
         }
     }
+    #endregion
 
-
-
-
-
-
-
-
-
-
+    #region Serialization Data Classes
     [Serializable]
     public class SerlializedDoorway {
         public string sceneNameToLoad;
@@ -543,4 +521,5 @@ public class NodeBasedMapEditor : EditorWindow, ISerializationCallbackReceiver {
         public DoorwayConnections() {}
         public DoorwayConnections(SerializationInfo info, StreamingContext context) : base(info, context) {}
     }
+    #endregion
 }

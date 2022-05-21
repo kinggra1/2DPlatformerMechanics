@@ -162,7 +162,7 @@ public class SceneNode : ISerializationCallbackReceiver {
     }
 
     public void OnAfterDeserialize() {
-        ConstructDoorwayHandlesFromData();
+        // ConstructDoorwayHandlesFromData();
     }
 }
 
